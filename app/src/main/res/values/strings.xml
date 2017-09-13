@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Cuidador</string>
+    <string name="Salvar">Salvar</string>
+    <string name="Buscar">Buscar</string>
+    <string name="Ajuda">Ajuda</string>
+    <string name="Configuracoes">Configurações</string>
+    <string name="agendar_medicacao">Agendar medicação</string>
+    <string name="gerenciar_contatos">Gerenciar contatos</string>
+    <string name="gerenciar_programas_favoritos">Gerenciar programas favoritos</string>
+    <string name="title_medicacao_list">Medicacoes</string>
+    <string name="title_medicacao_detail">Medicacao Detail</string>
+    <string name="title_activity_agenda_medicacao">AgendaMedicacaoActivity</string>
+    <string name="titulo">Título</string>
+    <string name="descricao">Descrição</string>
+    <string name="apelido">Apelido</string>
+    <string name="msg_erro_validacao_usuario">Por favor, digite um telefone válido</string>
+    <string name="msg_telefone_requerido">Por favor, preencha o campo do telefone</string>
+    <string name="msg_usuario_nao_encontrado">Usuário não encontrado</string>
+    <string name="nome">Nome</string>
+    <string name="hint_nome">Digite o nome</string>
+    <string name="telefone">Telefone</string>
+    <string name="hint_telefone">Digite o telefone</string>
+    <string name="salvar">Salvar</string>
+    <string name="configuracoes">Configurações</string>
+    <string name="busca">Busca</string>
+    <string name="ajuda">Ajuda</string>
+    <string name="voltar">Voltar</string>
+    <string name="chaveUsuarioLogado">usuarioLogadoTelefone</string>
+    <string name="chaveIdosoSelecionado">idosoSelecionadoTelefone</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_cadastro_contato">Contato</string>
+    <string name="Excluir">Excluir</string>
+    <string name="hint_horarios">Exemplo: 10:00; 16:00</string>
+    <string name="horarios">Horários</string>
+    <string name="dose">Dose</string>
+    <string name="hint_dose">Exemplo: 1 comprimido</string>
+    <string name="hint_nome_do_programa">Digite o nome do programa</string>
+    <string name="nome_programa">Nome do programa</string>
+    <string name="horarios_programa">Horários sugeridos para notificação</string>
+    <string name="link">Link</string>
+    <string name="hint_link">http://</string>
+</resources>

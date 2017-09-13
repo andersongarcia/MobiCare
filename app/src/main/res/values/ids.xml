@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="agendar_medicacao" type="id">agendar_medicacao</item>
+    <item name="gerenciar_contatos" type="id">gerenciar_contatos</item>
+    <item name="gerenciar_programas" type="id">gerenciar_programas</item>
+</resources>
