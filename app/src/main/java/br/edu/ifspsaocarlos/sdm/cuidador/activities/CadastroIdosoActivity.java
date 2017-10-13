@@ -10,8 +10,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
@@ -28,7 +26,8 @@ public class CadastroIdosoActivity extends AppCompatActivity {
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setTitle(R.string.registro_idoso);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -64,16 +63,7 @@ public class CadastroIdosoActivity extends AppCompatActivity {
     }
 
     private void registrarIdoso(String nome, String telefone) {
-        // busca usuário na base
-        Usuario usuario = new CuidadorService(this).obterUsuarioLogado();
-
-        CuidadorRepository usuarioDAO = new CuidadorRepository(this);
-        usuarioDAO.adicionarIdoso(usuario, nome, telefone);
-
-        // define idoso como idoso selecionado
-        SharedPreferences preferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(getString(R.string.chaveIdosoSelecionado), telefone);
-        editor.commit();
+        CuidadorService service = new CuidadorService(this);
+        service.registrarIdoso(nome, telefone);
     }
 }

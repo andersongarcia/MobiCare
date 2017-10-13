@@ -16,6 +16,7 @@ import java.util.List;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.AgendaMedicacaoActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MedicacaoAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 
@@ -25,7 +26,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
 
 public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSelecionado {
     private RecyclerView mRecyclerView;
-    private List<Medicacao> mList;
+    private List<Medicacao> listaMedicacoes;
     AgendaMedicacaoActivity agendaMedicacaoActivity;
 
     @Override
@@ -42,8 +43,8 @@ public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSe
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        mList = AgendaMedicacaoActivity.medicacoes;
-        MedicacaoAdapter adapter = new MedicacaoAdapter(getActivity(), mList);
+        listaMedicacoes = CuidadorFirebaseRepository.getInstance().getMedicacoes();
+        MedicacaoAdapter adapter = new MedicacaoAdapter(getActivity(), listaMedicacoes);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);
 
@@ -55,7 +56,7 @@ public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSe
         view.findViewById(R.id.btn_cadastrar_medicacao).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance("");
+                CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance(new Medicacao());
                 agendaMedicacaoActivity.openFragment(fragment);
             }
 
@@ -64,24 +65,12 @@ public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSe
         return view;
     }
 
-    private Medicacao getMedicacao(View v) {
-        Medicacao medicacao = new Medicacao();
-
-        String nome = ((TextView)v.findViewById(R.id.lista_titulo)).getText().toString();
-        String horarios = ((TextView)v.findViewById(R.id.lista_descricao)).getText().toString();
-
-        medicacao.setNome(nome);
-        medicacao.setHorarios(horarios);
-
-        return medicacao;
-    }
-
     @Override
     public void onItemSelecionado(View view, int posicao) {
 
-        Medicacao medicacao = getMedicacao(view);
+        Medicacao medicacao = listaMedicacoes.get(posicao);
 
-        CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance(medicacao.getNome());
+        CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance(medicacao);
         agendaMedicacaoActivity.openFragment(fragment);
     }
 

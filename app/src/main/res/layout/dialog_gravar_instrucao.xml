@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/text_margin"
+        android:text="@string/msg_gravar_instrucao" />
+
+    <ImageButton
+        android:id="@+id/btn_iniciar_gravacao"
+        android:contentDescription="@string/gravar_instrucao"
+        android:padding="@dimen/text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_mic_none_black_48dp"
+        android:background="@null"/>
+</LinearLayout>

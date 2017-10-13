@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ContatosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -20,8 +21,6 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  */
 
 public class ContatosActivity extends AppCompatActivity {
-    public static List<Contato> contatos = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +28,6 @@ public class ContatosActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        contatos = new CuidadorService(this).obterContatos();
 
         getFragmentManager().beginTransaction().replace(R.id.content_frame,
                 ContatosFragment.newInstance(this)).commit();

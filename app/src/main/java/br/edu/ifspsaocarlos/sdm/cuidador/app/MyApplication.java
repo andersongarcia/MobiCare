@@ -11,12 +11,12 @@ public class MyApplication extends Application {
     public void onCreate() {
 
         super.onCreate();
-        Realm.init(this);
+        /*Realm.init(this);
         RealmConfiguration config =
                 new RealmConfiguration.Builder()
                         .schemaVersion(5)
                         .name("myrealm.realm")
                         .build();
-        Realm.setDefaultConfiguration(config);
+        Realm.setDefaultConfiguration(config);*/
     }
 }

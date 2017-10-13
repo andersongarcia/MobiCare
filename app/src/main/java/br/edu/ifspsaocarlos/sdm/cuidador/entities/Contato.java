@@ -2,31 +2,33 @@ package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
 import java.io.Serializable;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Classe que representa um contato
  *
  * @author Anderson Canale Garcia
  */
-public class Contato extends RealmObject implements Serializable {
+public class Contato implements Serializable {
 
-    @PrimaryKey
+    private String id;
+
     private String telefone;
 
     private String nome;
 
-    public String getNome() {
+    public Contato(){}
 
-        return nome;
-    }
-
-    public void setNome(String nome) {
-
+    public Contato(String nome, String telefone) {
         this.nome = nome;
+        this.telefone = telefone;
     }
+
+    public String getId() { return id; }
+
+    public void setId(String id) { this.id = id; }
+
+    public String getNome() { return nome; }
+
+    public void setNome(String nome) { this.nome = nome; }
 
     public String getTelefone() {
         return telefone;

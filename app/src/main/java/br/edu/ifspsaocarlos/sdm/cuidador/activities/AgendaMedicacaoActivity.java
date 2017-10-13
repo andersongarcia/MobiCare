@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.MedicacoesFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -29,7 +30,7 @@ public class AgendaMedicacaoActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        medicacoes = new CuidadorService(this).obterMedicacoes();
+        medicacoes = CuidadorFirebaseRepository.getInstance().getMedicacoes();
 
         getFragmentManager().beginTransaction().replace(R.id.frame_medicacao,
                 MedicacoesFragment.newInstance(this)).commit();

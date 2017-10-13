@@ -57,8 +57,10 @@ public class ContatoAdapter extends RecyclerView.Adapter<ContatoAdapter.ContatoH
 
     @Override
     public int getItemCount() {
+        if(listaContatos != null)
+            return listaContatos.size();
 
-        return listaContatos.size();
+        return 0;
     }
 
     public void setRecyclerViewOnItemSelecionado(RecyclerViewOnItemSelecionado r){

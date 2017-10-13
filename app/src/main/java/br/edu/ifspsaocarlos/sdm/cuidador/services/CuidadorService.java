@@ -1,21 +1,23 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.net.Uri;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FileDownloadTask;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorRepository;
+import java.io.File;
+
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseStorage;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
-import io.realm.RealmList;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Classe de serviço para usuário
@@ -23,82 +25,88 @@ import static android.content.Context.MODE_PRIVATE;
  * @author Anderson Canale Garcia
  */
 public class CuidadorService {
-    Context context;
+    private final Context contexto;
+    private final PreferenciaHelper preferencias;
+    private final CuidadorFirebaseRepository repositorio;
 
     public CuidadorService(Context context){
-        this.context = context;
+        this.contexto = context;
+        this.preferencias = new PreferenciaHelper(context);
+        this.repositorio = CuidadorFirebaseRepository.getInstance();
     }
 
-    public Usuario obterUsuarioLogado()
-    {
-        SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.app_name), MODE_PRIVATE);
-        String telefoneLogado = preferences.getString(context.getString(R.string.chaveUsuarioLogado), "");
+    public boolean verificaUsuarioLogado() {
+        String usuarioLogadoId = preferencias.getUsuarioLogadoId();
 
-        CuidadorRepository dao = new CuidadorRepository(context);
-        Usuario usuario = dao.buscaUsuarioPeloTelefone(telefoneLogado);
-
-        return usuario;
+        return (usuarioLogadoId != null && !usuarioLogadoId.isEmpty());
     }
 
-    public ArrayList<Contato> obterContatos(){
-        Idoso idoso = obterIdosoSelecionado();
+    // Verifica se já possui idoso selecionado nas preferências
+    public boolean verificaIdosoSelecionado() {
+        String idosoSelecionadoId = preferencias.getIdosoSelecionadoId();
 
-        RealmList<Contato> contatos = idoso.getContatos();
-        return new ArrayList<>(contatos);
+        return (idosoSelecionadoId != null && !idosoSelecionadoId.isEmpty());
     }
 
-    public Idoso obterIdosoSelecionado() {
-        SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.app_name), MODE_PRIVATE);
-        String idosoSelecionado = preferences.getString(context.getString(R.string.chaveIdosoSelecionado), "");
-
-        CuidadorRepository repository = new CuidadorRepository(context);
-        Idoso idoso = repository.buscaIdosoPeloTelefone(idosoSelecionado);
-
-        return idoso;
+    public void removerContato(String idContato) {
+        repositorio.removerContato(preferencias.getIdosoSelecionadoId(), idContato);
     }
 
-    public void adicionarContato(Contato contato) {
-        Idoso idoso = obterIdosoSelecionado();
-
-        CuidadorRepository repository = new CuidadorRepository(context);
-        repository.adicionarContato(idoso, contato);
+    public void removerMedicacao(String idMedicacao) {
+        repositorio.removerMedicacao(preferencias.getIdosoSelecionadoId(), idMedicacao);
     }
 
-    public void removerContato(String telefone) {
-        CuidadorRepository repository = new CuidadorRepository(context);
-        repository.removerContato(telefone);
+    public void removerPrograma(String idPrograma) {
+        repositorio.removerPrograma(preferencias.getIdosoSelecionadoId(), idPrograma);
     }
 
-    public List<Medicacao> obterMedicacoes() {
-        Idoso idoso = obterIdosoSelecionado();
-
-        RealmList<Medicacao> medicacoes = idoso.getMedicacoes();
-        return new ArrayList<>(medicacoes);
+    public void registrarIdoso(String nome, String telefone) {
+        Idoso idoso = repositorio.adicionarIdoso(preferencias.getUsuarioLogadoId(), nome, telefone);
+        preferencias.setIdosoSelecionadoId(idoso.getId());
     }
 
-    public void adicionarMedicacao(Medicacao medicacao) {
-        Idoso idoso = obterIdosoSelecionado();
-
-        CuidadorRepository repository = new CuidadorRepository(context);
-        repository.adicionarMedicacao(idoso, medicacao);
+    public void registrarUsuario(String nome, String telefone, String perfil) {
+        Usuario usuario = repositorio.criarUsuario(nome, telefone, perfil);
+        preferencias.setUsuarioLogadoId(usuario.getId());
     }
 
-    public void removerMedicacao(String nome) {
-        CuidadorRepository repository = new CuidadorRepository(context);
-        repository.removerMedicacao(nome);
+    public void carregarListas() {
+        repositorio.carregarListas(preferencias.getIdosoSelecionadoId());
     }
 
-    public List<Programa> obterProgramas() {
-        Idoso idoso = obterIdosoSelecionado();
-
-        RealmList<Programa> programas = idoso.getProgramas();
-        return new ArrayList<>(programas);
+    public void salvarContato(Contato contato) {
+        if(contato.getId() == null || contato.getId().isEmpty()){
+            repositorio.adicionarContato(preferencias.getIdosoSelecionadoId(), contato);
+        }else{
+            repositorio.atualizarContato(preferencias.getIdosoSelecionadoId(), contato);
+        }
     }
 
-    public void adicionarPrograma(Programa programa) {
-        Idoso idoso = obterIdosoSelecionado();
+    public void salvarMedicacao(Medicacao medicacao) {
+        if(medicacao.getId() == null || medicacao.getId().isEmpty()){
+            repositorio.adicionarMedicacao(preferencias.getIdosoSelecionadoId(), medicacao);
+        }else {
+            repositorio.atualizarMedicacao(preferencias.getIdosoSelecionadoId(), medicacao);
+        }
+    }
 
-        CuidadorRepository repository = new CuidadorRepository(context);
-        repository.adicionarPrograma(idoso, programa);
+    public void salvarPrograma(Programa programa) {
+        if(programa.getId() == null || programa.getId().isEmpty()){
+            repositorio.adicionarPrograma(preferencias.getIdosoSelecionadoId(), programa);
+        }else {
+            repositorio.atualizarPrograma(preferencias.getIdosoSelecionadoId(), programa);
+        }
+    }
+
+    public void salvarAudioInstrucao(String fileName, String medicacaoId) {
+        CuidadorFirebaseStorage.getInstance().salvarAudioInstrucao(preferencias.getIdosoSelecionadoId(), medicacaoId, fileName);
+    }
+
+    public void carregaInstrucaoURI(String medicacaoId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener){
+        CuidadorFirebaseStorage.getInstance().carregaInstrucaoURI(preferencias.getIdosoSelecionadoId(), medicacaoId, successListener, failureListener);
+    }
+
+    public void carregarArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
+        CuidadorFirebaseStorage.getInstance().carregaArquivo(uri, localFile, successListener, failureListener);
     }
 }

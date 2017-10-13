@@ -25,7 +25,8 @@
             android:name=".activities.AgendaMedicacaoActivity"
             android:label="@string/title_activity_agenda_medicacao" />
         <activity android:name=".activities.CadastroUsuarioActivity" />
-        <activity android:name=".activities.CadastroIdosoActivity"></activity>
+        <activity android:name=".activities.CadastroIdosoActivity" />
+        <activity android:name=".activities.ChatActivity" />
+        <uses-permission android:name="android.permission.RECORD_AUDIO" />
     </application>
-
 </manifest>

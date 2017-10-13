@@ -18,4 +18,7 @@
     <dimen name="card_image_height">200dp</dimen>
     <dimen name="list_body">14sp</dimen>
     <dimen name="navheader_height">222dp</dimen>
+    <dimen name="button_height">36dp</dimen>
+    <dimen name="border_radius">2dp</dimen>
+
 </resources>

@@ -2,23 +2,25 @@ package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
 import java.io.Serializable;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
  * Classe que representa uma medicacao
  *
  * @author Anderson Canale Garcia
  */
-public class Medicacao extends RealmObject implements Serializable {
+public class Medicacao implements Serializable {
 
-    @PrimaryKey
+    private String id;
+
     private String nome;
 
     private String horarios;
 
     private String dose;
 
+
+    public String getId() { return id; }
+
+    public void setId(String id) { this.id = id; }
 
     public String getNome() {
         return nome;

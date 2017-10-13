@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
  */
 public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSelecionado {
     private RecyclerView mRecyclerView;
-    private List<Programa> mList;
+    private List<Programa> listaProgramas;
     ProgramasActivity programasActivity;
 
     @Override
@@ -42,8 +41,8 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        mList = ProgramasActivity.programas;
-        ProgramaAdapter adapter = new ProgramaAdapter(getActivity(), mList);
+        listaProgramas = ProgramasActivity.programas;
+        ProgramaAdapter adapter = new ProgramaAdapter(getActivity(), listaProgramas);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);
 
@@ -55,7 +54,7 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
         view.findViewById(R.id.btn_cadastrar_medicacao).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CadastroProgramaFragment fragment = CadastroProgramaFragment.newInstance("");
+                CadastroProgramaFragment fragment = CadastroProgramaFragment.newInstance(new Programa());
                 programasActivity.openFragment(fragment);
             }
 
@@ -64,24 +63,12 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
         return view;
     }
 
-    private Programa getPrograma(View v) {
-        Programa programa = new Programa();
-
-        String nome = ((TextView)v.findViewById(R.id.lista_titulo)).getText().toString();
-        String horarios = ((TextView)v.findViewById(R.id.lista_descricao)).getText().toString();
-
-        programa.setNome(nome);
-        programa.setHorarios(horarios);
-
-        return programa;
-    }
-
     @Override
     public void onItemSelecionado(View view, int posicao) {
 
-        Programa programa = getPrograma(view);
+        Programa programa = listaProgramas.get(posicao);
 
-        CadastroProgramaFragment fragment = CadastroProgramaFragment.newInstance(programa.getNome());
+        CadastroProgramaFragment fragment = CadastroProgramaFragment.newInstance(programa);
         programasActivity.openFragment(fragment);
     }
 

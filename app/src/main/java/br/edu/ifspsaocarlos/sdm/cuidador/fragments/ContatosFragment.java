@@ -16,6 +16,7 @@ import java.util.List;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.ContatosActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ContatoAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 
@@ -27,7 +28,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
 public class ContatosFragment extends Fragment implements RecyclerViewOnItemSelecionado {
 
     private RecyclerView mRecyclerView;
-    private List<Contato> mList;
+    private List<Contato> listaContatos;
     ContatosActivity contatosActivity;
 
     @Override
@@ -44,8 +45,8 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        mList = ContatosActivity.contatos;
-        ContatoAdapter adapter = new ContatoAdapter(getActivity(), mList);
+        listaContatos = CuidadorFirebaseRepository.getInstance().getContatos();
+        ContatoAdapter adapter = new ContatoAdapter(getActivity(), listaContatos);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);
 
@@ -57,7 +58,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         view.findViewById(R.id.btn_cadastrar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CadastroContatoFragment fragment = CadastroContatoFragment.newInstance("", "");
+                CadastroContatoFragment fragment = CadastroContatoFragment.newInstance("", "", "");
                 contatosActivity.openFragment(fragment);
             }
 
@@ -66,24 +67,12 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         return view;
     }
 
-    private Contato getContato(View v) {
-        Contato contato = new Contato();
-
-        String nome = ((TextView)v.findViewById(R.id.lista_titulo)).getText().toString();
-        String telefone = ((TextView)v.findViewById(R.id.lista_descricao)).getText().toString();
-
-        contato.setNome(nome);
-        contato.setTelefone(telefone);
-
-        return contato;
-    }
-
     @Override
     public void onItemSelecionado(View view, int posicao) {
 
-        Contato contato = getContato(view);
+        Contato contato = listaContatos.get(posicao);
 
-        CadastroContatoFragment fragment = CadastroContatoFragment.newInstance(contato.getNome(), contato.getTelefone());
+        CadastroContatoFragment fragment = CadastroContatoFragment.newInstance(contato.getId(), contato.getNome(), contato.getTelefone());
         contatosActivity.openFragment(fragment);
     }
 

@@ -20,15 +20,18 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
- * Created by ander on 11/09/2017.
+ * Fragment de cadastro de programa.
+ *
+ * @author Anderson Canale Garcia
  */
 
 public class CadastroProgramaFragment  extends Fragment {
-    private static final String NOME = "NOME";
+    private static final String PROGRAMA = "PROGRAMA";
 
-    private String nome;
+    private Programa programa;
 
     private CadastroProgramaFragment.OnFragmentInteractionListener mListener;
+    private CuidadorService cuidadorService;
 
     public CadastroProgramaFragment() {
         // Required empty public constructor
@@ -38,14 +41,14 @@ public class CadastroProgramaFragment  extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param nome Nome do programa
+     * @param programa Instância do programa
      * @return Uma nova instância do fragment CadastroProgramaFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CadastroProgramaFragment newInstance(String nome) {
+    public static CadastroProgramaFragment newInstance(Programa programa) {
         CadastroProgramaFragment fragment = new CadastroProgramaFragment();
         Bundle args = new Bundle();
-        args.putString(NOME, nome);
+        args.putSerializable(PROGRAMA, programa);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,8 +56,9 @@ public class CadastroProgramaFragment  extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cuidadorService = new CuidadorService(getActivity());
         if (getArguments() != null) {
-            nome = getArguments().getString(NOME);
+            programa = (Programa) getArguments().getSerializable(PROGRAMA);
         }
     }
 
@@ -68,7 +72,9 @@ public class CadastroProgramaFragment  extends Fragment {
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ((EditText)view.findViewById(R.id.programa_nome)).setText(nome);
+        ((EditText)view.findViewById(R.id.programa_nome)).setText(programa.getNome());
+        ((EditText)view.findViewById(R.id.programa_horarios)).setText(programa.getHorarios());
+        ((EditText)view.findViewById(R.id.programa_link)).setText(programa.getLink());
 
         return view;
     }
@@ -89,12 +95,19 @@ public class CadastroProgramaFragment  extends Fragment {
                 String nome = ((TextView)getView().findViewById(R.id.programa_nome)).getText().toString();
                 String horarios = ((TextView)getView().findViewById(R.id.programa_horarios)).getText().toString();
                 String link = ((TextView)getView().findViewById(R.id.programa_link)).getText().toString();
-                adicionarPrograma(nome, horarios, link);
+
+                Programa programa = new Programa();
+                programa.setId(this.programa.getId());
+                programa.setNome(nome);
+                programa.setHorarios(horarios);
+                programa.setLink(link);
+
+                cuidadorService.salvarPrograma(programa);
+
                 redirecionaParaLista();
                 break;
             case R.id.excluir:
-                String nomeRemove = ((TextView)getView().findViewById(R.id.medicacao_nome)).getText().toString();
-                new CuidadorService(getActivity()).removerMedicacao(nomeRemove);
+                cuidadorService.removerPrograma(this.programa.getId());
                 redirecionaParaLista();
                 break;
             case android.R.id.home:
@@ -110,22 +123,6 @@ public class CadastroProgramaFragment  extends Fragment {
     private void redirecionaParaLista() {
         Intent loginIntent = new Intent(getActivity(), ProgramasActivity.class);
         startActivity(loginIntent);
-    }
-
-    private void adicionarPrograma(String nome, String horarios, String link) {
-        Programa programa = new Programa();
-        programa.setNome(nome);
-        programa.setHorarios(horarios);
-        programa.setLink(link);
-
-        new CuidadorService(getActivity()).adicionarPrograma(programa);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

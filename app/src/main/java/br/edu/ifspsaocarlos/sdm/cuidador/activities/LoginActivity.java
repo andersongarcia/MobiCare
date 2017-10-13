@@ -4,16 +4,21 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.Util;
-
 
 /**
  * Activity responsável pelo login do usuário.
@@ -21,6 +26,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.util.Util;
  * @author Anderson Canale Garcia
  */
 public class LoginActivity extends Activity {
+    private static final String TAG = "LoginActivity";
 
     // Objeto de progresso de diálogo.
     ProgressDialog prgDialogo;
@@ -61,15 +67,7 @@ public class LoginActivity extends Activity {
 
         // Faz uma pré validação para verificar se o ID está dentro dos padrões exigidos
         if (Util.isNotNull(telefone)) {
-
-            if (validarUsuario(telefone)) {
-                Toast.makeText(getApplicationContext(), "Login feito com sucesso!.", Toast.LENGTH_LONG).show();
-
-                redirecionarActivityPrincipal();
-            } else {
-                mensagemErro.setText(R.string.msg_erro_validacao_usuario);
-                //fgToast.makeText(getApplicationContext(), "Por favor, digite um apelido de usuário válido.", Toast.LENGTH_LONG).show();
-            }
+            validarUsuario(telefone);
         }
         // Caso algum Edit View tenha ficado em branco.
         else {
@@ -83,23 +81,38 @@ public class LoginActivity extends Activity {
      * @param telefone O telefone do usuário que pretende fazer login no sistema
      * @return true caso o usuário exista, false caso contrário
      */
-    private boolean validarUsuario(String telefone) {
+    private void validarUsuario(String telefone) {
 
         if (telefone == null || telefone.isEmpty()) {
-            return false;
+            return;
         }
 
-        CuidadorRepository dao = new CuidadorRepository(this);
-        Usuario usuario = dao.buscaUsuarioPeloTelefone(telefone);
+        Query query = CuidadorFirebaseRepository.getInstance().obterReferenciaUsuario(telefone);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-        if(usuario == null){
-            mensagemErro.setText(R.string.msg_usuario_nao_encontrado);
-            return false;
-        }else {
-            usuarioLogado = usuario;
-            return true;
-        }
+                Usuario usuario = dataSnapshot.getValue(Usuario.class);
+
+                Log.d(TAG, "User name: " + usuario.getContato().getNome() + ", telefone " + usuario.getContato().getTelefone());
+
+                if(usuario == null){
+                    mensagemErro.setText(R.string.msg_usuario_nao_encontrado);
+                }else {
+                    usuarioLogado = usuario;
+                    Toast.makeText(getApplicationContext(), "Login feito com sucesso!.", Toast.LENGTH_LONG).show();
+                    redirecionarActivityPrincipal();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Erro ao ler usuário.", error.toException());
+            }
+        });
     }
+
     /**
      * Redireciona para a tela Home.
      */

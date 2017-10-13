@@ -1,21 +1,27 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
 import java.io.Serializable;
-
-import io.realm.RealmList;
-import io.realm.RealmModel;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import java.util.ArrayList;
 
 /**
  * Classe que representa um usuário
  *
  * @author Anderson Canale Garcia
  */
-public class Usuario extends RealmObject implements Serializable {
+public class Usuario implements Serializable {
+    public static final String CUIDADOR = "Cuidador";
+    public static final String FAMILIAR = "Familiar";
+    public static final String IDOSO = "Idoso";
+
+    private String id;
+
     private Contato contato;
 
-    private RealmList<Idoso> idosos;
+    private String perfil;
+
+    public String getId() { return id; }
+
+    public void setId(String id) { this.id = id; }
 
     public Contato getContato() {
         return contato;
@@ -25,11 +31,7 @@ public class Usuario extends RealmObject implements Serializable {
         this.contato = contato;
     }
 
-    public RealmList<Idoso> getIdosos() {
-        return idosos;
-    }
+    public String getPerfil() { return perfil; }
 
-    public void setIdosos(RealmList<Idoso> idosos) {
-        this.idosos = idosos;
-    }
+    public void setPerfil(String perfil) { this.perfil = perfil; }
 }

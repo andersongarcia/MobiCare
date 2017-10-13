@@ -25,12 +25,15 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  * @author Anderson Canale Garcia
  */
 public class CadastroContatoFragment extends Fragment {
+    private static final String ID = "ID";
     private static final String NOME = "NOME";
     private static final String TELEFONE = "TELEFONE";
 
+    private String id;
     private String nome;
     private String telefone;
 
+    private CuidadorService cuidadorService;
     private OnFragmentInteractionListener mListener;
 
     public CadastroContatoFragment() {
@@ -41,14 +44,17 @@ public class CadastroContatoFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
+     *
+     * @param id
      * @param nome Nome do contato
      * @param telefone Telefone do contato
      * @return Uma nova instância do fragment CadastroContatoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CadastroContatoFragment newInstance(String nome, String telefone) {
+    public static CadastroContatoFragment newInstance(String id, String nome, String telefone) {
         CadastroContatoFragment fragment = new CadastroContatoFragment();
         Bundle args = new Bundle();
+        args.putString(ID, id);
         args.putString(NOME, nome);
         args.putString(TELEFONE, telefone);
         fragment.setArguments(args);
@@ -58,7 +64,9 @@ public class CadastroContatoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cuidadorService = new CuidadorService(getActivity());
         if (getArguments() != null) {
+            id = getArguments().getString(ID);
             nome = getArguments().getString(NOME);
             telefone = getArguments().getString(TELEFONE);
         }
@@ -96,12 +104,13 @@ public class CadastroContatoFragment extends Fragment {
             case R.id.salvar:
                 String nome = ((TextView)getView().findViewById(R.id.contato_nome)).getText().toString();
                 String telefone = ((TextView)getView().findViewById(R.id.contato_telefone)).getText().toString();
-                adicionarContato(nome, telefone);
+                Contato contato = new Contato(nome, telefone);
+                contato.setId(id);
+                cuidadorService.salvarContato(contato);
                 redirecionaParaLista();
                 break;
             case R.id.excluir:
-                String tel = ((TextView)getView().findViewById(R.id.contato_telefone)).getText().toString();
-                new CuidadorService(getActivity()).removerContato(tel);
+                cuidadorService.removerContato(id);
                 redirecionaParaLista();
                 break;
             case android.R.id.home:
@@ -117,38 +126,6 @@ public class CadastroContatoFragment extends Fragment {
     private void redirecionaParaLista() {
         Intent loginIntent = new Intent(getActivity(), ContatosActivity.class);
         startActivity(loginIntent);
-    }
-
-    private void adicionarContato(String nome, String telefone) {
-        Contato contato = new Contato();
-        contato.setNome(nome);
-        contato.setTelefone(telefone);
-
-        new CuidadorService(getActivity()).adicionarContato(contato);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     /**

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ProgramasFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -24,7 +25,7 @@ public class ProgramasActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        programas = new CuidadorService(this).obterProgramas();
+        programas = CuidadorFirebaseRepository.getInstance().getProgramas();
 
         getFragmentManager().beginTransaction().replace(R.id.frame_programas,
                 ProgramasFragment.newInstance(this)).commit();

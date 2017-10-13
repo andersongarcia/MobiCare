@@ -2,23 +2,25 @@ package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
 import java.io.Serializable;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
  * Classe que representa um Programa de TV
  *
  * @author Anderson Canale Garcia
  */
-public class Programa extends RealmObject implements Serializable {
+public class Programa implements Serializable {
 
-    @PrimaryKey
+    private String id;
+
     private String nome;
 
     private String horarios;
 
     private String link;
 
+
+    public String getId() { return id; }
+
+    public void setId(String id) { this.id = id; }
 
     public String getNome() {
         return nome;
@@ -40,7 +42,7 @@ public class Programa extends RealmObject implements Serializable {
         return link;
     }
 
-    public void setLink(String dose) {
+    public void setLink(String link) {
         this.link = link;
     }
 }
