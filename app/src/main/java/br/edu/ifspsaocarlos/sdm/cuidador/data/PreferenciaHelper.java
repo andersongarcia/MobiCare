@@ -12,6 +12,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
  */
 public final class PreferenciaHelper {
     private static final String USUARIO_LOGADO = "USUARIO_LOGADO";
+    private static final String USUARIO_LOGADO_PERFIL = "USUARIO_LOGADO_PERFIL";
     private static final String IDOSO_SELECIONADO = "IDOSO_SELECIONADO";
     private final Context context;
 
@@ -35,6 +36,12 @@ public final class PreferenciaHelper {
         salvarPreferencia(IDOSO_SELECIONADO, id);
     }
 
+    public String getUsuarioLogadoPerfil() {
+        return obterPreferencia(USUARIO_LOGADO_PERFIL);
+    }
+
+    public void setUsuarioLogadoPerfil(String perfil) { salvarPreferencia(USUARIO_LOGADO_PERFIL, perfil); }
+
     public void salvarPreferencia(String key, String value ){
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);
         sp.edit().putString(key, value).apply();
@@ -45,5 +52,4 @@ public final class PreferenciaHelper {
         String token = sp.getString(key, "");
         return( token );
     }
-
 }

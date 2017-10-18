@@ -5,14 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ContatosFragment;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
  * Activity responsável pelos contatos.
@@ -30,7 +24,7 @@ public class ContatosActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         getFragmentManager().beginTransaction().replace(R.id.content_frame,
-                ContatosFragment.newInstance(this)).commit();
+                ContatosFragment.newInstance()).commit();
     }
 
     public void openFragment(Fragment fragment) {

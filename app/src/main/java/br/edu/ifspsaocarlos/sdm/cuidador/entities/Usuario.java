@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class Usuario implements Serializable {
     public static final String CUIDADOR = "Cuidador";
-    public static final String FAMILIAR = "Familiar";
+    public static final String CONTATO = "Contato";
     public static final String IDOSO = "Idoso";
 
     private String id;

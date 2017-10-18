@@ -29,6 +29,7 @@ public class ContatoAdapter extends RecyclerView.Adapter<ContatoAdapter.ContatoH
 
         listaContatos = l;
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        setHasStableIds(true);
     }
 
     @Override
@@ -61,6 +62,16 @@ public class ContatoAdapter extends RecyclerView.Adapter<ContatoAdapter.ContatoH
             return listaContatos.size();
 
         return 0;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     public void setRecyclerViewOnItemSelecionado(RecyclerViewOnItemSelecionado r){

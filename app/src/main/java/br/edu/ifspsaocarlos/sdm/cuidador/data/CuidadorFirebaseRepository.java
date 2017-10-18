@@ -1,5 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.data;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -8,13 +9,13 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 
 /**
  * Classe de acesso a dados no padrão repository com conexão ao Firebase
@@ -35,6 +36,18 @@ public class CuidadorFirebaseRepository {
     private List<Contato> contatos;
     private List<Medicacao> medicacoes;
     private List<Programa> programas;
+
+    public List<Contato> getContatos() {
+        return contatos;
+    }
+
+    public List<Medicacao> getMedicacoes() {
+        return medicacoes;
+    }
+
+    public List<Programa> getProgramas() {
+        return programas;
+    }
 
     private CuidadorFirebaseRepository() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -61,21 +74,21 @@ public class CuidadorFirebaseRepository {
         return repository;
     }
 
-    public Usuario criarUsuario(String nome, String telefone, String perfil) {
-        String key = cuidadorEndPoint.push().getKey();
-
-        Usuario usuario = new Usuario();
-        usuario.setId(key);
-        usuario.setContato(new Contato(nome, telefone));
-        usuario.setPerfil(perfil);
-
-        cuidadorEndPoint.child(key).setValue(usuario);
-
-        return usuario;
+    /**
+     * Salva (cria) cuidador na base
+     * @param id telefone do cuidador
+     */
+    public void salvarCuidador(String id) {
+        cuidadorEndPoint.child(id).setValue(true);
     }
 
-    public void excluirUsuario(Usuario usuario) {
-        cuidadorEndPoint.child(usuario.getId()).removeValue();
+    /**
+     * Exclui cuidador da base
+     * @param id
+     */
+    public void excluirUsuario(String id) {
+        cuidadorEndPoint.child(id).removeValue();
+        // TODO: remover cuidador dos relacionamentos dos idosos
     }
 
     public Query obterReferenciaUsuario(String telefone) {
@@ -97,36 +110,38 @@ public class CuidadorFirebaseRepository {
         });*/
     }
 
-    public Idoso adicionarIdoso(String usuarioId, String nome, String telefone) {
-        DatabaseReference reference = idosoEndPoint.child(usuarioId);
-        String key = reference.push().getKey();
-
-        Idoso idoso = new Idoso();
-        idoso.setId(key);
-        idoso.setContato(new Contato(nome, telefone));
-
-        reference.child(key).setValue(idoso);
-
-        return idoso;
+    public void buscarContatoPeloTelefone(String telefone, ValueEventListener listener){
+        contatoEndPoint.orderByChild("telefone").equalTo(telefone).addListenerForSingleValueEvent(listener);
     }
 
-    public Contato adicionarContato(String idosoId, Contato contato) {
-        DatabaseReference reference = contatoEndPoint.child(idosoId);
-
-        String key = reference.push().getKey();
-        contato.setId(key);
-        reference.child(key).setValue(contato);
-
-        return contato;
-
+    public void salvarIdoso(String telefone) {
+        idosoEndPoint.child(telefone).setValue(true);
     }
 
-    public void atualizarContato(String idosoId, Contato contato) {
-        contatoEndPoint.child(idosoId).child(contato.getId()).setValue(contato);
+    public String salvarContato(Contato contato, OnSuccessListener listener) {
+        String id = contato.getId();
+        if(id == null || id.isEmpty()){
+            id = contatoEndPoint.push().getKey();
+            contato.setId(id);
+        }
+        contatoEndPoint.child(id).setValue(contato).addOnSuccessListener(listener);
+
+        return id;
     }
 
-    public void removerContato(String idosoId, String contatoId) {
-        contatoEndPoint.child(idosoId).child(contatoId).removeValue();
+    public void removerContato(final String contatoId, final String idosoId, final Runnable runnable) {
+        contatoEndPoint.child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                idosoEndPoint.child(idosoId).child("contatos").child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        removerContatoDaLista(contatoId);
+                        runnable.run();
+                    }
+                });
+            }
+        });
     }
 
     public Medicacao adicionarMedicacao(String idosoId, Medicacao medicacao) {
@@ -165,20 +180,13 @@ public class CuidadorFirebaseRepository {
         programaEndPoint.child(idosoId).child(programaId).removeValue();
     }
 
-    public List<Contato> getContatos() {
-        return contatos;
-    }
-
-    public List<Medicacao> getMedicacoes() {
-        return medicacoes;
-    }
-
-    public List<Programa> getProgramas() {
-        return programas;
-    }
-
     public void carregarListas(String idosoId) {
-        carregarContatos(idosoId);
+        carregarContatos(idosoId, new Runnable(){
+            @Override
+            public void run() {
+
+            }
+        });
         carregarMedicacoes(idosoId);
         carregarProgramas(idosoId);
     }
@@ -202,15 +210,14 @@ public class CuidadorFirebaseRepository {
         });
     }
 
-    private void carregarContatos(String idosoId) {
-        contatoEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
+    private void carregarContatos(String idosoId, final Runnable runnable) {
+        contatos.clear();
+        idosoEndPoint.child(idosoId).child("contatos").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                contatos.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    //Getting the data from snapshot
-                    Contato contato = postSnapshot.getValue(Contato.class);
-                    contatos.add(contato);
+                    carregarContatoNaLista(postSnapshot);
+                    runnable.run();
                 }
             }
 
@@ -219,6 +226,53 @@ public class CuidadorFirebaseRepository {
                 System.out.println("The read failed: " + databaseError.getMessage());
             }
         });
+
+        /*idosoEndPoint.child(idosoId).child("contatos").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                carregarContatoNaLista(dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });*/
+    }
+
+    private void carregarContatoNaLista(DataSnapshot dataSnapshot) {
+        String contatoId = dataSnapshot.getKey();
+        contatoEndPoint.child(contatoId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Contato contato = dataSnapshot.getValue(Contato.class);
+                contatos.add(contato);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void removerContatoDaLista(String contatoId) {
+        Iterator<Contato> i = contatos.iterator();
+        while (i.hasNext()) {
+            Contato c = i.next();
+            if(c.getId() == contatoId)
+                i.remove();
+        }
     }
 
     private void carregarProgramas(String idosoId) {
@@ -236,6 +290,37 @@ public class CuidadorFirebaseRepository {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Grava relacionamento ente cuidador e idoso (bidirecional)
+     * @param cuidadorId
+     * @param idodoId
+     */
+    public void relacionarCuidadorIdoso(String cuidadorId, String idodoId) {
+        cuidadorEndPoint.child(cuidadorId).child("idosos").child(idodoId).setValue(true);
+        idosoEndPoint.child(idodoId).child("cuidadores").child(cuidadorId).setValue(true);
+    }
+
+    /**
+     * Grava relacionamento ente contato e idoso (bidirecional)
+     * @param contatoId
+     * @param idodoId
+     * @param runnable
+     */
+    public void relacionarContatoIdoso(final String contatoId, final String idodoId, final Runnable runnable) {
+        contatoEndPoint.child(contatoId).child("idosos").child(idodoId).setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                idosoEndPoint.child(idodoId).child("contatos").child(contatoId).setValue(true)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                carregarContatos(idodoId, runnable);
+                            }
+                        });
             }
         });
     }

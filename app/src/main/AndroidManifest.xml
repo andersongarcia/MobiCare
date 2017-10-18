@@ -27,6 +27,9 @@
         <activity android:name=".activities.CadastroUsuarioActivity" />
         <activity android:name=".activities.CadastroIdosoActivity" />
         <activity android:name=".activities.ChatActivity" />
-        <uses-permission android:name="android.permission.RECORD_AUDIO" />
+        <activity android:name=".activities.IdosoActivity" />
+        <activity android:name=".activities.RegistroActivity"></activity>
     </application>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
 </manifest>

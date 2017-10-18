@@ -26,10 +26,6 @@ public class Contato implements Serializable {
 
     public void setId(String id) { this.id = id; }
 
-    public String getNome() { return nome; }
-
-    public void setNome(String nome) { this.nome = nome; }
-
     public String getTelefone() {
         return telefone;
     }
@@ -37,5 +33,9 @@ public class Contato implements Serializable {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+
+    public String getNome() { return nome; }
+
+    public void setNome(String nome) { this.nome = nome; }
 }
 

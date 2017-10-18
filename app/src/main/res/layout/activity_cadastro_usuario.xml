@@ -65,7 +65,7 @@
                         android:id="@+id/perfil_familiar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/Familiar" />
+                        android:text="@string/Contato" />
 
                     <android.support.v7.widget.AppCompatRadioButton
                         android:id="@+id/perfil_idoso"

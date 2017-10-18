@@ -43,7 +43,6 @@
     <string name="escolha_seu_perfil">Escolha seu perfil</string>
     <string name="Idoso">Idoso</string>
     <string name="Cuidador">Cuidador</string>
-    <string name="Familiar">Familiar</string>
     <string name="registro_idoso">Registro do idoso</string>
     <string name="gravar_instrucao">Gravar instrução</string>
     <string name="msg_gravar_instrucao">Pressione o botão abaixo para iniciar a gravação. Grave sua mensagem e pressione novamene para finalizar.</string>
@@ -55,4 +54,11 @@
     <string name="msg_erro_reproducao">Erro ao reproduzir áudio</string>
     <string name="ouvir_instrucao">Ouvir instrução</string>
     <string name="btn_fechar">Fechar</string>
+
+    <string name="abrir_drawer">Abrir menu</string>
+    <string name="fechar_drawer">Fechar menu</string>
+    <string name="Contato">Contato</string>
+    <string name="msg_selecione_perfil">Selecione o perfil com que deseja utilizar o app</string>
+    <string name="registro_cuidador">Registro do cuidador</string>
+
 </resources>

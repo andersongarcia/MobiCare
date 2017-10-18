@@ -1,7 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,7 +44,6 @@ public class CadastroContatoFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      *
-     * @param id
      * @param nome Nome do contato
      * @param telefone Telefone do contato
      * @return Uma nova instância do fragment CadastroContatoFragment.
@@ -98,27 +96,33 @@ public class CadastroContatoFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        String nome = ((TextView)getView().findViewById(R.id.contato_nome)).getText().toString();
+        String telefone = ((TextView)getView().findViewById(R.id.contato_telefone)).getText().toString();
 
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                String nome = ((TextView)getView().findViewById(R.id.contato_nome)).getText().toString();
-                String telefone = ((TextView)getView().findViewById(R.id.contato_telefone)).getText().toString();
                 Contato contato = new Contato(nome, telefone);
                 contato.setId(id);
-                cuidadorService.salvarContato(contato);
-                redirecionaParaLista();
+                cuidadorService.salvarContato(contato, new Runnable() {
+                    @Override
+                    public void run() {
+                        redirecionaParaLista();
+                    }
+                });
                 break;
             case R.id.excluir:
-                cuidadorService.removerContato(id);
-                redirecionaParaLista();
+                cuidadorService.removerContato(id, new Runnable() {
+                    @Override
+                    public void run() {
+                        redirecionaParaLista();
+                    }
+                });
                 break;
             case android.R.id.home:
                 redirecionaParaLista();
                 break;
         }
-
-        //Toast.makeText(this, msg + " clicked !", Toast.LENGTH_SHORT).show();
 
         return super.onOptionsItemSelected(item);
     }

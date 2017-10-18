@@ -1,7 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -76,7 +74,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         contatosActivity.openFragment(fragment);
     }
 
-    public static ContatosFragment newInstance(Context context) {
+    public static ContatosFragment newInstance() {
         ContatosFragment fragment = new ContatosFragment();
         return fragment;
     }

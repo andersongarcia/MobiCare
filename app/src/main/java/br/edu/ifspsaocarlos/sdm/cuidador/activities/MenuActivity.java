@@ -15,7 +15,6 @@ import android.widget.Toast;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MenuItemAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.MenuItemLista;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -54,17 +53,29 @@ public class MenuActivity extends AppCompatActivity {
         CuidadorService service = new CuidadorService(this);
 
         if(!service.verificaUsuarioLogado()){
-            // Se não estiver logado, redireciona para tela de definição do usuário
-            Intent intent = new Intent(this, CadastroUsuarioActivity.class);
+            // Se não estiver logado, redireciona para tela de registro do usuário
+            Intent intent = new Intent(this, RegistroActivity.class);
             startActivity(intent);
         }else {
             // Se estiver logado, verifica se tem idoso registrado
             if(!service.verificaIdosoSelecionado()){
                 // Se não tiver idoso selecionado, redireciona para registro do idoso
-                Intent intent = new Intent(this, CadastroIdosoActivity.class);
+                Intent intent = new Intent(this, RegistroActivity.class);
                 startActivity(intent);
             }else {
-                service.carregarListas();
+                // Verifica perfil
+                switch (service.obterPerfilLogado()){
+                    case Usuario.CUIDADOR:
+                        service.carregarListas();
+                        break;
+                    case Usuario.IDOSO:
+                        // Se usuário logado for o idoso, redireciona para activity
+                        Intent intent = new Intent(this, IdosoActivity.class);
+                        startActivity(intent);
+                        break;
+                    case Usuario.CONTATO:
+                        break;
+                }
             }
         }
     }
