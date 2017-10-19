@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="br.edu.ifspsaocarlos.sdm.cuidador">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:name=".app.MyApplication"
         android:allowBackup="true"
@@ -10,26 +12,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppMaterialTheme">
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.MainActivity" />
-        <activity android:name=".activities.MenuActivity">
+        <activity android:name=".activities.MenuActivity" />
+        <activity android:name=".activities.IdosoActivity" />
+        <activity android:name=".activities.RegistroActivity" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppMaterialTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ContatosActivity" />
-        <activity android:name=".activities.ProgramasActivity" />
-        <activity
-            android:name=".activities.AgendaMedicacaoActivity"
-            android:label="@string/title_activity_agenda_medicacao" />
-        <activity android:name=".activities.CadastroUsuarioActivity" />
-        <activity android:name=".activities.CadastroIdosoActivity" />
-        <activity android:name=".activities.ChatActivity" />
-        <activity android:name=".activities.IdosoActivity" />
-        <activity android:name=".activities.RegistroActivity"></activity>
     </application>
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
 </manifest>

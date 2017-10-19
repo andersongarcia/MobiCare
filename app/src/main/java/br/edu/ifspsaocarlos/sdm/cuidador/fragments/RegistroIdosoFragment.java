@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.MenuActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 
@@ -63,20 +63,26 @@ public class RegistroIdosoFragment extends Fragment {
                 String nome = ((TextView)getView().findViewById(R.id.registro_idoso_nome)).getText().toString();
                 String telefone = ((TextView)getView().findViewById(R.id.registro_idoso_telefone)).getText().toString();
 
+                Runnable runnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Intent menuIntent = new Intent(activity, MainActivity.class);
+                        startActivity(menuIntent);
+                    }
+                };
+
                 switch (perfilUsuario){
                     case Usuario.CUIDADOR:
-                        activity.getCuidadorService().registrarIdoso(nome, telefone);
+                        activity.getCuidadorService().registrarIdoso(nome, telefone, runnable);
                         break;
                     case Usuario.IDOSO:
                         activity.getCuidadorService().registrarUsuario(nome, telefone, Usuario.IDOSO);
-                        activity.getCuidadorService().registrarIdoso(nome, telefone);
+                        activity.getCuidadorService().registrarIdoso(nome, telefone, runnable);
                         break;
                     case Usuario.CONTATO:
                         break;
                 }
-
-                Intent menuIntent = new Intent(activity, MenuActivity.class);
-                startActivity(menuIntent);
                 break;
             case android.R.id.home:
                 switch (perfilUsuario){

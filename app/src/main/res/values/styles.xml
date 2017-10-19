@@ -21,13 +21,21 @@
     </style>
 
     <style name="MyToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:textColorPrimary">@android:color/white</item>  <!-- Text color of Toolbar Title -->
-        <item name="android:textColorSecondary">@android:color/white</item><!-- Color of Overflow Menu and color of Navigation Drawer Icon -->
+        <item name="android:textColorPrimary">@android:color/white
+        </item>  <!-- Text color of Toolbar Title -->
+        <item name="android:textColorSecondary">@android:color/white
+        </item><!-- Color of Overflow Menu and color of Navigation Drawer Icon -->
     </style>
 
     <style name="MyPopupTheme" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:background">@android:color/white</item><!--Background of Overflow Menu-->
-        <item name="android:textColorPrimary">@android:color/darker_gray</item><!-- Text color of Overflow Menu items-->
+        <item name="android:background">@android:color/white
+        </item><!--Background of Overflow Menu-->
+        <item name="android:textColorPrimary">@android:color/darker_gray
+        </item><!-- Text color of Overflow Menu items-->
     </style>
+
+    <style name="AppMaterialTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppMaterialTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

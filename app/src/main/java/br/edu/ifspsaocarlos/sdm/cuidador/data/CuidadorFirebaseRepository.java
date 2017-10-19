@@ -5,7 +5,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -89,25 +88,6 @@ public class CuidadorFirebaseRepository {
     public void excluirUsuario(String id) {
         cuidadorEndPoint.child(id).removeValue();
         // TODO: remover cuidador dos relacionamentos dos idosos
-    }
-
-    public Query obterReferenciaUsuario(String telefone) {
-        return cuidadorEndPoint.orderByChild("telefone").equalTo(telefone);
-        /*cuidadorEndPoint.child(id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Usuario usuario = dataSnapshot.getValue(Usuario.class);
-
-                Log.d(TAG, "Usuário: " + usuario.getContato().getNome() + ", telefone: " + usuario.getContato().getTelefone());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });*/
     }
 
     public void buscarContatoPeloTelefone(String telefone, ValueEventListener listener){
@@ -226,29 +206,6 @@ public class CuidadorFirebaseRepository {
                 System.out.println("The read failed: " + databaseError.getMessage());
             }
         });
-
-        /*idosoEndPoint.child(idosoId).child("contatos").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                carregarContatoNaLista(dataSnapshot);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });*/
     }
 
     private void carregarContatoNaLista(DataSnapshot dataSnapshot) {

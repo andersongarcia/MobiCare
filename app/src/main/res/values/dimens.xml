@@ -20,5 +20,8 @@
     <dimen name="navheader_height">222dp</dimen>
     <dimen name="button_height">36dp</dimen>
     <dimen name="border_radius">2dp</dimen>
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
 </resources>

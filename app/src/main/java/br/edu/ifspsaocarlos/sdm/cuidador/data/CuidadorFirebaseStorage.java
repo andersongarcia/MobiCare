@@ -2,7 +2,6 @@ package br.edu.ifspsaocarlos.sdm.cuidador.data;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -63,5 +62,24 @@ public class CuidadorFirebaseStorage {
     public void carregaArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
         StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(uri.toString());
         reference.getFile(localFile).addOnSuccessListener(successListener).addOnFailureListener(failureListener);
+    }
+
+    public void salvarAudioChat(String idosoId, String contatoId, String fileName) {
+        Uri uri = Uri.fromFile(new File(fileName));
+        UploadTask uploadTask = idosoEndPoint.child(idosoId).child("chat").child(contatoId).putFile(uri);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            }
+        });
     }
 }

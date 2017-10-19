@@ -17,9 +17,9 @@ public class MenuItemLista {
 
         ArrayList<MenuItem> data = new ArrayList<>();
 
-        data.add(new MenuItem(R.string.agendar_medicacao, R.drawable.ic_alarm_add_black_48dp));
-        data.add(new MenuItem(R.string.gerenciar_contatos, R.drawable.ic_contacts_black_48dp));
-        data.add(new MenuItem(R.string.gerenciar_programas_favoritos, R.drawable.ic_live_tv_black_48dp));
+        data.add(new MenuItem(R.string.menu_remedios, R.drawable.ic_alarm_add_black_48dp));
+        data.add(new MenuItem(R.string.menu_contatos, R.drawable.ic_contacts_black_48dp));
+        data.add(new MenuItem(R.string.menu_programas_favoritos, R.drawable.ic_live_tv_black_48dp));
 
         return data;
     }

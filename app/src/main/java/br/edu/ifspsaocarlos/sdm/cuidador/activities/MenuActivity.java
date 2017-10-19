@@ -135,17 +135,11 @@ public class MenuActivity extends AppCompatActivity {
         {
             int position = menuRecyclerView.getChildLayoutPosition(view);
             switch (MenuItemLista.getData().get(position).getTitulo()){
-                case R.string.agendar_medicacao:
-                    Intent agendaMedicacao = new Intent(getApplicationContext(), AgendaMedicacaoActivity.class);
-                    startActivity(agendaMedicacao);
+                case R.string.menu_remedios:
                     break;
-                case R.string.gerenciar_contatos:
-                    Intent contatos = new Intent(getApplicationContext(), ContatosActivity.class);
-                    startActivity(contatos);
+                case R.string.menu_contatos:
                     break;
-                case R.string.gerenciar_programas_favoritos:
-                    Intent programas = new Intent(getApplicationContext(), ProgramasActivity.class);
-                    startActivity(programas);
+                case R.string.menu_programas_favoritos:
                     break;
             }
         }

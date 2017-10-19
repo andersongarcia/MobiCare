@@ -29,6 +29,7 @@ public class CuidadorService {
     private final Context contexto;
     private final PreferenciaHelper preferencias;
     private final CuidadorFirebaseRepository repositorio;
+    private String idosoId;
 
     public CuidadorService(Context context){
         this.contexto = context;
@@ -65,7 +66,6 @@ public class CuidadorService {
      */
     public void registrarUsuario(final String nome, final String telefone, final String perfil) {
 
-        String id = "";
         repositorio.buscarContatoPeloTelefone(telefone, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -109,23 +109,37 @@ public class CuidadorService {
      * Registra idoso para cuidador selecionado
      * @param nome nome do idoso
      * @param telefone telefone do idoso (identificação)
+     * @param runnable
      */
-    public void registrarIdoso(String nome, String telefone) {
-        // salva contato do idoso
-        Contato contato = new Contato(nome, telefone);
-        String id = repositorio.salvarContato(contato, new OnSuccessListener() {
+    public void registrarIdoso(final String nome, final String telefone, final Runnable runnable) {
+
+        repositorio.buscarContatoPeloTelefone(telefone, new ValueEventListener() {
             @Override
-            public void onSuccess(Object o) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() == null){
+                    // Contato não encontrado
+                    // Salva dados de contato do usuário
+                    Contato contato = new Contato(nome, telefone);
+                    idosoId = repositorio.salvarContato(contato, new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            // grava idoso nas preferências
+                            preferencias.setIdosoSelecionadoId(idosoId);
+                            runnable.run();
+                        }
+                    });
+                }else {
+                    // grava idoso nas preferências
+                    preferencias.setIdosoSelecionadoId(dataSnapshot.getKey());
+                    runnable.run();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
-
-        // grava idoso nas preferências
-        preferencias.setIdosoSelecionadoId(id);
-
-        // adiciona idoso para cuidador e vice-versa
-        repositorio.relacionarCuidadorIdoso(preferencias.getUsuarioLogadoId(), id);
     }
-
 
     public void carregarListas() {
         repositorio.carregarListas(preferencias.getIdosoSelecionadoId());
@@ -178,5 +192,9 @@ public class CuidadorService {
 
     public String obterPerfilLogado() {
         return preferencias.getUsuarioLogadoPerfil();
+    }
+
+    public void salvarAudioChat(String fileName) {
+        CuidadorFirebaseStorage.getInstance().salvarAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
     }
 }

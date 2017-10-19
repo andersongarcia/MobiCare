@@ -2,7 +2,6 @@ package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.ProgramasActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -32,6 +31,8 @@ public class CadastroProgramaFragment  extends Fragment {
 
     private CadastroProgramaFragment.OnFragmentInteractionListener mListener;
     private CuidadorService cuidadorService;
+
+    MainActivity activity;
 
     public CadastroProgramaFragment() {
         // Required empty public constructor
@@ -68,7 +69,7 @@ public class CadastroProgramaFragment  extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cadastro_programa, container, false);
         setHasOptionsMenu(true);
 
-        final ProgramasActivity activity = (ProgramasActivity) getActivity();
+        activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -121,8 +122,7 @@ public class CadastroProgramaFragment  extends Fragment {
     }
 
     private void redirecionaParaLista() {
-        Intent loginIntent = new Intent(getActivity(), ProgramasActivity.class);
-        startActivity(loginIntent);
+        activity.openFragment(ProgramasFragment.newInstance());
     }
 
     @Override

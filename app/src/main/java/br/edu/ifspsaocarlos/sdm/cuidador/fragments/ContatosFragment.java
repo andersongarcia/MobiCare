@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.ContatosActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ContatoAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
@@ -27,14 +27,14 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
 
     private RecyclerView mRecyclerView;
     private List<Contato> listaContatos;
-    ContatosActivity contatosActivity;
+    MainActivity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contatos, container, false);
 
-        contatosActivity = (ContatosActivity) getActivity();
-        contatosActivity.getSupportActionBar().setTitle(getString(R.string.gerenciar_contatos));
+        activity = (MainActivity) getActivity();
+        activity.getSupportActionBar().setTitle(getString(R.string.menu_contatos));
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_contatos);
         mRecyclerView.setHasFixedSize(true);
@@ -57,7 +57,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
             @Override
             public void onClick(View v) {
                 CadastroContatoFragment fragment = CadastroContatoFragment.newInstance("", "", "");
-                contatosActivity.openFragment(fragment);
+                activity.openFragment(fragment);
             }
 
         });
@@ -71,7 +71,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         Contato contato = listaContatos.get(posicao);
 
         CadastroContatoFragment fragment = CadastroContatoFragment.newInstance(contato.getId(), contato.getNome(), contato.getTelefone());
-        contatosActivity.openFragment(fragment);
+        activity.openFragment(fragment);
     }
 
     public static ContatosFragment newInstance() {

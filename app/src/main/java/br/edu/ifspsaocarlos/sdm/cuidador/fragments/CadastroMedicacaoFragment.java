@@ -3,7 +3,6 @@ package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -27,7 +26,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
@@ -37,7 +35,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.AgendaMedicacaoActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -77,6 +75,8 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
     private String [] permissions = {android.Manifest.permission.RECORD_AUDIO};
+
+    MainActivity activity;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -125,7 +125,7 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
         View view = inflater.inflate(R.layout.fragment_cadastro_medicacao, container, false);
         setHasOptionsMenu(true);
 
-        final AgendaMedicacaoActivity activity = (AgendaMedicacaoActivity) getActivity();
+        activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -451,8 +451,7 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
     }
 
     private void redirecionaParaLista() {
-        Intent loginIntent = new Intent(getActivity(), AgendaMedicacaoActivity.class);
-        startActivity(loginIntent);
+        activity.openFragment(MedicacoesFragment.newInstance());
     }
 
     @Override

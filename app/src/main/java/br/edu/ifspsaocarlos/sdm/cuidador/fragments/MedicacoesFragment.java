@@ -1,7 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,12 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.AgendaMedicacaoActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MedicacaoAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
@@ -27,14 +25,14 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
 public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSelecionado {
     private RecyclerView mRecyclerView;
     private List<Medicacao> listaMedicacoes;
-    AgendaMedicacaoActivity agendaMedicacaoActivity;
+    MainActivity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_medicacoes, container, false);
 
-        agendaMedicacaoActivity = (AgendaMedicacaoActivity) getActivity();
-        agendaMedicacaoActivity.getSupportActionBar().setTitle(getString(R.string.agendar_medicacao));
+        activity = (MainActivity) getActivity();
+        activity.getSupportActionBar().setTitle(getString(R.string.menu_remedios));
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_medicacoes);
         mRecyclerView.setHasFixedSize(true);
@@ -57,7 +55,7 @@ public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSe
             @Override
             public void onClick(View v) {
                 CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance(new Medicacao());
-                agendaMedicacaoActivity.openFragment(fragment);
+                activity.openFragment(fragment);
             }
 
         });
@@ -71,10 +69,10 @@ public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSe
         Medicacao medicacao = listaMedicacoes.get(posicao);
 
         CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance(medicacao);
-        agendaMedicacaoActivity.openFragment(fragment);
+        activity.openFragment(fragment);
     }
 
-    public static MedicacoesFragment newInstance(Context context) {
+    public static MedicacoesFragment newInstance() {
         MedicacoesFragment fragment = new MedicacoesFragment();
         return fragment;
     }

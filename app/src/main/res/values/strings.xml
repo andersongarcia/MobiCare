@@ -4,9 +4,9 @@
     <string name="Buscar">Buscar</string>
     <string name="Ajuda">Ajuda</string>
     <string name="Configuracoes">Configurações</string>
-    <string name="agendar_medicacao">Agendar medicação</string>
-    <string name="gerenciar_contatos">Gerenciar contatos</string>
-    <string name="gerenciar_programas_favoritos">Gerenciar programas favoritos</string>
+    <string name="menu_remedios">Remédios</string>
+    <string name="menu_contatos">Contatos</string>
+    <string name="menu_programas_favoritos">Programas favoritos</string>
     <string name="title_medicacao_list">Medicacoes</string>
     <string name="title_medicacao_detail">Medicacao Detail</string>
     <string name="title_activity_agenda_medicacao">AgendaMedicacaoActivity</string>
@@ -60,5 +60,19 @@
     <string name="Contato">Contato</string>
     <string name="msg_selecione_perfil">Selecione o perfil com que deseja utilizar o app</string>
     <string name="registro_cuidador">Registro do cuidador</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="compartilhar">Compartilhar</string>
+    <string name="enviar">Enviar</string>
+    <string name="menu_gerenciar">Gerenciar</string>
+    <string name="menu_sobre">Sobre o app</string>
+    <string name="menu_chat">Início</string>
+    <string name="app_powered_by">IFSP São Carlos</string>
+    <string name="msg_aguardando">Aguardando...</string>
+    <string name="gravar_audio">Gravar áudio</string>
 
 </resources>
