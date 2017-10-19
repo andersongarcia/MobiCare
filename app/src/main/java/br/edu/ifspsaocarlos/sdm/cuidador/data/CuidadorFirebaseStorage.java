@@ -12,6 +12,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
+
 /**
  * Classe de acesso ao storage Firebase
  *
@@ -64,7 +66,7 @@ public class CuidadorFirebaseStorage {
         reference.getFile(localFile).addOnSuccessListener(successListener).addOnFailureListener(failureListener);
     }
 
-    public void salvarAudioChat(String idosoId, String contatoId, String fileName) {
+    public void salvarAudioChat(final String idosoId, final String contatoId, final String fileName) {
         Uri uri = Uri.fromFile(new File(fileName));
         UploadTask uploadTask = idosoEndPoint.child(idosoId).child("chat").child(contatoId).putFile(uri);
 
@@ -79,6 +81,10 @@ public class CuidadorFirebaseStorage {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                Mensagem mensagem = new Mensagem(contatoId, idosoId, fileName);
+
+                CuidadorFirebaseRepository.getInstance().salvarMensagem(idosoId, mensagem);
             }
         });
     }

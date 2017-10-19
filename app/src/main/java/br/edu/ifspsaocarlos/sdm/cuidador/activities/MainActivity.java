@@ -1,5 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -82,8 +83,14 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_configuracoes) {
             return true;
+        }
+
+        if (id == R.id.action_sair) {
+            service.efetuarLogout();
+            Intent intent = new Intent(this, RegistroActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

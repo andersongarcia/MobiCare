@@ -1,6 +1,11 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.data;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -14,6 +19,7 @@ import java.util.List;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 
 /**
@@ -30,6 +36,7 @@ public class CuidadorFirebaseRepository {
     private final DatabaseReference contatoEndPoint;
     private final DatabaseReference medicacaoEndPoint;
     private final DatabaseReference programaEndPoint;
+    private final DatabaseReference mensagemEndPoint;
 
     private List<Idoso> idosos;
     private List<Contato> contatos;
@@ -57,6 +64,7 @@ public class CuidadorFirebaseRepository {
         contatoEndPoint = mDatabase.child("contatos");
         medicacaoEndPoint = mDatabase.child("medicacoes");
         programaEndPoint = mDatabase.child("programas");
+        mensagemEndPoint = mDatabase.child("mensagens");
 
         idosos = new ArrayList<>();
         contatos = new ArrayList<>();
@@ -280,5 +288,21 @@ public class CuidadorFirebaseRepository {
                         });
             }
         });
+    }
+
+    public void salvarMensagem(String idosoId, Mensagem mensagem) {
+        DatabaseReference reference = mensagemEndPoint.child(idosoId);
+        String id = reference.push().getKey();
+        mensagem.setId(id);
+        reference.child(id).setValue(mensagem).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("FIREBASE", e.getMessage());
+            }
+        });
+    }
+
+    public void lerNovasMensagens(String idosoId, ChildEventListener listener) {
+        mensagemEndPoint.child(idosoId).addChildEventListener(listener);
     }
 }

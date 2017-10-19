@@ -5,6 +5,7 @@ import android.net.Uri;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -196,5 +197,14 @@ public class CuidadorService {
 
     public void salvarAudioChat(String fileName) {
         CuidadorFirebaseStorage.getInstance().salvarAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
+    }
+
+    public void lerNovasMensagens(ChildEventListener listener) {
+        repositorio.lerNovasMensagens(preferencias.getIdosoSelecionadoId(), listener);
+    }
+
+    public void efetuarLogout() {
+        preferencias.setUsuarioLogadoId(null);
+        preferencias.setIdosoSelecionadoId(null);
     }
 }

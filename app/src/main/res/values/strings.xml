@@ -65,7 +65,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Configurações</string>
     <string name="compartilhar">Compartilhar</string>
     <string name="enviar">Enviar</string>
     <string name="menu_gerenciar">Gerenciar</string>
@@ -74,5 +74,6 @@
     <string name="app_powered_by">IFSP São Carlos</string>
     <string name="msg_aguardando">Aguardando...</string>
     <string name="gravar_audio">Gravar áudio</string>
+    <string name="action_sair">Sair</string>
 
 </resources>
