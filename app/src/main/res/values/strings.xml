@@ -7,9 +7,6 @@
     <string name="menu_remedios">Remédios</string>
     <string name="menu_contatos">Contatos</string>
     <string name="menu_programas_favoritos">Programas favoritos</string>
-    <string name="title_medicacao_list">Medicacoes</string>
-    <string name="title_medicacao_detail">Medicacao Detail</string>
-    <string name="title_activity_agenda_medicacao">AgendaMedicacaoActivity</string>
     <string name="titulo">Título</string>
     <string name="descricao">Descrição</string>
     <string name="apelido">Apelido</string>

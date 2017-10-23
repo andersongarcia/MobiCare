@@ -36,17 +36,17 @@ import java.util.Calendar;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
- * Fragment de cadastro de medicação.
+ * Fragment de cadastro de remédio.
  *
  * @author Anderson Canale Garcia
  */
-public class CadastroMedicacaoFragment extends Fragment implements TimePickedListener {
-    private static final String MEDICADAO = "MEDICACAO";
+public class CadastroRemedioFragment extends Fragment implements TimePickedListener {
+    private static final String REMEDIO = "REMEDIO";
 
     // status para gravação de instrução
     private static final int AGUARDANDO_GRAVACAO = 0;
@@ -58,7 +58,7 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
 
     private OnFragmentInteractionListener mListener;
 
-    private Medicacao medicacao;
+    private Remedio remedio;
     private CuidadorService cuidadorService;
     private EditText etNome;
     private EditText etHorarios;
@@ -89,7 +89,7 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
         if (!permissionToRecordAccepted ) getActivity().finish();
     }
 
-    public CadastroMedicacaoFragment() {
+    public CadastroRemedioFragment() {
         // Required empty public constructor
     }
 
@@ -97,14 +97,14 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param medicacao Instância da medicação
-     * @return Uma nova instância do fragment CadastroMedicacaoFragment.
+     * @param remedio Instância da remédio
+     * @return Uma nova instância do fragment CadastroRemedioFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CadastroMedicacaoFragment newInstance(Medicacao medicacao) {
-        CadastroMedicacaoFragment fragment = new CadastroMedicacaoFragment();
+    public static CadastroRemedioFragment newInstance(Remedio remedio) {
+        CadastroRemedioFragment fragment = new CadastroRemedioFragment();
         Bundle args = new Bundle();
-        args.putSerializable(MEDICADAO, medicacao);
+        args.putSerializable(REMEDIO, remedio);
         fragment.setArguments(args);
         return fragment;
     }
@@ -115,43 +115,44 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
         cuidadorService = new CuidadorService(getActivity());
 
         if (getArguments() != null) {
-            this.medicacao = (Medicacao) getArguments().getSerializable(MEDICADAO);
+            this.remedio = (Remedio) getArguments().getSerializable(REMEDIO);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cadastro_medicacao, container, false);
+        View view = inflater.inflate(R.layout.fragment_cadastro_remedio, container, false);
         setHasOptionsMenu(true);
 
         activity = (MainActivity) getActivity();
-        activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        etNome = (EditText)view.findViewById(R.id.medicacao_nome);
-        etHorarios = (EditText) view.findViewById(R.id.medicacao_horarios);
-        etDose = (EditText)view.findViewById(R.id.medicacao_dose);
+        activity.showBackButton(true);
+
+
+        etNome = (EditText)view.findViewById(R.id.remedio_nome);
+        etHorarios = (EditText) view.findViewById(R.id.remedio_horarios);
+        etDose = (EditText)view.findViewById(R.id.remedio_dose);
         btnOuvirInstrucao = (Button)view.findViewById(R.id.btn_ouvir_instrucao);
         btnGravarInstrucao = (Button)view.findViewById(R.id.btn_gravar_instrucao);
 
-        etNome.setText(medicacao.getNome());
-        etHorarios.setText(medicacao.getHorarios());
-        etDose.setText(medicacao.getDose());
+        etNome.setText(remedio.getNome());
+        etHorarios.setText(remedio.getHorarios());
+        etDose.setText(remedio.getDose());
 
         setLinkParaInstrucao();
 
         etHorarios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment newFragment = new TimePickerFragment();
+                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.remedio_horarios);
                 newFragment.show(getActivity().getFragmentManager(), "timePicker");
             }
         });
 
         // Record to the external cache directory for visibility
         mFileName = getActivity().getExternalCacheDir().getAbsolutePath();
-        mFileName += "/medicacao_" + medicacao.getId() + ".3gp";
+        mFileName += "/" + REMEDIO.toLowerCase() + "_" + remedio.getId() + ".3gp";
 
         ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
@@ -331,14 +332,14 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
     }
 
     private void setLinkParaInstrucao() {
-        if(medicacao.getId() != null){
+        if(remedio.getId() != null){
             final CuidadorService service = new CuidadorService(getActivity());
-            service.carregaInstrucaoURI(medicacao.getId(), new OnSuccessListener<Uri>(){
+            service.carregaInstrucaoURI(remedio.getId(), new OnSuccessListener<Uri>(){
                 @Override
                 public void onSuccess(Uri uri) {
                     // Got the download URL
                     try {
-                        final File localFile = File.createTempFile(medicacao.getId(), ".3gp");
+                        final File localFile = File.createTempFile(remedio.getId(), ".3gp");
                         service.carregarArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
@@ -406,7 +407,7 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
     }
 
     private void salvarAudio(){
-        new CuidadorService(getActivity()).salvarAudioInstrucao(mFileName, medicacao.getId());
+        new CuidadorService(getActivity()).salvarAudioInstrucao(mFileName, remedio.getId());
     }
 
     @Override
@@ -423,21 +424,21 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                String nome = ((TextView)getView().findViewById(R.id.medicacao_nome)).getText().toString();
-                String horarios = ((TextView)getView().findViewById(R.id.medicacao_horarios)).getText().toString();
-                String dose = ((TextView)getView().findViewById(R.id.medicacao_dose)).getText().toString();
+                String nome = ((TextView)getView().findViewById(R.id.remedio_nome)).getText().toString();
+                String horarios = ((TextView)getView().findViewById(R.id.remedio_horarios)).getText().toString();
+                String dose = ((TextView)getView().findViewById(R.id.remedio_dose)).getText().toString();
 
-                Medicacao medicacao = new Medicacao();
-                medicacao.setId(this.medicacao.getId());
-                medicacao.setNome(nome);
-                medicacao.setHorarios(horarios);
-                medicacao.setDose(dose);
+                Remedio remedio = new Remedio();
+                remedio.setId(this.remedio.getId());
+                remedio.setNome(nome);
+                remedio.setHorarios(horarios);
+                remedio.setDose(dose);
 
-                cuidadorService.salvarMedicacao(medicacao);
+                cuidadorService.salvarRemedio(remedio);
                 redirecionaParaLista();
                 break;
             case R.id.excluir:
-                cuidadorService.removerMedicacao(this.medicacao.getId());
+                cuidadorService.removerRemedio(this.remedio.getId());
                 redirecionaParaLista();
                 break;
             case android.R.id.home:
@@ -451,7 +452,8 @@ public class CadastroMedicacaoFragment extends Fragment implements TimePickedLis
     }
 
     private void redirecionaParaLista() {
-        activity.openFragment(MedicacoesFragment.newInstance());
+        activity.showBackButton(false);
+        activity.openFragment(RemediosFragment.newInstance());
     }
 
     @Override

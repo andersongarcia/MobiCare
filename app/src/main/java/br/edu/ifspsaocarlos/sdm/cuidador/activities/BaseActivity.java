@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
@@ -24,7 +23,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void openFragment(Fragment fragment) {
-        getFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack("").commit();
     }
 
     // verifica se tem usuário logado

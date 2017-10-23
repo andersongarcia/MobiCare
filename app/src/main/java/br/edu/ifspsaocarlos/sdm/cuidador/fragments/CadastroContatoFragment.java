@@ -77,8 +77,8 @@ public class CadastroContatoFragment extends Fragment {
         setHasOptionsMenu(true);
 
         activity = (MainActivity) getActivity();
-        activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        activity.showBackButton(true);
 
         ((EditText)view.findViewById(R.id.contato_nome)).setText(nome);
         ((EditText)view.findViewById(R.id.contato_telefone)).setText(telefone);
@@ -128,6 +128,7 @@ public class CadastroContatoFragment extends Fragment {
     }
 
     private void redirecionaParaLista() {
+        activity.showBackButton(false);
         activity.openFragment(ContatosFragment.newInstance());
     }
 

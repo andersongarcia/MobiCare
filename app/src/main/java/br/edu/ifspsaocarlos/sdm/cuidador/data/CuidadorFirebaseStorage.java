@@ -38,9 +38,9 @@ public class CuidadorFirebaseStorage {
         return storage;
     }
 
-    public void salvarAudioInstrucao(String idosoId, String medicacaoId, String fileName) {
+    public void salvarAudioInstrucao(String idosoId, String remedioId, String fileName) {
         Uri uri = Uri.fromFile(new File(fileName));
-        UploadTask uploadTask = idosoEndPoint.child(idosoId).child("instrucoes").child(medicacaoId).putFile(uri);
+        UploadTask uploadTask = idosoEndPoint.child(idosoId).child("instrucoes").child(remedioId).putFile(uri);
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -57,8 +57,8 @@ public class CuidadorFirebaseStorage {
         });
     }
 
-    public void carregaInstrucaoURI(String idosoId, String medicacaoId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {
-        idosoEndPoint.child(idosoId).child("instrucoes").child(medicacaoId).getDownloadUrl().addOnSuccessListener(successListener).addOnFailureListener(failureListener);
+    public void carregaInstrucaoURI(String idosoId, String remedioId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {
+        idosoEndPoint.child(idosoId).child("instrucoes").child(remedioId).getDownloadUrl().addOnSuccessListener(successListener).addOnFailureListener(failureListener);
     }
 
     public void carregaArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {

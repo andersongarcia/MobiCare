@@ -31,12 +31,12 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_medicacoes, container, false);
+        View view = inflater.inflate(R.layout.fragment_programas, container, false);
 
         activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.menu_programas_favoritos));
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_medicacoes);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_programas);
         mRecyclerView.setHasFixedSize(true);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
@@ -53,7 +53,7 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
                 new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
 
-        view.findViewById(R.id.btn_cadastrar_medicacao).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_cadastrar_programa).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CadastroProgramaFragment fragment = CadastroProgramaFragment.newInstance(new Programa());

@@ -13,36 +13,36 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
-import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MedicacaoAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.adapters.RemedioAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 
 /**
  * Created by ander on 11/09/2017.
  */
 
-public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSelecionado {
+public class RemediosFragment extends Fragment implements RecyclerViewOnItemSelecionado {
     private RecyclerView mRecyclerView;
-    private List<Medicacao> listaMedicacoes;
+    private List<Remedio> listaRemedios;
     MainActivity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_medicacoes, container, false);
+        View view = inflater.inflate(R.layout.fragment_remedios, container, false);
 
         activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.menu_remedios));
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_medicacoes);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_remedios);
         mRecyclerView.setHasFixedSize(true);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        listaMedicacoes = CuidadorFirebaseRepository.getInstance().getMedicacoes();
-        MedicacaoAdapter adapter = new MedicacaoAdapter(getActivity(), listaMedicacoes);
+        listaRemedios = CuidadorFirebaseRepository.getInstance().getRemedios();
+        RemedioAdapter adapter = new RemedioAdapter(getActivity(), listaRemedios);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);
 
@@ -51,10 +51,10 @@ public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSe
                 new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
 
-        view.findViewById(R.id.btn_cadastrar_medicacao).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_cadastrar_remedio).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance(new Medicacao());
+                CadastroRemedioFragment fragment = CadastroRemedioFragment.newInstance(new Remedio());
                 activity.openFragment(fragment);
             }
 
@@ -66,14 +66,14 @@ public class MedicacoesFragment extends Fragment implements RecyclerViewOnItemSe
     @Override
     public void onItemSelecionado(View view, int posicao) {
 
-        Medicacao medicacao = listaMedicacoes.get(posicao);
+        Remedio remedio = listaRemedios.get(posicao);
 
-        CadastroMedicacaoFragment fragment = CadastroMedicacaoFragment.newInstance(medicacao);
+        CadastroRemedioFragment fragment = CadastroRemedioFragment.newInstance(remedio);
         activity.openFragment(fragment);
     }
 
-    public static MedicacoesFragment newInstance() {
-        MedicacoesFragment fragment = new MedicacoesFragment();
+    public static RemediosFragment newInstance() {
+        RemediosFragment fragment = new RemediosFragment();
         return fragment;
     }
 }

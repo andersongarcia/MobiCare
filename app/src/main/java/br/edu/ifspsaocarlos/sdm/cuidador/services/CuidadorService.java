@@ -17,7 +17,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseStorage;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 
@@ -51,8 +51,8 @@ public class CuidadorService {
         return (idosoSelecionadoId != null && !idosoSelecionadoId.isEmpty());
     }
 
-    public void removerMedicacao(String idMedicacao) {
-        repositorio.removerMedicacao(preferencias.getIdosoSelecionadoId(), idMedicacao);
+    public void removerRemedio(String remedioId) {
+        repositorio.removerRemedio(preferencias.getIdosoSelecionadoId(), remedioId);
     }
 
     public void removerPrograma(String idPrograma) {
@@ -163,11 +163,11 @@ public class CuidadorService {
         repositorio.removerContato(idContato, preferencias.getIdosoSelecionadoId(), runnable);
     }
 
-    public void salvarMedicacao(Medicacao medicacao) {
-        if(medicacao.getId() == null || medicacao.getId().isEmpty()){
-            repositorio.adicionarMedicacao(preferencias.getIdosoSelecionadoId(), medicacao);
+    public void salvarRemedio(Remedio remedio) {
+        if(remedio.getId() == null || remedio.getId().isEmpty()){
+            repositorio.adicionarRemedio(preferencias.getIdosoSelecionadoId(), remedio);
         }else {
-            repositorio.atualizarMedicacao(preferencias.getIdosoSelecionadoId(), medicacao);
+            repositorio.atualizarRemedio(preferencias.getIdosoSelecionadoId(), remedio);
         }
     }
 
@@ -179,12 +179,12 @@ public class CuidadorService {
         }
     }
 
-    public void salvarAudioInstrucao(String fileName, String medicacaoId) {
-        CuidadorFirebaseStorage.getInstance().salvarAudioInstrucao(preferencias.getIdosoSelecionadoId(), medicacaoId, fileName);
+    public void salvarAudioInstrucao(String fileName, String remedioId) {
+        CuidadorFirebaseStorage.getInstance().salvarAudioInstrucao(preferencias.getIdosoSelecionadoId(), remedioId, fileName);
     }
 
-    public void carregaInstrucaoURI(String medicacaoId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener){
-        CuidadorFirebaseStorage.getInstance().carregaInstrucaoURI(preferencias.getIdosoSelecionadoId(), medicacaoId, successListener, failureListener);
+    public void carregaInstrucaoURI(String remedioId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener){
+        CuidadorFirebaseStorage.getInstance().carregaInstrucaoURI(preferencias.getIdosoSelecionadoId(), remedioId, successListener, failureListener);
     }
 
     public void carregarArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {

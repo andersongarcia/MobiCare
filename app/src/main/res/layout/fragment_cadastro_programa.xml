@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.edu.ifspsaocarlos.sdm.cuidador.fragments.CadastroMedicacaoFragment">
+    tools:context="br.edu.ifspsaocarlos.sdm.cuidador.fragments.CadastroRemedioFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -36,6 +36,7 @@
                 android:id="@+id/programa_horarios"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusableInTouchMode="false"
                 android:hint="@string/hint_horarios" />
 
             <TextView

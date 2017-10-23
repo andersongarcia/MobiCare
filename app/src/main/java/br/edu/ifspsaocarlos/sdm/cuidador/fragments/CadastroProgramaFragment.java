@@ -1,9 +1,11 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Calendar;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
+import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
@@ -24,7 +29,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  * @author Anderson Canale Garcia
  */
 
-public class CadastroProgramaFragment  extends Fragment {
+public class CadastroProgramaFragment  extends Fragment implements TimePickedListener {
     private static final String PROGRAMA = "PROGRAMA";
 
     private Programa programa;
@@ -33,6 +38,9 @@ public class CadastroProgramaFragment  extends Fragment {
     private CuidadorService cuidadorService;
 
     MainActivity activity;
+    private EditText etNome;
+    private EditText etHorarios;
+    private EditText etLink;
 
     public CadastroProgramaFragment() {
         // Required empty public constructor
@@ -70,12 +78,24 @@ public class CadastroProgramaFragment  extends Fragment {
         setHasOptionsMenu(true);
 
         activity = (MainActivity) getActivity();
-        activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ((EditText)view.findViewById(R.id.programa_nome)).setText(programa.getNome());
-        ((EditText)view.findViewById(R.id.programa_horarios)).setText(programa.getHorarios());
-        ((EditText)view.findViewById(R.id.programa_link)).setText(programa.getLink());
+        activity.showBackButton(true);
+
+        etNome = (EditText)view.findViewById(R.id.programa_nome);
+        etHorarios = (EditText) view.findViewById(R.id.programa_horarios);
+        etLink = (EditText)view.findViewById(R.id.programa_link);
+
+        etNome.setText(programa.getNome());
+        etHorarios.setText(programa.getHorarios());
+        etLink.setText(programa.getLink());
+
+        etHorarios.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.programa_horarios);
+                newFragment.show(getActivity().getFragmentManager(), "timePicker");
+            }
+        });
 
         return view;
     }
@@ -122,7 +142,13 @@ public class CadastroProgramaFragment  extends Fragment {
     }
 
     private void redirecionaParaLista() {
+        activity.showBackButton(false);
         activity.openFragment(ProgramasFragment.newInstance());
+    }
+
+    @Override
+    public void onTimePicked(Calendar time) {
+        etHorarios.setText(DateFormat.format("h:mm a", time));
     }
 
     @Override
@@ -141,7 +167,6 @@ public class CadastroProgramaFragment  extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

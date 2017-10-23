@@ -3,22 +3,18 @@ package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 
 // seletor de hora
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
+
+    private int viewId;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -34,6 +30,17 @@ public class TimePickerFragment extends DialogFragment
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // Do something with the time chosen by the user
-        ((EditText)getActivity().findViewById(R.id.medicacao_horarios)).setText(String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute));
+        ((EditText)getActivity().findViewById(viewId)).setText(String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute));
+    }
+
+    public void setViewId(int viewId) {
+        this.viewId = viewId;
+    }
+
+    public static TimePickerFragment newInstance(int viewId) {
+        TimePickerFragment timePickerFragment = new TimePickerFragment();
+        timePickerFragment.setViewId(viewId);
+
+        return timePickerFragment;
     }
 }

@@ -3,11 +3,11 @@ package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 import java.io.Serializable;
 
 /**
- * Classe que representa uma medicacao
+ * Classe que representa um remédio
  *
  * @author Anderson Canale Garcia
  */
-public class Medicacao implements Serializable {
+public class Remedio implements Serializable {
 
     private String id;
 

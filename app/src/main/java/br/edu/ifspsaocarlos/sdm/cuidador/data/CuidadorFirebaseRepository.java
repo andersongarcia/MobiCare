@@ -18,7 +18,7 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 
@@ -34,26 +34,24 @@ public class CuidadorFirebaseRepository {
     private final DatabaseReference cuidadorEndPoint;
     private final DatabaseReference idosoEndPoint;
     private final DatabaseReference contatoEndPoint;
-    private final DatabaseReference medicacaoEndPoint;
+    private final DatabaseReference remedioEndPoint;
     private final DatabaseReference programaEndPoint;
     private final DatabaseReference mensagemEndPoint;
 
     private List<Idoso> idosos;
     private List<Contato> contatos;
-    private List<Medicacao> medicacoes;
+    private List<Remedio> remedios;
     private List<Programa> programas;
 
     public List<Contato> getContatos() {
         return contatos;
     }
 
-    public List<Medicacao> getMedicacoes() {
-        return medicacoes;
+    public List<Remedio> getRemedios() {
+        return remedios;
     }
 
-    public List<Programa> getProgramas() {
-        return programas;
-    }
+    public List<Programa> getProgramas() { return programas; }
 
     private CuidadorFirebaseRepository() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -62,13 +60,13 @@ public class CuidadorFirebaseRepository {
         cuidadorEndPoint = mDatabase.child("cuidadores");
         idosoEndPoint = mDatabase.child("idosos");
         contatoEndPoint = mDatabase.child("contatos");
-        medicacaoEndPoint = mDatabase.child("medicacoes");
+        remedioEndPoint = mDatabase.child("remedios");
         programaEndPoint = mDatabase.child("programas");
         mensagemEndPoint = mDatabase.child("mensagens");
 
         idosos = new ArrayList<>();
         contatos = new ArrayList<>();
-        medicacoes = new ArrayList<>();
+        remedios = new ArrayList<>();
         programas = new ArrayList<>();
     }
 
@@ -132,22 +130,22 @@ public class CuidadorFirebaseRepository {
         });
     }
 
-    public Medicacao adicionarMedicacao(String idosoId, Medicacao medicacao) {
-        DatabaseReference reference = medicacaoEndPoint.child(idosoId);
+    public Remedio adicionarRemedio(String idosoId, Remedio remedio) {
+        DatabaseReference reference = remedioEndPoint.child(idosoId);
 
         String key = reference.push().getKey();
-        medicacao.setId(key);
-        reference.child(key).setValue(medicacao);
+        remedio.setId(key);
+        reference.child(key).setValue(remedio);
 
-        return medicacao;
+        return remedio;
     }
 
-    public void atualizarMedicacao(String idosoId, Medicacao medicacao) {
-        medicacaoEndPoint.child(idosoId).child(medicacao.getId()).setValue(medicacao);
+    public void atualizarRemedio(String idosoId, Remedio remedio) {
+        remedioEndPoint.child(idosoId).child(remedio.getId()).setValue(remedio);
     }
 
-    public void removerMedicacao(String idosoId, String medicacaoId) {
-        medicacaoEndPoint.child(idosoId).child(medicacaoId).removeValue();
+    public void removerRemedio(String idosoId, String remedioId) {
+        remedioEndPoint.child(idosoId).child(remedioId).removeValue();
     }
 
     public Programa adicionarPrograma(String idosoId, Programa programa) {
@@ -175,19 +173,19 @@ public class CuidadorFirebaseRepository {
 
             }
         });
-        carregarMedicacoes(idosoId);
+        carregarRemedios(idosoId);
         carregarProgramas(idosoId);
     }
 
-    private void carregarMedicacoes(String idosoId) {
-        medicacaoEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
+    private void carregarRemedios(String idosoId) {
+        remedioEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                medicacoes.clear();
+                remedios.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     //Getting the data from snapshot
-                    Medicacao medicacao = postSnapshot.getValue(Medicacao.class);
-                    medicacoes.add(medicacao);
+                    Remedio remedio = postSnapshot.getValue(Remedio.class);
+                    remedios.add(remedio);
                 }
             }
 

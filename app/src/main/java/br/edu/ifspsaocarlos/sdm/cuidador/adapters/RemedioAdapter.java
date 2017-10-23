@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Medicacao;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 
 /**
@@ -18,29 +18,29 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
  *
  * @author Anderson Canale Garcia
  */
-public class MedicacaoAdapter extends RecyclerView.Adapter<MedicacaoAdapter.MedicacaoHolder> {
+public class RemedioAdapter extends RecyclerView.Adapter<RemedioAdapter.RemedioHolder> {
 
-    private List<Medicacao> lista;
+    private List<Remedio> lista;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
 
-    public MedicacaoAdapter(Context c, List<Medicacao> l) {
+    public RemedioAdapter(Context c, List<Remedio> l) {
 
         lista = l;
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
-    public MedicacaoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RemedioHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View v = mLayoutInflater.inflate(R.layout.item_lista, parent, false);
-        MedicacaoHolder mvh = new MedicacaoHolder(v);
+        RemedioHolder mvh = new RemedioHolder(v);
 
         return mvh;
     }
 
     @Override
-    public void onBindViewHolder(MedicacaoHolder holder, int position) {
+    public void onBindViewHolder(RemedioHolder holder, int position) {
 
         holder.tvNome.setText(lista.get(position).getNome());
         holder.tvHorarios.setText(lista.get(position).getHorarios());
@@ -57,12 +57,12 @@ public class MedicacaoAdapter extends RecyclerView.Adapter<MedicacaoAdapter.Medi
         meuRecyclerViewOnItemSelecionado = r;
     }
 
-    public class MedicacaoHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class RemedioHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView tvNome;
         public TextView tvHorarios;
 
-        public MedicacaoHolder(View itemView) {
+        public RemedioHolder(View itemView) {
 
             super(itemView);
 
