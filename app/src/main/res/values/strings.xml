@@ -72,5 +72,6 @@
     <string name="msg_aguardando">Aguardando...</string>
     <string name="gravar_audio">Gravar áudio</string>
     <string name="action_sair">Sair</string>
+    <string name="msg_token_fmt">InstanceID Token: %s</string>
 
 </resources>

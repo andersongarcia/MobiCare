@@ -4,82 +4,92 @@
     android:layout_height="match_parent"
     tools:context="br.edu.ifspsaocarlos.sdm.cuidador.fragments.CadastroRemedioFragment">
 
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/text_margin"
-            android:paddingRight="@dimen/text_margin">
-
-            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="@string/nome" />
-
-            <EditText
-                android:id="@+id/remedio_nome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_nome" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/horarios" />
-
-            <EditText
-                android:id="@+id/remedio_horarios"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusableInTouchMode="false"
-                android:hint="@string/hint_horarios" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dose" />
-
-            <EditText
-                android:id="@+id/remedio_dose"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_dose" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:orientation="vertical"
                 android:paddingLeft="@dimen/text_margin"
-                android:paddingRight="@dimen/text_margin"
-                android:paddingTop="@dimen/text_margin">
+                android:paddingRight="@dimen/text_margin">
 
-                <Button
-                    android:id="@+id/btn_ouvir_instrucao"
-                    android:layout_width="200dp"
+
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:background="@color/colorPrimary"
-                    android:padding="@dimen/text_margin"
-                    android:text="@string/ouvir_instrucao"
-                    android:textColor="@android:color/white"
-                    android:visibility="invisible" />
+                    android:text="@string/nome" />
 
-                <Button
-                    android:id="@+id/btn_gravar_instrucao"
-                    android:layout_width="200dp"
+                <EditText
+                    android:id="@+id/remedio_nome"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/btn_ouvir_instrucao"
-                    android:layout_centerHorizontal="true"
-                    android:background="@color/colorPrimary"
-                    android:padding="@dimen/text_margin"
-                    android:layout_marginTop="@dimen/text_margin"
-                    android:text="@string/gravar_instrucao"
-                    android:textColor="@android:color/white" />
-            </RelativeLayout>
+                    android:hint="@string/hint_nome" />
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/horarios" />
+
+                <EditText
+                    android:id="@+id/remedio_horarios"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/hint_horarios" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dose" />
+
+                <EditText
+                    android:id="@+id/remedio_dose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_dose" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/text_margin">
+
+                    <Button
+                        android:id="@+id/btn_gravar_instrucao"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:text="@string/gravar_instrucao"
+                        android:drawableLeft="@drawable/ic_mic_white_48dp" />
+
+                    <Button
+                        android:id="@+id/btn_ouvir_instrucao"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/ouvir_instrucao"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:drawableLeft="@drawable/ic_play_arrow_white_48dp"
+                        android:enabled="false" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
 
 </FrameLayout>

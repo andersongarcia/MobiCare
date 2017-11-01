@@ -1,43 +1,30 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
+import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogAudioListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
@@ -45,52 +32,22 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  *
  * @author Anderson Canale Garcia
  */
-public class CadastroRemedioFragment extends Fragment implements TimePickedListener {
+public class CadastroRemedioFragment extends CadastroBaseFragment implements TimePickedListener {
     private static final String REMEDIO = "REMEDIO";
-
-    // status para gravação de instrução
-    private static final int AGUARDANDO_GRAVACAO = 0;
-    private static final int GRAVANDO = 1;
-    private static final int GRAVACAO_CONCLUIDA = 2;
-    private static final int REPRODUZINDO = 3;
-
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-
-    private OnFragmentInteractionListener mListener;
+    private static final String FILE_PREFIX = REMEDIO.toLowerCase() + "_";
 
     private Remedio remedio;
-    private CuidadorService cuidadorService;
     private EditText etNome;
     private EditText etHorarios;
     private EditText etDose;
     private Button btnOuvirInstrucao;
     private Button btnGravarInstrucao;
-    private AlertDialog dlgOuvirInstrucao;
-    private AlertDialog dlgGravarInstrucao;
 
-    private MediaRecorder mRecorder = null;
-    private MediaPlayer   mPlayer = null;
-    private static String mFileName = null;
-
-    // Requesting permission to RECORD_AUDIO
-    private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {android.Manifest.permission.RECORD_AUDIO};
-
-    MainActivity activity;
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
-        }
-        if (!permissionToRecordAccepted ) getActivity().finish();
-    }
+    private String fileName;
 
     public CadastroRemedioFragment() {
         // Required empty public constructor
+        super(RemediosFragment.newInstance(), CuidadorService.NO.REMEDIOS);
     }
 
     /**
@@ -112,7 +69,7 @@ public class CadastroRemedioFragment extends Fragment implements TimePickedListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cuidadorService = new CuidadorService(getActivity());
+        service = new CuidadorService(getActivity());
 
         if (getArguments() != null) {
             this.remedio = (Remedio) getArguments().getSerializable(REMEDIO);
@@ -120,28 +77,38 @@ public class CadastroRemedioFragment extends Fragment implements TimePickedListe
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cadastro_remedio, container, false);
-        setHasOptionsMenu(true);
+    public int getLayoutCadastro() {
+        return R.layout.fragment_cadastro_remedio;
+    }
 
-        activity = (MainActivity) getActivity();
+    @Override
+    protected String getIdCadastro() {
+        return remedio.getId();
+    }
 
-        activity.showBackButton(true);
-
-
+    @Override
+    protected void criarReferenciasLayout() {
+        // referencia componentes do layout
         etNome = (EditText)view.findViewById(R.id.remedio_nome);
         etHorarios = (EditText) view.findViewById(R.id.remedio_horarios);
         etDose = (EditText)view.findViewById(R.id.remedio_dose);
         btnOuvirInstrucao = (Button)view.findViewById(R.id.btn_ouvir_instrucao);
         btnGravarInstrucao = (Button)view.findViewById(R.id.btn_gravar_instrucao);
+    }
 
+    @Override
+    protected void carregarInformacoesCadastradas() {
+        // carrega informações cadastradas
         etNome.setText(remedio.getNome());
         etHorarios.setText(remedio.getHorarios());
         etDose.setText(remedio.getDose());
+    }
 
+    @Override
+    protected void carregarOutrasReferencias() {
         setLinkParaInstrucao();
 
+        // Cria timepicker para campo de horário
         etHorarios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,190 +117,61 @@ public class CadastroRemedioFragment extends Fragment implements TimePickedListe
             }
         });
 
-        // Record to the external cache directory for visibility
-        mFileName = getActivity().getExternalCacheDir().getAbsolutePath();
-        mFileName += "/" + REMEDIO.toLowerCase() + "_" + remedio.getId() + ".3gp";
-
         ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-        // Ouvir gravação salva
-        btnOuvirInstrucao.setOnClickListener(new View.OnClickListener() {
+        fileName = FILE_PREFIX + remedio.getId();
 
+        //region Dialog para gravação da instrução
+        final DialogAudioListener dlgGravarInstrucaoListener = new DialogAudioListener(activity, fileName);
+        dlgGravarInstrucaoListener.setTitle(R.string.gravar_instrucao);
+        btnGravarInstrucao.setOnClickListener(dlgGravarInstrucaoListener);
+
+        dlgGravarInstrucaoListener.setButton(DialogAudioListener.TipoBotao.POSITIVO, R.string.btn_usar, new Runnable() {
             @Override
-            public void onClick(View view) {
-                // Cria o gerador do AlertDialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                // Define o titulo
-                builder.setTitle(R.string.ouvir_instrucao);
-                // Define o conteúdo
-                builder.setView(R.layout.dialog_ouvir_instrucao);
+            public void run() {
+                service.salvarAudioInstrucao(dlgGravarInstrucaoListener.getFileName(), remedio.getId(),
+                        new OnSuccessListener<UploadTask.TaskSnapshot>(){
 
-                // Define um botão como negativo.
-                builder.setNegativeButton(R.string.btn_fechar, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        // não faz nada
-                    }
-                });
-
-                // Define um botão como meutro.
-                builder.setNeutralButton(R.string.btn_regravar, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        btnGravarInstrucao.callOnClick();
-                    }
-                });
-
-                // Cria o AlertDialog
-                dlgOuvirInstrucao = builder.create();
-                // Exibe
-                dlgOuvirInstrucao.show();
-
-                // Define ações do controle de gravação
-                final ImageButton btnIniciarReproducao = (ImageButton) dlgOuvirInstrucao.findViewById(R.id.btn_iniciar_reproducao);
-                btnIniciarReproducao.setTag(GRAVACAO_CONCLUIDA);
-                btnIniciarReproducao.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        Integer status = (Integer) btnIniciarReproducao.getTag();
-                        switch (status){
-                            case GRAVACAO_CONCLUIDA:
-                                // inicia reproducao
-                                btnIniciarReproducao.setImageResource(R.drawable.ic_pause_black_48dp);
-                                btnIniciarReproducao.setTag(REPRODUZINDO);
-
-                                MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
-
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        btnIniciarReproducao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                                        btnIniciarReproducao.setTag(GRAVACAO_CONCLUIDA);
-                                    }
-
-                                };
-
-
-                                iniciarReproducao(completionListener);
-                                break;
-                            case REPRODUZINDO:
-                                // termina reproducao
-                                btnIniciarReproducao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                                btnIniciarReproducao.setTag(GRAVACAO_CONCLUIDA);
-
-                                pararReproducao();
-                                break;
-                        }
-                    }
-                });
-
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                setLinkParaInstrucao();
+                            }
+                        });
             }
         });
 
-        btnGravarInstrucao.setOnClickListener(new View.OnClickListener() {
-
+        dlgGravarInstrucaoListener.setButton(DialogAudioListener.TipoBotao.NEUTRO, R.string.btn_regravar, new Runnable() {
             @Override
-            public void onClick(View view) {
-                // Cria o gerador do AlertDialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                // Define o titulo
-                builder.setTitle(R.string.gravar_instrucao);
-                // Define o conteúdo
-                builder.setView(R.layout.dialog_gravar_instrucao);
+            public void run() {
+                btnGravarInstrucao.callOnClick();
+            }
+        });
+        //endregion
 
-                // Define um botão como positivo
-                builder.setPositiveButton(R.string.btn_usar, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        salvarAudio();
-                    }
-                });
+        //region Dialog para reprodução da instrução gravada
+        final DialogAudioListener dlgOuvirInstrucaoListener = new DialogAudioListener(activity, fileName);
+        dlgOuvirInstrucaoListener.setTitle(R.string.ouvir_instrucao);
+        btnOuvirInstrucao.setOnClickListener(dlgOuvirInstrucaoListener);
+        dlgOuvirInstrucaoListener.setStatus(DialogAudioListener.Status.GRAVACAO_CONCLUIDA);
 
-                // Define um botão como negativo.
-                builder.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        // não faz nada
-                    }
-                });
-
-                // Define um botão como meutro.
-                builder.setNeutralButton(R.string.btn_regravar, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        btnGravarInstrucao.callOnClick();
-                    }
-                });
-
-
-                // Cria o AlertDialog
-                dlgGravarInstrucao = builder.create();
-                // Exibe
-                dlgGravarInstrucao.show();
-
-                // Inicialmente, botôes positivo e neutro permanecem desabilitados
-                dlgGravarInstrucao.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                dlgGravarInstrucao.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(false);
-
-                // Define ações do controle de gravação
-                final ImageButton btnIniciarGravacao = (ImageButton) dlgGravarInstrucao.findViewById(R.id.btn_iniciar_gravacao);
-                btnIniciarGravacao.setTag(AGUARDANDO_GRAVACAO);
-                btnIniciarGravacao.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        Integer status = (Integer) btnIniciarGravacao.getTag();
-                        switch (status){
-                            case AGUARDANDO_GRAVACAO:
-                                // inicia gravação
-                                btnIniciarGravacao.setImageResource(R.drawable.ic_mic_black_48dp);
-                                btnIniciarGravacao.setTag(GRAVANDO);
-
-                                iniciarGravacao();
-                                break;
-                            case GRAVANDO:
-                                // termina gravação
-                                btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                                dlgGravarInstrucao.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                                dlgGravarInstrucao.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
-                                btnIniciarGravacao.setTag(GRAVACAO_CONCLUIDA);
-
-                                pararGravacao();
-                                break;
-                            case GRAVACAO_CONCLUIDA:
-                                // inicia reproducao
-                                btnIniciarGravacao.setImageResource(R.drawable.ic_pause_black_48dp);
-                                btnIniciarGravacao.setTag(REPRODUZINDO);
-
-                                MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
-
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        // termina reproducao
-                                        btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                                        btnIniciarGravacao.setTag(GRAVACAO_CONCLUIDA);
-                                    }
-
-                                };
-
-                                iniciarReproducao(completionListener);
-                                break;
-                            case REPRODUZINDO:
-                                // termina reproducao
-                                btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                                btnIniciarGravacao.setTag(GRAVACAO_CONCLUIDA);
-
-                                pararReproducao();
-                                break;
-                        }
-                    }
-                });
-
+        dlgOuvirInstrucaoListener.setButton(DialogAudioListener.TipoBotao.NEGATIVO, R.string.btn_fechar, new Runnable() {
+            @Override
+            public void run() {
+                // não faz nada
             }
         });
 
-
-        return view;
+        dlgOuvirInstrucaoListener.setButton(DialogAudioListener.TipoBotao.NEUTRO, R.string.btn_regravar, new Runnable() {
+            @Override
+            public void run() {
+                btnGravarInstrucao.callOnClick();
+            }
+        });
+        //endregion
     }
 
-    private void setLinkParaInstrucao() {
+    private final void setLinkParaInstrucao() {
         if(remedio.getId() != null){
-            final CuidadorService service = new CuidadorService(getActivity());
             service.carregaInstrucaoURI(remedio.getId(), new OnSuccessListener<Uri>(){
                 @Override
                 public void onSuccess(Uri uri) {
@@ -343,7 +181,7 @@ public class CadastroRemedioFragment extends Fragment implements TimePickedListe
                         service.carregarArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                mFileName = localFile.getAbsolutePath();
+                                fileName = localFile.getAbsolutePath();
                                 Log.e("firebase ",";local tem file created  created " + localFile.toString());
                             }
                         }, new OnFailureListener() {
@@ -355,124 +193,39 @@ public class CadastroRemedioFragment extends Fragment implements TimePickedListe
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    btnOuvirInstrucao.setVisibility(View.VISIBLE);
+                    btnOuvirInstrucao.setEnabled(true);
                 }
             }, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    btnOuvirInstrucao.setVisibility(View.INVISIBLE);
+                    btnOuvirInstrucao.setEnabled(false);
                 }
             });
         }
     }
 
-    private void iniciarReproducao(MediaPlayer.OnCompletionListener completionListener) {
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setDataSource(mFileName);
-            mPlayer.setOnCompletionListener(completionListener);
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IOException e) {
-            Toast.makeText(getActivity(), R.string.msg_erro_reproducao + ": " + e.getMessage(), Toast.LENGTH_LONG);
-        }
-    }
+    @Override
+    protected void salvar() {
+        String nome = ((TextView)getView().findViewById(R.id.remedio_nome)).getText().toString();
+        String horarios = ((TextView)getView().findViewById(R.id.remedio_horarios)).getText().toString();
+        String dose = ((TextView)getView().findViewById(R.id.remedio_dose)).getText().toString();
 
-    private void pararReproducao() {
-        mPlayer.release();
-        mPlayer = null;
-    }
+        Remedio remedio = new Remedio();
+        remedio.setId(this.remedio.getId());
+        remedio.setNome(nome);
+        remedio.setHorarios(horarios);
+        remedio.setDose(dose);
 
-    private void iniciarGravacao() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Toast.makeText(getActivity(), R.string.msg_erro_gravacao + ": " + e.getMessage(), Toast.LENGTH_LONG);
-        }
-
-        mRecorder.start();
-    }
-
-    private void pararGravacao() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
-    }
-
-    private void salvarAudio(){
-        new CuidadorService(getActivity()).salvarAudioInstrucao(mFileName, remedio.getId());
+        service.salvarRemedio(remedio);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        //super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_cadastro ,menu);
-        menu.findItem(R.id.excluir).setVisible(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.salvar:
-                String nome = ((TextView)getView().findViewById(R.id.remedio_nome)).getText().toString();
-                String horarios = ((TextView)getView().findViewById(R.id.remedio_horarios)).getText().toString();
-                String dose = ((TextView)getView().findViewById(R.id.remedio_dose)).getText().toString();
-
-                Remedio remedio = new Remedio();
-                remedio.setId(this.remedio.getId());
-                remedio.setNome(nome);
-                remedio.setHorarios(horarios);
-                remedio.setDose(dose);
-
-                cuidadorService.salvarRemedio(remedio);
-                redirecionaParaLista();
-                break;
-            case R.id.excluir:
-                cuidadorService.removerRemedio(this.remedio.getId());
-                redirecionaParaLista();
-                break;
-            case android.R.id.home:
-                redirecionaParaLista();
-                break;
-        }
-
-        //Toast.makeText(this, msg + " clicked !", Toast.LENGTH_SHORT).show();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void redirecionaParaLista() {
-        activity.showBackButton(false);
-        activity.openFragment(RemediosFragment.newInstance());
+    protected void excluir() {
+        service.removerRemedio(this.remedio.getId());
     }
 
     @Override
     public void onTimePicked(Calendar time) {
         etHorarios.setText(DateFormat.format("h:mm a", time));
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

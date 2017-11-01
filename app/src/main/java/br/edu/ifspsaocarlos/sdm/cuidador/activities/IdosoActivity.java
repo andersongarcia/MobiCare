@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MenuItemAdapter;
@@ -24,6 +25,8 @@ public class IdosoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_idoso);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (RecyclerView) findViewById(R.id.left_drawer);

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "778707210151",
+    "firebase_url": "https://cuidador-468a6.firebaseio.com",
+    "project_id": "cuidador-468a6",
+    "storage_bucket": "cuidador-468a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778707210151:android:ec8d244889c6309c",
+        "android_client_info": {
+          "package_name": "br.edu.ifspsaocarlos.sdm.cuidador"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778707210151-g0cc08l3urr04nuecs06etvm368l890o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.ifspsaocarlos.sdm.cuidador",
+            "certificate_hash": "7868cb31235b03fee120f4284f6c92e1032efd9c"
+          }
+        },
+        {
+          "client_id": "778707210151-hv8pmsj8q1rfdd29dn57uoo9oegonqe1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4yJzNDiPlBwizYJ4b2dCc7_Rcc9f3O2U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778707210151-hv8pmsj8q1rfdd29dn57uoo9oegonqe1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -60,8 +60,8 @@ public class RegistroIdosoFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                String nome = ((TextView)getView().findViewById(R.id.registro_idoso_nome)).getText().toString();
-                String telefone = ((TextView)getView().findViewById(R.id.registro_idoso_telefone)).getText().toString();
+                String nome = ((TextView)getView().findViewById(R.id.registro_idoso_nome)).getText().toString().trim();
+                String telefone = ((TextView)getView().findViewById(R.id.registro_idoso_telefone)).getText().toString().trim();
 
                 Runnable runnable = new Runnable() {
 

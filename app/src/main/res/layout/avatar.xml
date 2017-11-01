@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_insert_photo_grey" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_add_avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="@dimen/text_margin"
+        android:layout_marginTop="@dimen/fab_topmargin"
+        android:src="@drawable/ic_photo_camera_white_48dp" />
+
+</LinearLayout>

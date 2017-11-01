@@ -1,24 +1,17 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Calendar;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -29,26 +22,24 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  * @author Anderson Canale Garcia
  */
 
-public class CadastroProgramaFragment  extends Fragment implements TimePickedListener {
+public class CadastroProgramaFragment  extends CadastroBaseFragment implements TimePickedListener {
     private static final String PROGRAMA = "PROGRAMA";
 
     private Programa programa;
 
     private CadastroProgramaFragment.OnFragmentInteractionListener mListener;
-    private CuidadorService cuidadorService;
 
-    MainActivity activity;
     private EditText etNome;
     private EditText etHorarios;
     private EditText etLink;
 
     public CadastroProgramaFragment() {
         // Required empty public constructor
+        super(ProgramasFragment.newInstance(), CuidadorService.NO.PROGRAMAS);
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Factory Method
      *
      * @param programa Instância do programa
      * @return Uma nova instância do fragment CadastroProgramaFragment.
@@ -65,30 +56,58 @@ public class CadastroProgramaFragment  extends Fragment implements TimePickedLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cuidadorService = new CuidadorService(getActivity());
+        service = new CuidadorService(getActivity());
         if (getArguments() != null) {
             programa = (Programa) getArguments().getSerializable(PROGRAMA);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cadastro_programa, container, false);
-        setHasOptionsMenu(true);
+    protected void salvar() {
+        String nome = ((TextView)getView().findViewById(R.id.programa_nome)).getText().toString();
+        String horarios = ((TextView)getView().findViewById(R.id.programa_horarios)).getText().toString();
+        String link = ((TextView)getView().findViewById(R.id.programa_link)).getText().toString();
 
-        activity = (MainActivity) getActivity();
+        Programa programa = new Programa();
+        programa.setId(this.programa.getId());
+        programa.setNome(nome);
+        programa.setHorarios(horarios);
+        programa.setLink(link);
 
-        activity.showBackButton(true);
+        service.salvarPrograma(programa);
+    }
 
+    @Override
+    protected void excluir() {
+        service.removerPrograma(this.programa.getId());
+    }
+
+    @Override
+    protected int getLayoutCadastro() {
+        return R.layout.fragment_cadastro_programa;
+    }
+
+    @Override
+    protected String getIdCadastro() {
+        return programa.getId();
+    }
+
+    @Override
+    protected void criarReferenciasLayout() {
         etNome = (EditText)view.findViewById(R.id.programa_nome);
         etHorarios = (EditText) view.findViewById(R.id.programa_horarios);
         etLink = (EditText)view.findViewById(R.id.programa_link);
+    }
 
+    @Override
+    protected void carregarInformacoesCadastradas() {
         etNome.setText(programa.getNome());
         etHorarios.setText(programa.getHorarios());
         etLink.setText(programa.getLink());
+    }
 
+    @Override
+    protected void carregarOutrasReferencias() {
         etHorarios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,54 +115,6 @@ public class CadastroProgramaFragment  extends Fragment implements TimePickedLis
                 newFragment.show(getActivity().getFragmentManager(), "timePicker");
             }
         });
-
-        return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        inflater.inflate(R.menu.menu_cadastro ,menu);
-        menu.findItem(R.id.excluir).setVisible(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.salvar:
-                String nome = ((TextView)getView().findViewById(R.id.programa_nome)).getText().toString();
-                String horarios = ((TextView)getView().findViewById(R.id.programa_horarios)).getText().toString();
-                String link = ((TextView)getView().findViewById(R.id.programa_link)).getText().toString();
-
-                Programa programa = new Programa();
-                programa.setId(this.programa.getId());
-                programa.setNome(nome);
-                programa.setHorarios(horarios);
-                programa.setLink(link);
-
-                cuidadorService.salvarPrograma(programa);
-
-                redirecionaParaLista();
-                break;
-            case R.id.excluir:
-                cuidadorService.removerPrograma(this.programa.getId());
-                redirecionaParaLista();
-                break;
-            case android.R.id.home:
-                redirecionaParaLista();
-                break;
-        }
-
-        //Toast.makeText(this, msg + " clicked !", Toast.LENGTH_SHORT).show();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void redirecionaParaLista() {
-        activity.showBackButton(false);
-        activity.openFragment(ProgramasFragment.newInstance());
     }
 
     @Override

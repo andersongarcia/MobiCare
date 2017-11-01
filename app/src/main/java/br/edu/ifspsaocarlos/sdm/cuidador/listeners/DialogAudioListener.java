@@ -20,12 +20,8 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 
 public class DialogAudioListener implements View.OnClickListener {
 
-    // status para gravação de instrução
-    private static final int AGUARDANDO_GRAVACAO = 0;
-    private static final int GRAVANDO = 1;
-    private static final int GRAVACAO_CONCLUIDA = 2;
-    private static final int REPRODUZINDO = 3;
     private final Context context;
+    private Status status;
     private MediaPlayer mPlayer;
     private String fileName;
     private MediaRecorder mRecorder;
@@ -34,10 +30,14 @@ public class DialogAudioListener implements View.OnClickListener {
         return fileName;
     }
 
+    public void setStatus(Status status) { this.status = status; }
+
     // botões do dialog
     public enum TipoBotao { POSITIVO, NEGATIVO, NEUTRO };
+    // status para gravação de instrução
+    public enum Status { AGUARDANDO_GRAVACAO, GRAVANDO, GRAVACAO_CONCLUIDA, REPRODUZINDO };
 
-    private final int dialog_title;
+    private int dialog_title;
     private final int dialog_layout;
 
     private AlertDialog.Builder builder;
@@ -54,11 +54,12 @@ public class DialogAudioListener implements View.OnClickListener {
         // configurações padrão
         this.dialog_title = R.string.gravar_audio;
         this.dialog_layout = R.layout.dialog_gravar_instrucao;
+        this.status = Status.AGUARDANDO_GRAVACAO;
     }
 
 
     public void setTitle(int resTitle){
-        builder.setTitle(resTitle);
+        this.dialog_title = resTitle;
     }
 
     public void setButton(TipoBotao tipoBotao, int resTextoBotao, final Runnable runnable){
@@ -108,17 +109,18 @@ public class DialogAudioListener implements View.OnClickListener {
 
         // Define ações do controle de gravação
         final ImageButton btnIniciarGravacao = (ImageButton) dialog.findViewById(R.id.btn_iniciar_gravacao);
-        btnIniciarGravacao.setTag(AGUARDANDO_GRAVACAO);
+        btnIniciarGravacao.setTag(status);
         btnIniciarGravacao.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                Integer status = (Integer) btnIniciarGravacao.getTag();
+                //Integer status = (Integer) btnIniciarGravacao.getTag();
+                status = (Status) btnIniciarGravacao.getTag();
                 switch (status){
                     case AGUARDANDO_GRAVACAO:
                         // inicia gravação
                         btnIniciarGravacao.setImageResource(R.drawable.ic_mic_black_48dp);
-                        btnIniciarGravacao.setTag(GRAVANDO);
+                        btnIniciarGravacao.setTag(Status.GRAVANDO);
 
                         iniciarGravacao();
                         break;
@@ -127,14 +129,14 @@ public class DialogAudioListener implements View.OnClickListener {
                         btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
-                        btnIniciarGravacao.setTag(GRAVACAO_CONCLUIDA);
+                        btnIniciarGravacao.setTag(Status.GRAVACAO_CONCLUIDA);
 
                         pararGravacao();
                         break;
                     case GRAVACAO_CONCLUIDA:
                         // inicia reproducao
                         btnIniciarGravacao.setImageResource(R.drawable.ic_pause_black_48dp);
-                        btnIniciarGravacao.setTag(REPRODUZINDO);
+                        btnIniciarGravacao.setTag(Status.REPRODUZINDO);
 
                         MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
 
@@ -142,7 +144,7 @@ public class DialogAudioListener implements View.OnClickListener {
                             public void onCompletion(MediaPlayer mp) {
                                 // termina reproducao
                                 btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                                btnIniciarGravacao.setTag(GRAVACAO_CONCLUIDA);
+                                btnIniciarGravacao.setTag(Status.GRAVACAO_CONCLUIDA);
                             }
 
                         };
@@ -152,7 +154,7 @@ public class DialogAudioListener implements View.OnClickListener {
                     case REPRODUZINDO:
                         // termina reproducao
                         btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                        btnIniciarGravacao.setTag(GRAVACAO_CONCLUIDA);
+                        btnIniciarGravacao.setTag(Status.GRAVACAO_CONCLUIDA);
 
                         pararReproducao();
                         break;

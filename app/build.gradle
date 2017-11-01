@@ -3,7 +3,7 @@ apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "br.edu.ifspsaocarlos.sdm.cuidador"
         minSdkVersion 21
@@ -40,6 +40,9 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:11.0.2'
     compile 'com.google.firebase:firebase-database:11.0.2'
     compile 'com.google.firebase:firebase-storage:11.0.2'
+    compile 'com.google.firebase:firebase-messaging:11.0.4'
+    compile 'com.firebase:firebase-jobdispatcher:0.6.0'
+
     testCompile 'junit:junit:4.12'
 }
 

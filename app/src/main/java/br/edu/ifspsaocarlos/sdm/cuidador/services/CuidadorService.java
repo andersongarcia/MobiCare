@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 
@@ -27,6 +28,46 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
  * @author Anderson Canale Garcia
  */
 public class CuidadorService {
+    public static final String NO_INSTRUCOES = "instrucoes";
+    public static final String NO_CHAT = "instrucoes";
+
+    public enum NO {
+        CONTATOS,
+        CUIDADORES,
+        IDOSOS,
+        REMEDIOS,
+        CHAT,
+        INSTRUCOES,
+        FOTOS,
+        PROGRAMAS,
+        MENSAGENS;
+
+        public static String getNo(NO no) {
+            switch (no) {
+                case CONTATOS:
+                    return "contatos";
+                case CUIDADORES:
+                    return "cuidadores";
+                case IDOSOS:
+                    return "idosos";
+                case REMEDIOS:
+                    return "remedios";
+                case CHAT:
+                    return "chat";
+                case INSTRUCOES:
+                    return "instrucoes";
+                case FOTOS:
+                    return "fotos";
+                case PROGRAMAS:
+                    return "programas";
+                case MENSAGENS:
+                    return "mensagens";
+                default:
+                    return "";
+            }
+        }
+    }
+
     private final Context contexto;
     private final PreferenciaHelper preferencias;
     private final CuidadorFirebaseRepository repositorio;
@@ -81,7 +122,10 @@ public class CuidadorService {
                     });
                     criarRegistroUsuario(id, perfil);
                 }else {
-                    criarRegistroUsuario(dataSnapshot.getKey(), perfil);
+                    for(DataSnapshot contato : dataSnapshot.getChildren()){
+                        String key = contato.getKey();
+                        criarRegistroUsuario(key, perfil);
+                    }
                 }
             }
 
@@ -120,19 +164,26 @@ public class CuidadorService {
                 if(dataSnapshot.getValue() == null){
                     // Contato não encontrado
                     // Salva dados de contato do usuário
-                    Contato contato = new Contato(nome, telefone);
+                    final Contato contato = new Contato(nome, telefone);
                     idosoId = repositorio.salvarContato(contato, new OnSuccessListener() {
                         @Override
                         public void onSuccess(Object o) {
+                            // salva idoso
+                            repositorio.salvarIdoso(idosoId);
                             // grava idoso nas preferências
                             preferencias.setIdosoSelecionadoId(idosoId);
                             runnable.run();
                         }
                     });
                 }else {
-                    // grava idoso nas preferências
-                    preferencias.setIdosoSelecionadoId(dataSnapshot.getKey());
-                    runnable.run();
+                    // salva idoso
+                    for(DataSnapshot contato : dataSnapshot.getChildren()){ // só traz 1 resultado
+                        String key = contato.getKey();
+                        repositorio.salvarIdoso(key);
+                        // grava idoso nas preferências
+                        preferencias.setIdosoSelecionadoId(key);
+                        runnable.run();
+                    }
                 }
             }
 
@@ -179,8 +230,8 @@ public class CuidadorService {
         }
     }
 
-    public void salvarAudioInstrucao(String fileName, String remedioId) {
-        CuidadorFirebaseStorage.getInstance().salvarAudioInstrucao(preferencias.getIdosoSelecionadoId(), remedioId, fileName);
+    public void salvarAudioInstrucao(String fileName, String remedioId, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+        CuidadorFirebaseStorage.getInstance().salvarAudioInstrucao(preferencias.getIdosoSelecionadoId(), remedioId, fileName, onSuccessListener);
     }
 
     public void carregaInstrucaoURI(String remedioId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener){
@@ -188,7 +239,7 @@ public class CuidadorService {
     }
 
     public void carregarArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
-        CuidadorFirebaseStorage.getInstance().carregaArquivo(uri, localFile, successListener, failureListener);
+        CuidadorFirebaseStorage.getInstance().carregarArquivo(uri, localFile, successListener, failureListener);
     }
 
     public String obterPerfilLogado() {
@@ -207,4 +258,13 @@ public class CuidadorService {
         preferencias.setUsuarioLogadoId(null);
         preferencias.setIdosoSelecionadoId(null);
     }
+
+    public void salvarFoto(NO no, String id, File arquivoFoto, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+        CuidadorFirebaseStorage.getInstance().salvarArquivo(NO.getNo(no), id, arquivoFoto, onSuccessListener);
+    }
+
+    public void carregarFotoURI(NO no, String id, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {
+        CuidadorFirebaseStorage.getInstance().carregaFotoURI(NO.getNo(no), id, successListener, failureListener);
+    }
 }
+

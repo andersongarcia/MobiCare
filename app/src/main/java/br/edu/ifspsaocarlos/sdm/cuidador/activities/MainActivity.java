@@ -2,15 +2,30 @@ package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+
+import java.io.File;
+import java.io.IOException;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
@@ -19,12 +34,17 @@ import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatIdosoFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ContatosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ProgramasFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RemediosFragment;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.IMService;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int TAKE_PHOTO_CODE = 1;
 
     private ActionBarDrawerToggle drawerToggle;
     private boolean toolBarNavigationListenerIsRegistered;
+    private FotoService fotoService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +81,11 @@ public class MainActivity extends BaseActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        IMService.subscribe("-KxFu5wMTkjf1lZ94RBq");
+        //IMService.getToken(this);
+        //AlarmeReceiver alarm = new AlarmeReceiver();
+        //alarm.setAlarm(this);
 
         // Verifica perfil
         switch (service.obterPerfilLogado()){
@@ -154,16 +179,6 @@ public class MainActivity extends BaseActivity
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void recriarToolbar(boolean enable) {
-        /*getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        drawerToggle.setDrawerIndicatorEnabled(true);
-        drawerToggle.syncState();*/
-        getSupportActionBar().setDisplayHomeAsUpEnabled(enable);
-        drawerToggle.setDrawerIndicatorEnabled(!enable);
-        drawerToggle.syncState();
-    }
-
     public void showBackButton(boolean enable) {
 
         // To keep states of ActionBar and ActionBarDrawerToggle synchronized,
@@ -199,12 +214,70 @@ public class MainActivity extends BaseActivity
             drawerToggle.setToolbarNavigationClickListener(null);
             toolBarNavigationListenerIsRegistered = false;
         }
+    }
 
-        // So, one may think "Hmm why not simplify to:
-        // .....
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(enable);
-        // mDrawer.setDrawerIndicatorEnabled(!enable);
-        // ......
-        // To re-iterate, the order in which you enable and disable views IS important #dontSimplify.
+    private File getTempFile(){
+        //it will return /sdcard/image.tmp
+        final File path = new File( Environment.getExternalStorageDirectory(), getPackageName() );
+        if(!path.exists()){
+            path.mkdir();
+        }
+        return new File(path, "image.tmp");
+    }
+
+    public void tirarFoto(FotoService fotoService){
+        this.fotoService = fotoService;
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(getTempFile()) );
+        startActivityForResult(intent, TAKE_PHOTO_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch(requestCode){
+                case TAKE_PHOTO_CODE:
+                    fotoService.corrigirRotacao(this, getTempFile());
+                    fotoService.run(getTempFile());
+                    break;
+            }
+        }
+    }
+
+
+    public void carregarAvatar(CuidadorService.NO no, String id, final ImageView imageView) {
+        if(id != null){
+            service.carregarFotoURI(no, id, new OnSuccessListener<Uri>(){
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL
+                    try {
+                        final File localFile = File.createTempFile("foto", ".jpg");
+                        service.carregarArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                if(localFile.exists()){
+                                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                    imageView.setImageBitmap(bitmap);
+                                }
+                                Log.e("firebase ",";local tem file created  created " + localFile.toString());
+                            }
+                        }, new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Log.e("firebase ",";local tem file not created  created " +exception.toString());
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            });
+        }
+
     }
 }

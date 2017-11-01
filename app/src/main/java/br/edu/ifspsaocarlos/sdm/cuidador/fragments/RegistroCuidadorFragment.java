@@ -53,8 +53,8 @@ public class RegistroCuidadorFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                String nome = ((TextView)getView().findViewById(R.id.registro_cuidador_nome)).getText().toString();
-                String telefone = ((TextView)getView().findViewById(R.id.registro_cuidador_telefone)).getText().toString();
+                String nome = ((TextView)getView().findViewById(R.id.registro_cuidador_nome)).getText().toString().trim();
+                String telefone = ((TextView)getView().findViewById(R.id.registro_cuidador_telefone)).getText().toString().trim();
 
                 activity.getCuidadorService().registrarUsuario(nome, telefone, Usuario.CUIDADOR);
                 activity.abrirFragment(RegistroIdosoFragment.newInstance(Usuario.CUIDADOR));

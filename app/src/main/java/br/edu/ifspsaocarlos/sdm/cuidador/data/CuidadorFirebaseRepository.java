@@ -18,9 +18,10 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
  * Classe de acesso a dados no padrão repository com conexão ao Firebase
@@ -29,6 +30,8 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
  */
 
 public class CuidadorFirebaseRepository {
+    private static final String TAG = "Repository";
+
     private static CuidadorFirebaseRepository repository;
     private final DatabaseReference mDatabase;
     private final DatabaseReference cuidadorEndPoint;
@@ -57,12 +60,12 @@ public class CuidadorFirebaseRepository {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.setPersistenceEnabled(true);
         mDatabase =  firebaseDatabase.getReference();
-        cuidadorEndPoint = mDatabase.child("cuidadores");
-        idosoEndPoint = mDatabase.child("idosos");
-        contatoEndPoint = mDatabase.child("contatos");
-        remedioEndPoint = mDatabase.child("remedios");
-        programaEndPoint = mDatabase.child("programas");
-        mensagemEndPoint = mDatabase.child("mensagens");
+        cuidadorEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.CUIDADORES));
+        idosoEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.IDOSOS));
+        contatoEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.CONTATOS));
+        remedioEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.REMEDIOS));
+        programaEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.PROGRAMAS));
+        mensagemEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.MENSAGENS));
 
         idosos = new ArrayList<>();
         contatos = new ArrayList<>();
@@ -97,11 +100,11 @@ public class CuidadorFirebaseRepository {
     }
 
     public void buscarContatoPeloTelefone(String telefone, ValueEventListener listener){
-        contatoEndPoint.orderByChild("telefone").equalTo(telefone).addListenerForSingleValueEvent(listener);
+        contatoEndPoint.orderByChild("telefone").startAt(telefone).limitToFirst(1).addListenerForSingleValueEvent(listener);
     }
 
-    public void salvarIdoso(String telefone) {
-        idosoEndPoint.child(telefone).setValue(true);
+    public void salvarIdoso(String id) {
+        idosoEndPoint.child(id).setValue(true);
     }
 
     public String salvarContato(Contato contato, OnSuccessListener listener) {
@@ -295,7 +298,7 @@ public class CuidadorFirebaseRepository {
         reference.child(id).setValue(mensagem).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d("FIREBASE", e.getMessage());
+                Log.d(TAG, e.getMessage());
             }
         });
     }

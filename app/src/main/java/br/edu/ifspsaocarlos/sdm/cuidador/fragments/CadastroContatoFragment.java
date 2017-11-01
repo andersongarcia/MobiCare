@@ -1,19 +1,10 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
-import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -22,7 +13,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  *
  * @author Anderson Canale Garcia
  */
-public class CadastroContatoFragment extends Fragment {
+public class CadastroContatoFragment extends CadastroBaseFragment {
     private static final String ID = "ID";
     private static final String NOME = "NOME";
     private static final String TELEFONE = "TELEFONE";
@@ -31,12 +22,11 @@ public class CadastroContatoFragment extends Fragment {
     private String nome;
     private String telefone;
 
-    private CuidadorService cuidadorService;
     private OnFragmentInteractionListener mListener;
-    private MainActivity activity;
 
     public CadastroContatoFragment() {
         // Required empty public constructor
+        super(ContatosFragment.newInstance(), CuidadorService.NO.CONTATOS);
     }
 
     /**
@@ -62,7 +52,7 @@ public class CadastroContatoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cuidadorService = new CuidadorService(getActivity());
+        service = new CuidadorService(getActivity());
         if (getArguments() != null) {
             id = getArguments().getString(ID);
             nome = getArguments().getString(NOME);
@@ -71,65 +61,51 @@ public class CadastroContatoFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cadastro_contato, container, false);
-        setHasOptionsMenu(true);
+    protected void salvar() {
+        Contato contato = new Contato(nome, telefone);
+        contato.setId(id);
+        service.salvarContato(contato, new Runnable() {
+            @Override
+            public void run() {
+                //redirecionaParaLista();
+            }
+        });
+    }
 
-        activity = (MainActivity) getActivity();
+    @Override
+    protected void excluir() {
+        service.removerContato(id, new Runnable() {
+            @Override
+            public void run() {
+                //redirecionaParaLista();
+            }
+        });
+    }
 
-        activity.showBackButton(true);
+    @Override
+    protected int getLayoutCadastro() {
+        return R.layout.fragment_cadastro_contato;
+    }
 
+    @Override
+    protected String getIdCadastro() {
+        return null;
+    }
+
+    @Override
+    protected void criarReferenciasLayout() {
+
+    }
+
+    @Override
+    protected void carregarInformacoesCadastradas() {
         ((EditText)view.findViewById(R.id.contato_nome)).setText(nome);
         ((EditText)view.findViewById(R.id.contato_telefone)).setText(telefone);
-
-        return view;
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        //super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_cadastro ,menu);
-        menu.findItem(R.id.excluir).setVisible(true);
-    }
+    protected void carregarOutrasReferencias() {
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        String nome = ((TextView)getView().findViewById(R.id.contato_nome)).getText().toString();
-        String telefone = ((TextView)getView().findViewById(R.id.contato_telefone)).getText().toString();
-
-        switch (item.getItemId()) {
-
-            case R.id.salvar:
-                Contato contato = new Contato(nome, telefone);
-                contato.setId(id);
-                cuidadorService.salvarContato(contato, new Runnable() {
-                    @Override
-                    public void run() {
-                        redirecionaParaLista();
-                    }
-                });
-                break;
-            case R.id.excluir:
-                cuidadorService.removerContato(id, new Runnable() {
-                    @Override
-                    public void run() {
-                        redirecionaParaLista();
-                    }
-                });
-                break;
-            case android.R.id.home:
-                redirecionaParaLista();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void redirecionaParaLista() {
-        activity.showBackButton(false);
-        activity.openFragment(ContatosFragment.newInstance());
     }
 
     /**
