@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
@@ -60,12 +61,12 @@ public class CuidadorFirebaseRepository {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.setPersistenceEnabled(true);
         mDatabase =  firebaseDatabase.getReference();
-        cuidadorEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.CUIDADORES));
-        idosoEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.IDOSOS));
-        contatoEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.CONTATOS));
-        remedioEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.REMEDIOS));
-        programaEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.PROGRAMAS));
-        mensagemEndPoint = mDatabase.child(String.valueOf(CuidadorService.NO.MENSAGENS));
+        cuidadorEndPoint = mDatabase.child(CuidadorService.NO.getNo(CuidadorService.NO.CUIDADORES));
+        idosoEndPoint = mDatabase.child(CuidadorService.NO.getNo(CuidadorService.NO.IDOSOS));
+        contatoEndPoint = mDatabase.child(CuidadorService.NO.getNo(CuidadorService.NO.CONTATOS));
+        remedioEndPoint = mDatabase.child(CuidadorService.NO.getNo(CuidadorService.NO.REMEDIOS));
+        programaEndPoint = mDatabase.child(CuidadorService.NO.getNo(CuidadorService.NO.PROGRAMAS));
+        mensagemEndPoint = mDatabase.child(CuidadorService.NO.getNo(CuidadorService.NO.MENSAGENS));
 
         idosos = new ArrayList<>();
         contatos = new ArrayList<>();
@@ -90,39 +91,34 @@ public class CuidadorFirebaseRepository {
         cuidadorEndPoint.child(id).setValue(true);
     }
 
-    /**
-     * Exclui cuidador da base
-     * @param id
-     */
-    public void excluirUsuario(String id) {
-        cuidadorEndPoint.child(id).removeValue();
-        // TODO: remover cuidador dos relacionamentos dos idosos
-    }
-
     public void buscarContatoPeloTelefone(String telefone, ValueEventListener listener){
-        contatoEndPoint.orderByChild("telefone").startAt(telefone).limitToFirst(1).addListenerForSingleValueEvent(listener);
+        contatoEndPoint.orderByChild("telefone").equalTo(telefone).limitToFirst(1).addListenerForSingleValueEvent(listener);
     }
 
     public void salvarIdoso(String id) {
         idosoEndPoint.child(id).setValue(true);
     }
 
-    public String salvarContato(Contato contato, OnSuccessListener listener) {
+    public void salvarContato(final Contato contato, final CallbackGenerico<Contato> callback) {
         String id = contato.getId();
-        if(id == null || id.isEmpty()){
+        if (id == null || id.isEmpty()) {
             id = contatoEndPoint.push().getKey();
             contato.setId(id);
         }
-        contatoEndPoint.child(id).setValue(contato).addOnSuccessListener(listener);
-
-        return id;
+        contatoEndPoint.child(id).setValue(contato).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                callback.OnComplete(contato);
+            }
+        });
     }
+
 
     public void removerContato(final String contatoId, final String idosoId, final Runnable runnable) {
         contatoEndPoint.child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                idosoEndPoint.child(idosoId).child("contatos").child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.CONTATOS)).child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         removerContatoDaLista(contatoId);
@@ -170,12 +166,7 @@ public class CuidadorFirebaseRepository {
     }
 
     public void carregarListas(String idosoId) {
-        carregarContatos(idosoId, new Runnable(){
-            @Override
-            public void run() {
-
-            }
-        });
+        carregarContatos(idosoId);
         carregarRemedios(idosoId);
         carregarProgramas(idosoId);
     }
@@ -199,14 +190,13 @@ public class CuidadorFirebaseRepository {
         });
     }
 
-    private void carregarContatos(String idosoId, final Runnable runnable) {
+    private void carregarContatos(String idosoId) {
         contatos.clear();
-        idosoEndPoint.child(idosoId).child("contatos").addListenerForSingleValueEvent(new ValueEventListener() {
+        idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.CONTATOS)).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     carregarContatoNaLista(postSnapshot);
-                    runnable.run();
                 }
             }
 
@@ -266,7 +256,7 @@ public class CuidadorFirebaseRepository {
      * @param idodoId
      */
     public void relacionarCuidadorIdoso(String cuidadorId, String idodoId) {
-        cuidadorEndPoint.child(cuidadorId).child("idosos").child(idodoId).setValue(true);
+        cuidadorEndPoint.child(cuidadorId).child(CuidadorService.NO.getNo(CuidadorService.NO.IDOSOS)).child(idodoId).setValue(true);
         idosoEndPoint.child(idodoId).child("cuidadores").child(cuidadorId).setValue(true);
     }
 
@@ -274,17 +264,16 @@ public class CuidadorFirebaseRepository {
      * Grava relacionamento ente contato e idoso (bidirecional)
      * @param contatoId
      * @param idodoId
-     * @param runnable
      */
-    public void relacionarContatoIdoso(final String contatoId, final String idodoId, final Runnable runnable) {
-        contatoEndPoint.child(contatoId).child("idosos").child(idodoId).setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+    public void relacionarContatoIdoso(final String contatoId, final String idodoId) {
+        contatoEndPoint.child(contatoId).child(CuidadorService.NO.getNo(CuidadorService.NO.IDOSOS)).child(idodoId).setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                idosoEndPoint.child(idodoId).child("contatos").child(contatoId).setValue(true)
+                idosoEndPoint.child(idodoId).child(CuidadorService.NO.getNo(CuidadorService.NO.CONTATOS)).child(contatoId).setValue(true)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                carregarContatos(idodoId, runnable);
+                                carregarContatos(idodoId);
                             }
                         });
             }
@@ -305,5 +294,27 @@ public class CuidadorFirebaseRepository {
 
     public void lerNovasMensagens(String idosoId, ChildEventListener listener) {
         mensagemEndPoint.child(idosoId).addChildEventListener(listener);
+    }
+
+    public void buscarIdosoDoContato(String id, final CallbackGenerico<String> callback) {
+        contatoEndPoint.child(id).child(CuidadorService.NO.getNo(CuidadorService.NO.IDOSOS)).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null){
+                    // carrega contato
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){ // só traz 1 resultado
+                        String idosoId = snapshot.getKey();
+                        callback.OnComplete(idosoId);
+                    }
+                }else {
+                    callback.OnComplete(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

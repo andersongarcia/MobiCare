@@ -1,6 +1,5 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -9,7 +8,10 @@ import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.IdosoActivity;
+import java.util.Map;
+
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
 /**
  * Created by ander on 29/10/2017.
@@ -21,25 +23,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Chamado quando uma mensagem é recebida
      *
-     * @param mensagem Objeto representando a mensagem recebida do Firebase Cloud Messaging.
+     * @param remoteMessage Objeto representando a mensagem recebida do Firebase Cloud Messaging.
      */
     // [START receive_message]
     @Override
-    public void onMessageReceived(RemoteMessage mensagem) {
+    public void onMessageReceived(RemoteMessage remoteMessage) {
 
         // TODO(developer): Handle FCM messages here.
 
-        Log.d(TAG, "From: " + mensagem.getFrom());
+        Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        Log.d(TAG, "Data: " + mensagem.getData());
+        Log.d(TAG, "Data: " + remoteMessage.getData());
 
-        Intent intent = new Intent(getBaseContext(), IdosoActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        Map<String, String> data = remoteMessage.getData();
+
+        Mensagem mensagem = new Mensagem(data.get("emissorId"), data.get("destinatarioId"), data.get("fileName"));
+
+        AlarmeReceiver alarm = new AlarmeReceiver();
+        alarm.setNovaMensagem(getBaseContext(), mensagem);
+        //alarm.startActivityOnetime(getBaseContext(), intent);
+
 
         // Check if message contains a data payload.
-        if (mensagem.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + mensagem.getData());
+        if (remoteMessage.getData().size() > 0) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
@@ -52,8 +59,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         // Check if message contains a notification payload.
-        if (mensagem.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + mensagem.getNotification().getBody());
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM

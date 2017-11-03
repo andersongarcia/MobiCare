@@ -64,9 +64,9 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
 
     @Override
     protected void salvar() {
-        String nome = ((TextView)getView().findViewById(R.id.programa_nome)).getText().toString();
-        String horarios = ((TextView)getView().findViewById(R.id.programa_horarios)).getText().toString();
-        String link = ((TextView)getView().findViewById(R.id.programa_link)).getText().toString();
+        String nome = ((TextView)getView().findViewById(R.id.programa_nome)).getText().toString().trim();
+        String horarios = ((TextView)getView().findViewById(R.id.programa_horarios)).getText().toString().trim();
+        String link = ((TextView)getView().findViewById(R.id.programa_link)).getText().toString().trim();
 
         Programa programa = new Programa();
         programa.setId(this.programa.getId());

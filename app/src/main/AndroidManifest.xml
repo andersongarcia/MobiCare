@@ -33,7 +33,11 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".receivers.AlarmeReceiver" />
+        <receiver android:name=".receivers.AlarmeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+            </intent-filter>
+        </receiver>
 
         <service android:name=".services.MyFirebaseMessagingService">
             <intent-filter>

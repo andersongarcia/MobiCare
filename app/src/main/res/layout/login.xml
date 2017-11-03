@@ -27,7 +27,7 @@
             android:id="@+id/login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_telefone" />
+            android:hint="@string/hint_seu_celular" />
 
         <TextView
             android:id="@+id/login_erro"

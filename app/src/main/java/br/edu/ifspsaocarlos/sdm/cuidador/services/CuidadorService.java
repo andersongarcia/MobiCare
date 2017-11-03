@@ -14,13 +14,15 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseStorage;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
+
 
 /**
  * Classe de serviço para usuário
@@ -100,95 +102,82 @@ public class CuidadorService {
         repositorio.removerPrograma(preferencias.getIdosoSelecionadoId(), idPrograma);
     }
 
-    /**
-     * Registra usuário logado de acordo com o perfil selecionado
-     * @param nome
-     * @param telefone
-     * @param perfil
-     */
-    public void registrarUsuario(final String nome, final String telefone, final String perfil) {
-
-        repositorio.buscarContatoPeloTelefone(telefone, new ValueEventListener() {
+    public void registrarCuidadorIdoso(final String nome, final String telefone, final String nomeIdoso, final String telefoneIdoso) {
+        // busca contato do cuidador
+        buscaContato(telefone, new CallbackGenerico<Contato>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() == null){
-                    // Contato não encontrado
-                    // Salva dados de contato do usuário
-                    Contato contato = new Contato(nome, telefone);
-                    String id = repositorio.salvarContato(contato, new OnSuccessListener() {
+            public void OnComplete(Contato contato) {
+                // Verifica se encontrou contato
+                // Em caso positivo, registra id como cuidador
+                if(contato != null){
+                    definirCuidadorRegistrarIdoso(contato, nomeIdoso, telefoneIdoso);
+                }else {
+                    // Se não encontrou contato, cria-o, e depois registra o id como cuidador
+                    contato = new Contato(nome, telefone);
+                    repositorio.salvarContato(contato, new CallbackGenerico<Contato>() {
                         @Override
-                        public void onSuccess(Object o) {
+                        public void OnComplete(Contato c) {
+                            // Se correr tudo bem, registra novo contato como cuidador
+                            definirCuidadorRegistrarIdoso(c, nomeIdoso, telefoneIdoso);
                         }
                     });
-                    criarRegistroUsuario(id, perfil);
-                }else {
-                    for(DataSnapshot contato : dataSnapshot.getChildren()){
-                        String key = contato.getKey();
-                        criarRegistroUsuario(key, perfil);
-                    }
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
             }
         });
     }
 
-    private void criarRegistroUsuario(String id, String perfil){
-        // Cria registro de acordo com perfil selecionado
-        switch (perfil){
-            case Usuario.CUIDADOR:
-                repositorio.salvarCuidador(id);
-                break;
-            case Usuario.IDOSO:
-                repositorio.salvarIdoso(id);
-                break;
-        }
+    private void definirCuidadorRegistrarIdoso(Contato contato, String nomeIdoso, String telefoneIdoso) {
+        registraUsuario(contato.getId(), Usuario.CUIDADOR);
+        repositorio.salvarCuidador(contato.getId());
+        // inicia registro do idoso
+        registrarIdoso(nomeIdoso, telefoneIdoso);
+    }
 
+    public void registraUsuario(String id, String perfil) {
         preferencias.setUsuarioLogadoId(id);
         preferencias.setUsuarioLogadoPerfil(perfil);
+    }
+
+    public void registrarUsuarioIdoso(String id) {
+        registraUsuario(id, Usuario.IDOSO);
+        preferencias.setIdosoSelecionadoId(id);
+    }
+
+    public void registraUsuarioContato(String id) {
+        registraUsuario(id, Usuario.CONTATO);
+        repositorio.buscarIdosoDoContato(id, new CallbackGenerico<String>() {
+            @Override
+            public void OnComplete(String idosoId) {
+                preferencias.setIdosoSelecionadoId(idosoId);
+            }
+        });
     }
 
     /**
      * Registra idoso para cuidador selecionado
      * @param nome nome do idoso
      * @param telefone telefone do idoso (identificação)
-     * @param runnable
      */
-    public void registrarIdoso(final String nome, final String telefone, final Runnable runnable) {
+    public void registrarIdoso(final String nome, final String telefone) {
 
-        repositorio.buscarContatoPeloTelefone(telefone, new ValueEventListener() {
+        buscaContato(telefone, new CallbackGenerico<Contato>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() == null){
-                    // Contato não encontrado
-                    // Salva dados de contato do usuário
-                    final Contato contato = new Contato(nome, telefone);
-                    idosoId = repositorio.salvarContato(contato, new OnSuccessListener() {
+            public void OnComplete(Contato contato) {
+                if(contato != null){
+                    preferencias.setIdosoSelecionadoId(contato.getId());
+                    repositorio.salvarIdoso(contato.getId());
+                }else {
+                    contato = new Contato(nome, telefone);
+                    repositorio.salvarContato(contato, new CallbackGenerico<Contato>() {
                         @Override
-                        public void onSuccess(Object o) {
-                            // salva idoso
-                            repositorio.salvarIdoso(idosoId);
+                        public void OnComplete(Contato c) {
                             // grava idoso nas preferências
-                            preferencias.setIdosoSelecionadoId(idosoId);
-                            runnable.run();
+                            preferencias.setIdosoSelecionadoId(c.getId());
+                            // salva idoso
+                            repositorio.salvarIdoso(c.getId());
                         }
                     });
-                }else {
-                    // salva idoso
-                    for(DataSnapshot contato : dataSnapshot.getChildren()){ // só traz 1 resultado
-                        String key = contato.getKey();
-                        repositorio.salvarIdoso(key);
-                        // grava idoso nas preferências
-                        preferencias.setIdosoSelecionadoId(key);
-                        runnable.run();
-                    }
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
             }
         });
     }
@@ -197,15 +186,39 @@ public class CuidadorService {
         repositorio.carregarListas(preferencias.getIdosoSelecionadoId());
     }
 
+    public void buscaContato(String telefone, final CallbackGenerico<Contato> callback) {
+        repositorio.buscarContatoPeloTelefone(telefone, new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null){
+                    // carrega contato
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){ // só traz 1 resultado
+                        Contato contato = snapshot.getValue(Contato.class);
+                        callback.OnComplete(contato);
+                    }
+                }else {
+                    callback.OnComplete(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     /**
      * Salva dados do contato relacionado ao idoso
      * @param contato dados do contato
+     * @param callback
      */
-    public void salvarContato(final Contato contato, final Runnable runnable) {
-        repositorio.salvarContato(contato, new OnSuccessListener() {
+    public void salvarContato(Contato contato, final CallbackGenerico<Contato> callback) {
+        repositorio.salvarContato(contato, new CallbackGenerico<Contato>() {
             @Override
-            public void onSuccess(Object o) {
-                repositorio.relacionarContatoIdoso(contato.getId(), preferencias.getIdosoSelecionadoId(), runnable);
+            public void OnComplete(Contato c) {
+                repositorio.relacionarContatoIdoso(c.getId(), preferencias.getIdosoSelecionadoId());
+                callback.OnComplete(c);
             }
         });
     }
@@ -263,8 +276,11 @@ public class CuidadorService {
         CuidadorFirebaseStorage.getInstance().salvarArquivo(NO.getNo(no), id, arquivoFoto, onSuccessListener);
     }
 
+    public void salvarFotoPerfil(File arquivoFoto, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+        salvarFoto(NO.CONTATOS, preferencias.getUsuarioLogadoId(), arquivoFoto, onSuccessListener);
+    }
+
     public void carregarFotoURI(NO no, String id, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {
         CuidadorFirebaseStorage.getInstance().carregaFotoURI(NO.getNo(no), id, successListener, failureListener);
     }
 }
-

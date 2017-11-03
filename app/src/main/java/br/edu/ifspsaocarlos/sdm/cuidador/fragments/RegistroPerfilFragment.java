@@ -54,9 +54,10 @@ public class RegistroPerfilFragment extends Fragment {
                         activity.abrirFragment(RegistroCuidadorFragment.newInstance());
                         break;
                     case Usuario.IDOSO:
-                        activity.abrirFragment(RegistroIdosoFragment.newInstance(Usuario.IDOSO));
+                        activity.abrirFragment(RegistroIdosoFragment.newInstance());
                         break;
                     case Usuario.CONTATO:
+                        activity.abrirFragment(RegistroContatoFragment.newInstance());
                         break;
                 }
             }

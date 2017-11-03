@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -206,9 +205,9 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
     @Override
     protected void salvar() {
-        String nome = ((TextView)getView().findViewById(R.id.remedio_nome)).getText().toString();
-        String horarios = ((TextView)getView().findViewById(R.id.remedio_horarios)).getText().toString();
-        String dose = ((TextView)getView().findViewById(R.id.remedio_dose)).getText().toString();
+        String nome = etNome.getText().toString().trim();
+        String horarios = etHorarios.getText().toString().trim();
+        String dose = etDose.getText().toString().trim();
 
         Remedio remedio = new Remedio();
         remedio.setId(this.remedio.getId());

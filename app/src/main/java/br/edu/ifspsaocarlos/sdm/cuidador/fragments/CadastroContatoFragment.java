@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.EditText;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -23,6 +24,8 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
     private String telefone;
 
     private OnFragmentInteractionListener mListener;
+    private EditText etNome;
+    private EditText etTelefone;
 
     public CadastroContatoFragment() {
         // Required empty public constructor
@@ -62,14 +65,17 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
 
     @Override
     protected void salvar() {
+        String nome = etNome.getText().toString().trim();
+        String telefone = etTelefone.getText().toString().trim();
+
         Contato contato = new Contato(nome, telefone);
         contato.setId(id);
-        service.salvarContato(contato, new Runnable() {
-            @Override
-            public void run() {
-                //redirecionaParaLista();
-            }
-        });
+        service.salvarContato(contato, new CallbackGenerico<Contato>() {
+                    @Override
+                    public void OnComplete(Contato c) {
+                    }
+                }
+        );
     }
 
     @Override
@@ -89,18 +95,19 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
 
     @Override
     protected String getIdCadastro() {
-        return null;
+        return id;
     }
 
     @Override
     protected void criarReferenciasLayout() {
-
+        etNome = (EditText)view.findViewById(R.id.contato_nome);
+        etTelefone = (EditText) view.findViewById(R.id.contato_telefone);
     }
 
     @Override
     protected void carregarInformacoesCadastradas() {
-        ((EditText)view.findViewById(R.id.contato_nome)).setText(nome);
-        ((EditText)view.findViewById(R.id.contato_telefone)).setText(telefone);
+        etNome.setText(nome);
+        etTelefone.setText(telefone);
     }
 
     @Override

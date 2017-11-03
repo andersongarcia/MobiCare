@@ -1,7 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * Classe que representa um usuário

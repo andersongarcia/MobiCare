@@ -24,7 +24,7 @@ public class Mensagem implements Serializable {
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.id = id.trim();
     }
 
     public String getEmissorId() {
@@ -32,7 +32,7 @@ public class Mensagem implements Serializable {
     }
 
     public void setEmissorId(String emissorId) {
-        this.emissorId = emissorId;
+        this.emissorId = emissorId.trim();
     }
 
     public String getDestinatarioId() {
@@ -40,7 +40,7 @@ public class Mensagem implements Serializable {
     }
 
     public void setDestinatarioId(String destinatarioId) {
-        this.destinatarioId = destinatarioId;
+        this.destinatarioId = destinatarioId.trim();
     }
 
     public String getFileName() {
@@ -48,6 +48,6 @@ public class Mensagem implements Serializable {
     }
 
     public void setFileName(String fileName) {
-        this.fileName = fileName;
+        this.fileName = fileName.trim();
     }
 }

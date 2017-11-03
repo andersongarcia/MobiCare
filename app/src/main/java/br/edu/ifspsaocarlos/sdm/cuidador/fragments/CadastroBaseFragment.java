@@ -48,6 +48,7 @@ public abstract class CadastroBaseFragment extends Fragment {
 
     protected FloatingActionButton btnTirarFoto;
     protected ImageView ivAvatar;
+    private FotoService fotoService;
 
     public CadastroBaseFragment(Fragment fragmentLista, CuidadorService.NO no) {
         this.fragmentLista = fragmentLista;
@@ -72,7 +73,7 @@ public abstract class CadastroBaseFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                activity.tirarFoto(new FotoService(){
+                activity.setFotoService(new FotoService() {
 
                     @Override
                     public void run(File arquivoFoto) {
@@ -84,10 +85,13 @@ public abstract class CadastroBaseFragment extends Fragment {
                         });
                     }
                 });
+                activity.getFotoService().tirarFoto(activity);
             }
         });
 
-        carregarAvatar();
+        if(getIdCadastro() != null && !getIdCadastro().isEmpty()){
+            carregarAvatar();
+        }
 
         carregarOutrasReferencias();
 

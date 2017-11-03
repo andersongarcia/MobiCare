@@ -11,7 +11,7 @@
         android:text="@string/telefone" />
 
     <EditText
-        android:id="@+id/registro_idoso_telefone"
+        android:id="@+id/registro_contato_telefone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_seu_celular" />

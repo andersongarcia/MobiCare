@@ -46,7 +46,7 @@
                 android:id="@+id/contato_telefone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_telefone" />
+                android:hint="@string/hint_seu_celular" />
         </LinearLayout>
 
         </LinearLayout>

@@ -7,13 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.widget.Toast;
-
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.IdosoActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService.NO;
 
 /**
  * Created by ander on 30/10/2017.
@@ -22,6 +19,8 @@ import br.edu.ifspsaocarlos.sdm.cuidador.activities.IdosoActivity;
 public class AlarmeReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmeReceiver";
     final public static String ONE_TIME = "onetime";
+    final public static String TARGET = "target";
+    private static final String DADOS = "dados";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -35,18 +34,23 @@ public class AlarmeReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         StringBuilder msgStr = new StringBuilder();
 
-        if(extras != null && extras.getBoolean(ONE_TIME, Boolean.FALSE)){
-            //Make sure this intent has been sent by the one-time timer button.
-            msgStr.append("One time Timer : ");
-        }
-        Format formatter = new SimpleDateFormat("hh:mm:ss a");
-        msgStr.append(formatter.format(new Date()));
-
         Intent newIntent = new Intent(context, IdosoActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if(extras != null){
+            NO no = (NO)extras.get(TARGET);
+            switch (no){
+                case MENSAGENS:
+                    Mensagem mensagem = (Mensagem) extras.get(String.valueOf(NO.MENSAGENS));
+                    intent.putExtra(TARGET, NO.MENSAGENS);
+                    intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
+                    break;
+            }
+        }
+
         context.startActivity(newIntent);
 
-        Toast.makeText(context, msgStr, Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, msgStr, Toast.LENGTH_LONG).show();
 
         //Release the lock
         wl.release();
@@ -77,4 +81,19 @@ public class AlarmeReceiver extends BroadcastReceiver {
         intent.putExtra(ONE_TIME, Boolean.TRUE);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-    }}
+    }
+
+    public void startActivityOnetime(Context context, NO no){
+        setOnetimeTimer(context);
+    }
+
+    public void setNovaMensagem(Context context, Mensagem mensagem) {
+        AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmeReceiver.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(TARGET, NO.MENSAGENS);
+        intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+    }
+}

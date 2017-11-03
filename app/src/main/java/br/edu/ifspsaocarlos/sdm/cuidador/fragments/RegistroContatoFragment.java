@@ -12,42 +12,38 @@ import android.widget.EditText;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 
 /**
- * Fragment de para registro do usuário cuidador
+ * Fragment de para registro do usuário contato
  *
  * @author Anderson Canale Garcia
  */
-public class RegistroCuidadorFragment extends Fragment {
+
+public class RegistroContatoFragment extends Fragment {
     RegistroActivity activity;
 
-    EditText etNome;
-    EditText etTelefone;
-    EditText etNomeIdoso;
-    EditText etTelefoneIdoso;
+    EditText tvTelefone;
 
-
-    public static RegistroCuidadorFragment newInstance() {
-        RegistroCuidadorFragment fragment = new RegistroCuidadorFragment();
+    public static RegistroContatoFragment newInstance() {
+        RegistroContatoFragment fragment = new RegistroContatoFragment();
         return fragment;
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_registro_cuidador, container, false);
+        View view = inflater.inflate(R.layout.fragment_registro_contato, container, false);
         setHasOptionsMenu(true);
 
         activity = (RegistroActivity) getActivity();
         activity.getSupportActionBar().setDisplayShowTitleEnabled(true);
-        activity.getSupportActionBar().setTitle(R.string.registro_cuidador);
+        activity.getSupportActionBar().setTitle(R.string.registro_contato);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        etNome = (EditText)view.findViewById(R.id.registro_cuidador_nome);
-        etTelefone = (EditText)view.findViewById(R.id.registro_cuidador_telefone);
-        etNomeIdoso = (EditText)view.findViewById(R.id.registro_idoso_nome);
-        etTelefoneIdoso = (EditText)view.findViewById(R.id.registro_idoso_telefone);
+        tvTelefone = (EditText) view.findViewById(R.id.registro_contato_telefone);
 
         return view;
     }
@@ -64,13 +60,19 @@ public class RegistroCuidadorFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                String nome = etNome.getText().toString().trim();
-                String telefone = etTelefone.getText().toString().trim();
-                String nomeIdoso = etNomeIdoso.getText().toString().trim();
-                String telefoneIdoso = etTelefoneIdoso.getText().toString().trim();
+                String telefone = tvTelefone.getText().toString().trim();
 
-                activity.getCuidadorService().registrarCuidadorIdoso(nome, telefone, nomeIdoso, telefoneIdoso);
-                activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.CUIDADOR));
+                activity.getCuidadorService().buscaContato(telefone, new CallbackGenerico<Contato>() {
+                    @Override
+                    public void OnComplete(Contato contato) {
+                        if(contato != null){
+                            activity.getCuidadorService().registraUsuarioContato(contato.getId());
+                            activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.CONTATO));
+                        }else {
+                            tvTelefone.setError(getResources().getString(R.string.msg_erro_validacao_idoso));
+                        }
+                    }
+                });
                 break;
             case android.R.id.home:
                 activity.abrirFragment(RegistroPerfilFragment.newInstance());
