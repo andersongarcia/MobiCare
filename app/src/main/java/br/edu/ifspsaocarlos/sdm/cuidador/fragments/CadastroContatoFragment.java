@@ -70,7 +70,7 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
 
         Contato contato = new Contato(nome, telefone);
         contato.setId(id);
-        service.salvarContato(contato, new CallbackGenerico<Contato>() {
+        service.salvaContato(contato, new CallbackGenerico<Contato>() {
                     @Override
                     public void OnComplete(Contato c) {
                     }

@@ -77,10 +77,10 @@ public abstract class CadastroBaseFragment extends Fragment {
 
                     @Override
                     public void run(File arquivoFoto) {
-                        service.salvarFoto(no, getIdCadastro(), arquivoFoto, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        service.salvarFoto(no, getIdCadastro(), arquivoFoto).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                carregarAvatar();
+                                FotoService.carregarAvatar(service, no, getIdCadastro(), ivAvatar);
                             }
                         });
                     }
@@ -99,7 +99,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     }
 
     private void carregarAvatar() {
-        activity.carregarAvatar(no, getIdCadastro(), ivAvatar);
+        FotoService.carregarAvatar(service, no, getIdCadastro(), ivAvatar);
     }
 
     @Override

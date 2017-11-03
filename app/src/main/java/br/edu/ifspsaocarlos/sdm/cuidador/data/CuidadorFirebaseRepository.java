@@ -92,7 +92,7 @@ public class CuidadorFirebaseRepository {
     }
 
     public void buscarContatoPeloTelefone(String telefone, ValueEventListener listener){
-        contatoEndPoint.orderByChild("telefone").equalTo(telefone).limitToFirst(1).addListenerForSingleValueEvent(listener);
+        contatoEndPoint.orderByChild("telefone").equalTo(telefone).addListenerForSingleValueEvent(listener);
     }
 
     public void salvarIdoso(String id) {

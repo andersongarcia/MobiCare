@@ -19,7 +19,6 @@ public class MainActivity extends BaseActivity {
 
         getSupportActionBar().setTitle(R.string.app_name);
 
-        IMService.subscribe("-KxFu5wMTkjf1lZ94RBq");
         //IMService.getToken(this);
         //AlarmeReceiver alarm = new AlarmeReceiver();
         //alarm.setAlarm(this);

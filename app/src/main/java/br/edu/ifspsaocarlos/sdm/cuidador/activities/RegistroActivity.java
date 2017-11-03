@@ -1,13 +1,24 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
+
+import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RegistroPerfilFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
+
+import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_CODE;
 
 
 /**
@@ -18,6 +29,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 public class RegistroActivity extends AppCompatActivity {
 
     private CuidadorService cuidadorService;
+    private File localFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,5 +50,30 @@ public class RegistroActivity extends AppCompatActivity {
 
     public CuidadorService getCuidadorService() {
         return cuidadorService;
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch(requestCode){
+                case TAKE_PHOTO_CODE:
+                    FotoService.corrigeRotacao(this, localFile);
+                    if(localFile.exists()){
+                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                        ImageView ivFotoPerfil = (ImageView)findViewById(R.id.iv_foto_perfil);
+                        ivFotoPerfil.setImageBitmap(bitmap);
+                    }
+                    break;
+            }
+        }
+    }
+
+    public void setLocalFile(File localFile) {
+        this.localFile = localFile;
+    }
+
+    public File getLocalFile() {
+        return localFile;
     }
 }

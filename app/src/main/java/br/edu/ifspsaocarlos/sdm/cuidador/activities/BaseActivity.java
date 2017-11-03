@@ -34,6 +34,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ProgramasFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RemediosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.IMService;
 
 /**
  * Created by ander on 18/10/2017.
@@ -53,13 +54,20 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         // verifica se tem usuário logado
         verificaLogado();
 
+        // inicia classe de serviço com o contexto
         service = new CuidadorService(this);
 
+        // inscreve usuário logado para receber notificações a ele direcionadas
+        String idLogado = service.obterIdLogado();
+        if(!idLogado.isEmpty())
+            IMService.subscribe(idLogado);
+
+        // configura toolbar do app
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // menu de navegação lateral
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         drawerToggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             public void onDrawerClosed(View view)
@@ -217,41 +225,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void carregarAvatar(CuidadorService.NO no, String id, final ImageView imageView) {
-        if(id != null){
-            service.carregarFotoURI(no, id, new OnSuccessListener<Uri>(){
-                @Override
-                public void onSuccess(Uri uri) {
-                    // Got the download URL
-                    try {
-                        final File localFile = File.createTempFile("foto", ".jpg");
-                        service.carregarArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                if(localFile.exists()){
-                                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                    imageView.setImageBitmap(bitmap);
-                                }
-                                Log.e("firebase ",";local tem file created  created " + localFile.toString());
-                            }
-                        }, new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                Log.e("firebase ",";local tem file not created  created " +exception.toString());
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                }
-            });
-        }
-
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

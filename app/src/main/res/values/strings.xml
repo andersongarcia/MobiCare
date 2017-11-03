@@ -81,5 +81,8 @@
     <string name="dados_cuidador">Dados do cuidador</string>
     <string name="dados_idoso">Dados do idoso</string>
     <string name="registro_contato">Registro do contato</string>
+    <string name="msg_erro_busca_contato">Erro ao buscar contato</string>
+    <string name="msg_erro_salva_foto">Erro ao salvar foto</string>
+    <string name="msg_sucesso_salva_foto">Foto salva com sucesso</string>
 
 </resources>

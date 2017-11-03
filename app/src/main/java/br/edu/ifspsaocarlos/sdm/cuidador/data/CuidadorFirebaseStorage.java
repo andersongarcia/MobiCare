@@ -1,7 +1,10 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.data;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -12,6 +15,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -21,6 +25,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  * @author Anderson Canale Garcia
  */
 public class CuidadorFirebaseStorage {
+    private static final String TAG = "FirebaseStorage";
 
     private static CuidadorFirebaseStorage storage;
     private final StorageReference idosoEndPoint;
@@ -93,16 +98,26 @@ public class CuidadorFirebaseStorage {
         }
     }
 
-    public void salvarArquivo(String child, String id, File arquivo, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+    public UploadTask salvarArquivo(String child, String id, File arquivo, final Context contexto) {
         Uri uri = Uri.fromFile(arquivo);
         UploadTask uploadTask = fotosEndPoint.child(child).child(id).putFile(uri);
 
-        // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(contexto, R.string.msg_erro_salva_foto, Toast.LENGTH_LONG).show();
+                Log.d(TAG, e.getMessage());
             }
-        }).addOnSuccessListener(onSuccessListener);
+        });
+
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(contexto, R.string.msg_sucesso_salva_foto, Toast.LENGTH_LONG).show();
+                Log.d(TAG, contexto.getString(R.string.msg_sucesso_salva_foto));
+            }
+        });
+
+        return uploadTask;
     }
 }

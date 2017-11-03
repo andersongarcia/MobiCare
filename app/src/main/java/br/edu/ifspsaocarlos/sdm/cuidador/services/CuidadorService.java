@@ -2,6 +2,9 @@ package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -14,6 +17,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseStorage;
@@ -30,6 +34,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
  * @author Anderson Canale Garcia
  */
 public class CuidadorService {
+    private static final String TAG = "CuidadorService";
     public static final String NO_INSTRUCOES = "instrucoes";
     public static final String NO_CHAT = "instrucoes";
 
@@ -203,7 +208,7 @@ public class CuidadorService {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Toast.makeText(contexto, R.string.msg_erro_busca_contato, Toast.LENGTH_LONG);
             }
         });
     }
@@ -213,7 +218,7 @@ public class CuidadorService {
      * @param contato dados do contato
      * @param callback
      */
-    public void salvarContato(Contato contato, final CallbackGenerico<Contato> callback) {
+    public void salvaContato(Contato contato, final CallbackGenerico<Contato> callback) {
         repositorio.salvarContato(contato, new CallbackGenerico<Contato>() {
             @Override
             public void OnComplete(Contato c) {
@@ -255,6 +260,10 @@ public class CuidadorService {
         CuidadorFirebaseStorage.getInstance().carregarArquivo(uri, localFile, successListener, failureListener);
     }
 
+    public String obterIdLogado() {
+        return preferencias.getUsuarioLogadoId();
+    }
+
     public String obterPerfilLogado() {
         return preferencias.getUsuarioLogadoPerfil();
     }
@@ -272,12 +281,12 @@ public class CuidadorService {
         preferencias.setIdosoSelecionadoId(null);
     }
 
-    public void salvarFoto(NO no, String id, File arquivoFoto, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
-        CuidadorFirebaseStorage.getInstance().salvarArquivo(NO.getNo(no), id, arquivoFoto, onSuccessListener);
+    public UploadTask salvarFoto(NO no, String id, File arquivoFoto) {
+        return CuidadorFirebaseStorage.getInstance().salvarArquivo(NO.getNo(no), id, arquivoFoto, contexto);
     }
 
-    public void salvarFotoPerfil(File arquivoFoto, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
-        salvarFoto(NO.CONTATOS, preferencias.getUsuarioLogadoId(), arquivoFoto, onSuccessListener);
+    public UploadTask salvarFotoPerfil(File arquivoFoto) {
+        return salvarFoto(NO.CONTATOS, preferencias.getUsuarioLogadoId(), arquivoFoto);
     }
 
     public void carregarFotoURI(NO no, String id, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {

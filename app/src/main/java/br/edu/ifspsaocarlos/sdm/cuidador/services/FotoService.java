@@ -4,15 +4,25 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.ImageView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -21,7 +31,8 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public abstract class FotoService {
-    private static final int TAKE_PHOTO_CODE = 1;
+    public static final int TAKE_PHOTO_CODE = 1;
+
     public abstract void run(File file);
 
     public static void corrigeRotacao(Context context, File file) {
@@ -58,7 +69,7 @@ public abstract class FotoService {
         }
     }
 
-    private File getTempFile(String packageName){
+    public static File getTempFile(String packageName){
         //it will return /sdcard/image.tmp
         final File path = new File( Environment.getExternalStorageDirectory(), packageName );
         if(!path.exists()){
@@ -109,4 +120,39 @@ public abstract class FotoService {
             }
         }
     }
-}
+
+    public static void carregarAvatar(final CuidadorService service, CuidadorService.NO no, String id, final ImageView imageView) {
+        if(id != null){
+            service.carregarFotoURI(no, id, new OnSuccessListener<Uri>(){
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL
+                    try {
+                        final File localFile = File.createTempFile("foto", ".jpg");
+                        service.carregarArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                if(localFile.exists()){
+                                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                    imageView.setImageBitmap(bitmap);
+                                }
+                                Log.e("firebase ",";local tem file created  created " + localFile.toString());
+                            }
+                        }, new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Log.e("firebase ",";local tem file not created  created " +exception.toString());
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            });
+        }
+
+    }}

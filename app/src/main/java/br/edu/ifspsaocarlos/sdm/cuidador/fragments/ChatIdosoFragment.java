@@ -47,7 +47,7 @@ public class ChatIdosoFragment extends Fragment {
         tvDescription = (TextView) view.findViewById(R.id.tv_description);
 
         if(mensagem != null){
-            activity.carregarAvatar(CuidadorService.NO.CONTATOS, mensagem.getEmissorId(), ivAvatar);
+            //activity.carregarAvatar(CuidadorService.NO.CONTATOS, mensagem.getEmissorId(), ivAvatar);
         }
 
         return view;
