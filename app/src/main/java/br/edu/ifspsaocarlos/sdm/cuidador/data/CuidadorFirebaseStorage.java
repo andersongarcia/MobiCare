@@ -47,7 +47,7 @@ public class CuidadorFirebaseStorage {
         return storage;
     }
 
-    public void salvarAudioInstrucao(String idosoId, String remedioId, String fileName, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+    public void salvaAudioInstrucao(String idosoId, String remedioId, String fileName, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
         Uri uri = Uri.fromFile(new File(fileName));
         UploadTask uploadTask = idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.INSTRUCOES)).child(remedioId).putFile(uri);
 
@@ -64,12 +64,12 @@ public class CuidadorFirebaseStorage {
         idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.INSTRUCOES)).child(remedioId).getDownloadUrl().addOnSuccessListener(successListener).addOnFailureListener(failureListener);
     }
 
-    public void carregarArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
+    public void carregaArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
         StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(uri.toString());
         reference.getFile(localFile).addOnSuccessListener(successListener).addOnFailureListener(failureListener);
     }
 
-    public void salvarAudioChat(final String idosoId, final String contatoId, final String fileName) {
+    public void salvaAudioChat(final String idosoId, final String contatoId, final String fileName) {
         Uri uri = Uri.fromFile(new File(fileName));
         UploadTask uploadTask = idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.CHAT)).child(contatoId).putFile(uri);
 
@@ -87,7 +87,7 @@ public class CuidadorFirebaseStorage {
 
                 Mensagem mensagem = new Mensagem(contatoId, idosoId, fileName);
 
-                CuidadorFirebaseRepository.getInstance().salvarMensagem(idosoId, mensagem);
+                CuidadorFirebaseRepository.getInstance().salvaMensagem(idosoId, mensagem);
             }
         });
     }

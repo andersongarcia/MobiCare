@@ -2,8 +2,6 @@ package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -47,7 +45,8 @@ public class CuidadorService {
         INSTRUCOES,
         FOTOS,
         PROGRAMAS,
-        MENSAGENS;
+        MENSAGENS,
+        CONTADOR_ALARME;
 
         public static String getNo(NO no) {
             switch (no) {
@@ -69,6 +68,8 @@ public class CuidadorService {
                     return "programas";
                 case MENSAGENS:
                     return "mensagens";
+                case CONTADOR_ALARME:
+                    return "contadorAlarme";
                 default:
                     return "";
             }
@@ -99,15 +100,15 @@ public class CuidadorService {
         return (idosoSelecionadoId != null && !idosoSelecionadoId.isEmpty());
     }
 
-    public void removerRemedio(String remedioId) {
-        repositorio.removerRemedio(preferencias.getIdosoSelecionadoId(), remedioId);
+    public void removeRemedio(String remedioId) {
+        repositorio.removeRemedio(preferencias.getIdosoSelecionadoId(), remedioId);
     }
 
-    public void removerPrograma(String idPrograma) {
-        repositorio.removerPrograma(preferencias.getIdosoSelecionadoId(), idPrograma);
+    public void removePrograma(String idPrograma) {
+        repositorio.removePrograma(preferencias.getIdosoSelecionadoId(), idPrograma);
     }
 
-    public void registrarCuidadorIdoso(final String nome, final String telefone, final String nomeIdoso, final String telefoneIdoso) {
+    public void registraCuidadorIdoso(final String nome, final String telefone, final String nomeIdoso, final String telefoneIdoso) {
         // busca contato do cuidador
         buscaContato(telefone, new CallbackGenerico<Contato>() {
             @Override
@@ -115,15 +116,15 @@ public class CuidadorService {
                 // Verifica se encontrou contato
                 // Em caso positivo, registra id como cuidador
                 if(contato != null){
-                    definirCuidadorRegistrarIdoso(contato, nomeIdoso, telefoneIdoso);
+                    defineCuidadorRegistrarIdoso(contato, nomeIdoso, telefoneIdoso);
                 }else {
                     // Se não encontrou contato, cria-o, e depois registra o id como cuidador
                     contato = new Contato(nome, telefone);
-                    repositorio.salvarContato(contato, new CallbackGenerico<Contato>() {
+                    repositorio.salvaContato(contato, new CallbackGenerico<Contato>() {
                         @Override
                         public void OnComplete(Contato c) {
                             // Se correr tudo bem, registra novo contato como cuidador
-                            definirCuidadorRegistrarIdoso(c, nomeIdoso, telefoneIdoso);
+                            defineCuidadorRegistrarIdoso(c, nomeIdoso, telefoneIdoso);
                         }
                     });
                 }
@@ -131,11 +132,11 @@ public class CuidadorService {
         });
     }
 
-    private void definirCuidadorRegistrarIdoso(Contato contato, String nomeIdoso, String telefoneIdoso) {
+    private void defineCuidadorRegistrarIdoso(Contato contato, String nomeIdoso, String telefoneIdoso) {
         registraUsuario(contato.getId(), Usuario.CUIDADOR);
         repositorio.salvarCuidador(contato.getId());
         // inicia registro do idoso
-        registrarIdoso(nomeIdoso, telefoneIdoso);
+        registraIdoso(nomeIdoso, telefoneIdoso);
     }
 
     public void registraUsuario(String id, String perfil) {
@@ -143,14 +144,14 @@ public class CuidadorService {
         preferencias.setUsuarioLogadoPerfil(perfil);
     }
 
-    public void registrarUsuarioIdoso(String id) {
+    public void registraUsuarioIdoso(String id) {
         registraUsuario(id, Usuario.IDOSO);
         preferencias.setIdosoSelecionadoId(id);
     }
 
     public void registraUsuarioContato(String id) {
         registraUsuario(id, Usuario.CONTATO);
-        repositorio.buscarIdosoDoContato(id, new CallbackGenerico<String>() {
+        repositorio.buscaIdosoDoContato(id, new CallbackGenerico<String>() {
             @Override
             public void OnComplete(String idosoId) {
                 preferencias.setIdosoSelecionadoId(idosoId);
@@ -163,23 +164,23 @@ public class CuidadorService {
      * @param nome nome do idoso
      * @param telefone telefone do idoso (identificação)
      */
-    public void registrarIdoso(final String nome, final String telefone) {
+    public void registraIdoso(final String nome, final String telefone) {
 
         buscaContato(telefone, new CallbackGenerico<Contato>() {
             @Override
             public void OnComplete(Contato contato) {
                 if(contato != null){
                     preferencias.setIdosoSelecionadoId(contato.getId());
-                    repositorio.salvarIdoso(contato.getId());
+                    repositorio.salvaIdoso(contato.getId());
                 }else {
                     contato = new Contato(nome, telefone);
-                    repositorio.salvarContato(contato, new CallbackGenerico<Contato>() {
+                    repositorio.salvaContato(contato, new CallbackGenerico<Contato>() {
                         @Override
                         public void OnComplete(Contato c) {
                             // grava idoso nas preferências
                             preferencias.setIdosoSelecionadoId(c.getId());
                             // salva idoso
-                            repositorio.salvarIdoso(c.getId());
+                            repositorio.salvaIdoso(c.getId());
                         }
                     });
                 }
@@ -187,12 +188,12 @@ public class CuidadorService {
         });
     }
 
-    public void carregarListas() {
-        repositorio.carregarListas(preferencias.getIdosoSelecionadoId());
+    public void carregaListas() {
+        repositorio.carregaListas(preferencias.getIdosoSelecionadoId());
     }
 
     public void buscaContato(String telefone, final CallbackGenerico<Contato> callback) {
-        repositorio.buscarContatoPeloTelefone(telefone, new ValueEventListener() {
+        repositorio.buscaContatoPeloTelefone(telefone, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() != null){
@@ -219,45 +220,45 @@ public class CuidadorService {
      * @param callback
      */
     public void salvaContato(Contato contato, final CallbackGenerico<Contato> callback) {
-        repositorio.salvarContato(contato, new CallbackGenerico<Contato>() {
+        repositorio.salvaContato(contato, new CallbackGenerico<Contato>() {
             @Override
             public void OnComplete(Contato c) {
-                repositorio.relacionarContatoIdoso(c.getId(), preferencias.getIdosoSelecionadoId());
+                repositorio.relacionaContatoIdoso(c.getId(), preferencias.getIdosoSelecionadoId());
                 callback.OnComplete(c);
             }
         });
     }
 
-    public void removerContato(String idContato, final Runnable runnable) {
-        repositorio.removerContato(idContato, preferencias.getIdosoSelecionadoId(), runnable);
+    public void removeContato(String idContato, final Runnable runnable) {
+        repositorio.removeContato(idContato, preferencias.getIdosoSelecionadoId(), runnable);
     }
 
-    public void salvarRemedio(Remedio remedio) {
+    public void salvaRemedio(Remedio remedio) {
         if(remedio.getId() == null || remedio.getId().isEmpty()){
-            repositorio.adicionarRemedio(preferencias.getIdosoSelecionadoId(), remedio);
+            repositorio.adicionaRemedio(preferencias.getIdosoSelecionadoId(), remedio);
         }else {
-            repositorio.atualizarRemedio(preferencias.getIdosoSelecionadoId(), remedio);
+            repositorio.atualizaRemedio(preferencias.getIdosoSelecionadoId(), remedio);
         }
     }
 
-    public void salvarPrograma(Programa programa) {
+    public void salvaPrograma(Programa programa) {
         if(programa.getId() == null || programa.getId().isEmpty()){
-            repositorio.adicionarPrograma(preferencias.getIdosoSelecionadoId(), programa);
+            repositorio.adicionaPrograma(preferencias.getIdosoSelecionadoId(), programa);
         }else {
-            repositorio.atualizarPrograma(preferencias.getIdosoSelecionadoId(), programa);
+            repositorio.atualizaPrograma(preferencias.getIdosoSelecionadoId(), programa);
         }
     }
 
-    public void salvarAudioInstrucao(String fileName, String remedioId, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
-        CuidadorFirebaseStorage.getInstance().salvarAudioInstrucao(preferencias.getIdosoSelecionadoId(), remedioId, fileName, onSuccessListener);
+    public void salvaAudioInstrucao(String fileName, String remedioId, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+        CuidadorFirebaseStorage.getInstance().salvaAudioInstrucao(preferencias.getIdosoSelecionadoId(), remedioId, fileName, onSuccessListener);
     }
 
     public void carregaInstrucaoURI(String remedioId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener){
         CuidadorFirebaseStorage.getInstance().carregaInstrucaoURI(preferencias.getIdosoSelecionadoId(), remedioId, successListener, failureListener);
     }
 
-    public void carregarArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
-        CuidadorFirebaseStorage.getInstance().carregarArquivo(uri, localFile, successListener, failureListener);
+    public void carregaArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
+        CuidadorFirebaseStorage.getInstance().carregaArquivo(uri, localFile, successListener, failureListener);
     }
 
     public String obterIdLogado() {
@@ -268,28 +269,33 @@ public class CuidadorService {
         return preferencias.getUsuarioLogadoPerfil();
     }
 
-    public void salvarAudioChat(String fileName) {
-        CuidadorFirebaseStorage.getInstance().salvarAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
+    public void salvaAudioChat(String fileName) {
+        CuidadorFirebaseStorage.getInstance().salvaAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
     }
 
-    public void lerNovasMensagens(ChildEventListener listener) {
-        repositorio.lerNovasMensagens(preferencias.getIdosoSelecionadoId(), listener);
+    public void leNovasMensagens(ChildEventListener listener) {
+        repositorio.leNovasMensagens(preferencias.getIdosoSelecionadoId(), listener);
     }
 
-    public void efetuarLogout() {
+    public void efetuaLogout() {
         preferencias.setUsuarioLogadoId(null);
         preferencias.setIdosoSelecionadoId(null);
     }
 
-    public UploadTask salvarFoto(NO no, String id, File arquivoFoto) {
+    public UploadTask salvaFoto(NO no, String id, File arquivoFoto) {
         return CuidadorFirebaseStorage.getInstance().salvarArquivo(NO.getNo(no), id, arquivoFoto, contexto);
     }
 
-    public UploadTask salvarFotoPerfil(File arquivoFoto) {
-        return salvarFoto(NO.CONTATOS, preferencias.getUsuarioLogadoId(), arquivoFoto);
+    public UploadTask salvaFotoPerfil(File arquivoFoto) {
+        return salvaFoto(NO.CONTATOS, preferencias.getUsuarioLogadoId(), arquivoFoto);
     }
 
-    public void carregarFotoURI(NO no, String id, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {
+    public void carregaFotoURI(NO no, String id, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {
         CuidadorFirebaseStorage.getInstance().carregaFotoURI(NO.getNo(no), id, successListener, failureListener);
+    }
+
+
+    public void obterRemedios() {
+
     }
 }

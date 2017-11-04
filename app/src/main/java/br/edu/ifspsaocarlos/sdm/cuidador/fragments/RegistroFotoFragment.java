@@ -1,45 +1,28 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.UploadTask;
-
-import java.io.File;
-import java.io.IOException;
-
-import br.edu.ifspsaocarlos.sdm.cuidador.BuildConfig;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
 
-import static android.app.Activity.RESULT_OK;
 import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_CODE;
 
 /**
@@ -119,7 +102,9 @@ public class RegistroFotoFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                activity.getCuidadorService().salvarFotoPerfil(activity.getLocalFile());
+                if(activity.getLocalFile() != null && activity.getLocalFile().exists()){
+                    activity.getCuidadorService().salvaFotoPerfil(activity.getLocalFile());
+                }
                 Intent intent = new Intent(activity, MainActivity.class);
                 startActivity(intent);
                 break;

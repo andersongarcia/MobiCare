@@ -71,15 +71,15 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
         Programa programa = new Programa();
         programa.setId(this.programa.getId());
         programa.setNome(nome);
-        programa.setHorarios(horarios);
+        programa.setHorario(horarios);
         programa.setLink(link);
 
-        service.salvarPrograma(programa);
+        service.salvaPrograma(programa);
     }
 
     @Override
     protected void excluir() {
-        service.removerPrograma(this.programa.getId());
+        service.removePrograma(this.programa.getId());
     }
 
     @Override
@@ -102,7 +102,7 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
     @Override
     protected void carregarInformacoesCadastradas() {
         etNome.setText(programa.getNome());
-        etHorarios.setText(programa.getHorarios());
+        etHorarios.setText(programa.getHorario());
         etLink.setText(programa.getLink());
     }
 

@@ -40,7 +40,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Mensagem mensagem = new Mensagem(data.get("emissorId"), data.get("destinatarioId"), data.get("fileName"));
 
         AlarmeReceiver alarm = new AlarmeReceiver();
-        alarm.setNovaMensagem(getBaseContext(), mensagem);
+        alarm.mostraNovaMensagem(getBaseContext(), mensagem);
         //alarm.startActivityOnetime(getBaseContext(), intent);
 
 

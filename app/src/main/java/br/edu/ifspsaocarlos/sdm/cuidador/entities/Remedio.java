@@ -13,9 +13,15 @@ public class Remedio implements Serializable {
 
     private String nome;
 
-    private String horarios;
+    private String horario;
 
     private String dose;
+
+    private int repeticao;
+
+    private boolean ajustavel;
+
+    private int codigoAlarme;
 
 
     public String getId() { return id; }
@@ -30,12 +36,12 @@ public class Remedio implements Serializable {
         this.nome = nome;
     }
 
-    public String getHorarios() {
-        return horarios;
+    public String getHorario() {
+        return horario;
     }
 
-    public void setHorarios(String horarios) {
-        this.horarios = horarios;
+    public void setHorario(String horario) {
+        this.horario = horario;
     }
 
     public String getDose() {
@@ -44,5 +50,29 @@ public class Remedio implements Serializable {
 
     public void setDose(String dose) {
         this.dose = dose;
+    }
+
+    public int getCodigoAlarme() {
+        return codigoAlarme;
+    }
+
+    public void setCodigoAlarme(int codigoAlarme) {
+        this.codigoAlarme = codigoAlarme;
+    }
+
+    public int getRepeticao() {
+        return repeticao;
+    }
+
+    public void setRepeticao(int repeticao) {
+        this.repeticao = repeticao;
+    }
+
+    public boolean isAjustavel() {
+        return ajustavel;
+    }
+
+    public void setAjustavel(boolean ajustavel) {
+        this.ajustavel = ajustavel;
     }
 }

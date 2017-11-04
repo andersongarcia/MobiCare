@@ -10,11 +10,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.UploadTask;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +43,12 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
     private Remedio remedio;
     private EditText etNome;
-    private EditText etHorarios;
     private EditText etDose;
+    private EditText etHorario;
+    private Switch switchAjustavel;
+    private RadioGroup rgRepete;
+    private TextView tvRepeticaoHoras;
+    private DiscreteSeekBar dsbRepeticaoHoras;
     private Button btnOuvirInstrucao;
     private Button btnGravarInstrucao;
 
@@ -89,8 +99,12 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     protected void criarReferenciasLayout() {
         // referencia componentes do layout
         etNome = (EditText)view.findViewById(R.id.remedio_nome);
-        etHorarios = (EditText) view.findViewById(R.id.remedio_horarios);
         etDose = (EditText)view.findViewById(R.id.remedio_dose);
+        etHorario = (EditText) view.findViewById(R.id.remedio_horario);
+        switchAjustavel = (Switch) view.findViewById(R.id.switchAjustavel);
+        rgRepete = (RadioGroup) view.findViewById(R.id.rg_repete);
+        tvRepeticaoHoras = (TextView) view.findViewById(R.id.tv_repeticao_horas);
+        dsbRepeticaoHoras = (DiscreteSeekBar) view.findViewById(R.id.dsb_repeticao_horas);
         btnOuvirInstrucao = (Button)view.findViewById(R.id.btn_ouvir_instrucao);
         btnGravarInstrucao = (Button)view.findViewById(R.id.btn_gravar_instrucao);
     }
@@ -99,8 +113,24 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     protected void carregarInformacoesCadastradas() {
         // carrega informações cadastradas
         etNome.setText(remedio.getNome());
-        etHorarios.setText(remedio.getHorarios());
+        etHorario.setText(remedio.getHorario());
         etDose.setText(remedio.getDose());
+        switchAjustavel.setChecked(remedio.isAjustavel());
+
+        dsbRepeticaoHoras.setProgress(remedio.getRepeticao());
+        switch (remedio.getRepeticao()){
+            case 0:
+                ((RadioButton)view.findViewById(R.id.rb_repete_nao)).setChecked(true);
+                exibeSelecaoHoras(false);
+                break;
+            case 24:
+                ((RadioButton)view.findViewById(R.id.rb_repete_diariamente)).setChecked(true);
+                exibeSelecaoHoras(false);
+                break;
+            default:
+                ((RadioButton)view.findViewById(R.id.rb_repete_em_horas)).setChecked(true);
+                exibeSelecaoHoras(true);
+        }
     }
 
     @Override
@@ -108,11 +138,20 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         setLinkParaInstrucao();
 
         // Cria timepicker para campo de horário
-        etHorarios.setOnClickListener(new View.OnClickListener() {
+        etHorario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.remedio_horarios);
+                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.remedio_horario);
                 newFragment.show(getActivity().getFragmentManager(), "timePicker");
+            }
+        });
+
+        rgRepete.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton rbSelecionado = (RadioButton)rgRepete.findViewById(rgRepete.getCheckedRadioButtonId());
+                boolean mostraHoras = rbSelecionado.getId() == R.id.rb_repete_em_horas;
+                exibeSelecaoHoras(mostraHoras);
             }
         });
 
@@ -128,7 +167,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         dlgGravarInstrucaoListener.setButton(DialogAudioListener.TipoBotao.POSITIVO, R.string.btn_usar, new Runnable() {
             @Override
             public void run() {
-                service.salvarAudioInstrucao(dlgGravarInstrucaoListener.getFileName(), remedio.getId(),
+                service.salvaAudioInstrucao(dlgGravarInstrucaoListener.getFileName(), remedio.getId(),
                         new OnSuccessListener<UploadTask.TaskSnapshot>(){
 
                             @Override
@@ -169,6 +208,16 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         //endregion
     }
 
+    private void exibeSelecaoHoras(boolean mostraHoras) {
+        if(mostraHoras){
+            tvRepeticaoHoras.setVisibility(View.VISIBLE);
+            dsbRepeticaoHoras.setVisibility(View.VISIBLE);
+        }else {
+            tvRepeticaoHoras.setVisibility(View.INVISIBLE);
+            dsbRepeticaoHoras.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private final void setLinkParaInstrucao() {
         if(remedio.getId() != null){
             service.carregaInstrucaoURI(remedio.getId(), new OnSuccessListener<Uri>(){
@@ -177,7 +226,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
                     // Got the download URL
                     try {
                         final File localFile = File.createTempFile(remedio.getId(), ".3gp");
-                        service.carregarArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        service.carregaArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                 fileName = localFile.getAbsolutePath();
@@ -206,25 +255,41 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     @Override
     protected void salvar() {
         String nome = etNome.getText().toString().trim();
-        String horarios = etHorarios.getText().toString().trim();
         String dose = etDose.getText().toString().trim();
+        String horario = etHorario.getText().toString().trim();
+        boolean isAjustavel = switchAjustavel.isChecked();
+
+        int horasRepeticao = 0;
+        RadioButton rbSelecionado = (RadioButton)rgRepete.findViewById(rgRepete.getCheckedRadioButtonId());
+        switch (rbSelecionado.getId()){
+            case R.id.rb_repete_em_horas:
+                horasRepeticao = dsbRepeticaoHoras.getProgress();
+                break;
+            case R.id.rb_repete_diariamente:
+                horasRepeticao = 24;
+                break;
+            default:
+                horasRepeticao = 0;
+        }
 
         Remedio remedio = new Remedio();
         remedio.setId(this.remedio.getId());
         remedio.setNome(nome);
-        remedio.setHorarios(horarios);
         remedio.setDose(dose);
+        remedio.setHorario(horario);
+        remedio.setAjustavel(isAjustavel);
+        remedio.setRepeticao(horasRepeticao);
 
-        service.salvarRemedio(remedio);
+        service.salvaRemedio(remedio);
     }
 
     @Override
     protected void excluir() {
-        service.removerRemedio(this.remedio.getId());
+        service.removeRemedio(this.remedio.getId());
     }
 
     @Override
     public void onTimePicked(Calendar time) {
-        etHorarios.setText(DateFormat.format("h:mm a", time));
+        etHorario.setText(DateFormat.format("h:mm a", time));
     }
 }

@@ -69,7 +69,7 @@ public class RegistroCuidadorFragment extends Fragment {
                 String nomeIdoso = etNomeIdoso.getText().toString().trim();
                 String telefoneIdoso = etTelefoneIdoso.getText().toString().trim();
 
-                activity.getCuidadorService().registrarCuidadorIdoso(nome, telefone, nomeIdoso, telefoneIdoso);
+                activity.getCuidadorService().registraCuidadorIdoso(nome, telefone, nomeIdoso, telefoneIdoso);
                 activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.CUIDADOR));
                 break;
             case android.R.id.home:

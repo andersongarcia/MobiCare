@@ -8,6 +8,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.IdosoActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService.NO;
@@ -21,6 +25,7 @@ public class AlarmeReceiver extends BroadcastReceiver {
     final public static String ONE_TIME = "onetime";
     final public static String TARGET = "target";
     private static final String DADOS = "dados";
+    private  static final int REQUEST_ALARM_DEFAULT = 0;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -42,8 +47,8 @@ public class AlarmeReceiver extends BroadcastReceiver {
             switch (no){
                 case MENSAGENS:
                     Mensagem mensagem = (Mensagem) extras.get(String.valueOf(NO.MENSAGENS));
-                    intent.putExtra(TARGET, NO.MENSAGENS);
-                    intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
+                    newIntent.putExtra(TARGET, NO.MENSAGENS);
+                    newIntent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
                     break;
             }
         }
@@ -56,44 +61,73 @@ public class AlarmeReceiver extends BroadcastReceiver {
         wl.release();
     }
 
-    public void setAlarm(Context context)
-    {
-        AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmeReceiver.class);
-        intent.putExtra(ONE_TIME, Boolean.FALSE);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
-        //After after 5 seconds
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 5 , pi);
-    }
-
-    public void cancelAlarm(Context context)
+    public void cancelaAlarme(Context context, int requestCode)
     {
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
+        PendingIntent sender = PendingIntent.getBroadcast(context, requestCode, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(sender);
     }
 
-    public void setOnetimeTimer(Context context){
+    public void defineAlarmeRecorrente(Context context, int requestCode, String horario, int recorrencia)
+    {
+        AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmeReceiver.class);
+        intent.putExtra(ONE_TIME, Boolean.FALSE);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+
+        // calcula intervalo do primeiro alarme
+        Calendar cal = calculaIntervalo(horario);
+        // calcula intervalo de recorrência
+        long intervaloRecorrencia = TimeUnit.HOURS.toMillis(recorrencia);
+
+        am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), intervaloRecorrencia , pi);
+    }
+
+    public void defineAlarmeUnico(Context context, int requestCode, String horario, boolean deveAjustarProximo){
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmeReceiver.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(ONE_TIME, Boolean.TRUE);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+
+        // calcula intervalo do alarme
+        Calendar cal = calculaIntervalo(horario);
+
+        am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
     }
 
-    public void startActivityOnetime(Context context, NO no){
-        setOnetimeTimer(context);
-    }
-
-    public void setNovaMensagem(Context context, Mensagem mensagem) {
+    public void mostraNovaMensagem(Context context, Mensagem mensagem) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmeReceiver.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(TARGET, NO.MENSAGENS);
         intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+    }
+
+    private Calendar calculaIntervalo(String horario) {
+        String array[];
+        array = horario.split(":");
+        int hora = Integer.parseInt(array[0]);
+        int minuto = Integer.parseInt(array[1]);
+
+        Calendar agora = new GregorianCalendar();
+        agora.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
+
+        Calendar cal = new GregorianCalendar();
+        cal.add(Calendar.DAY_OF_YEAR, agora.get(Calendar.DAY_OF_YEAR));
+        cal.set(Calendar.HOUR_OF_DAY, hora);
+        cal.set(Calendar.MINUTE, minuto);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.DATE, agora.get(Calendar.DATE));
+        cal.set(Calendar.MONTH, agora.get(Calendar.MONTH));
+        if(cal.before(agora)){
+            cal.add(Calendar.DATE, 1);
+        }
+
+        return cal;
     }
 }

@@ -66,7 +66,7 @@ public class MenuActivity extends AppCompatActivity {
                 // Verifica perfil
                 switch (service.obterPerfilLogado()){
                     case Usuario.CUIDADOR:
-                        service.carregarListas();
+                        service.carregaListas();
                         break;
                     case Usuario.IDOSO:
                         // Se usuário logado for o idoso, redireciona para activity

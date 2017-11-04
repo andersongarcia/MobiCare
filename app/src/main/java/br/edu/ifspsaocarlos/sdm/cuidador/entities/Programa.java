@@ -13,9 +13,13 @@ public class Programa implements Serializable {
 
     private String nome;
 
-    private String horarios;
+    private String horario;
 
     private String link;
+
+    private int repeticao;
+
+    private int codigoAlarme;
 
 
     public String getId() { return id; }
@@ -30,12 +34,12 @@ public class Programa implements Serializable {
         this.nome = nome;
     }
 
-    public String getHorarios() {
-        return horarios;
+    public String getHorario() {
+        return horario;
     }
 
-    public void setHorarios(String horarios) {
-        this.horarios = horarios;
+    public void setHorario(String horario) {
+        this.horario = horario;
     }
 
     public String getLink() {
@@ -44,5 +48,21 @@ public class Programa implements Serializable {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public int getCodigoAlarme() {
+        return codigoAlarme;
+    }
+
+    public void setCodigoAlarme(int codigoAlarme) {
+        this.codigoAlarme = codigoAlarme;
+    }
+
+    public int getRepeticao() {
+        return repeticao;
+    }
+
+    public void setRepeticao(int repeticao) {
+        this.repeticao = repeticao;
     }
 }

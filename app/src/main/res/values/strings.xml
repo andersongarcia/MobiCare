@@ -14,9 +14,9 @@
     <string name="msg_telefone_requerido">Por favor, preencha o campo do telefone</string>
     <string name="msg_usuario_nao_encontrado">Usuário não encontrado</string>
     <string name="nome">Nome</string>
-    <string name="hint_nome">Digite o seu nome</string>
+    <string name="hint_nome">Seu nome</string>
     <string name="telefone">Telefone</string>
-    <string name="hint_seu_celular">Digite o número do seu celular</string>
+    <string name="hint_seu_celular">Seu número de celular</string>
     <string name="salvar">Salvar</string>
     <string name="configuracoes">Configurações</string>
     <string name="busca">Busca</string>
@@ -27,10 +27,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fragment_cadastro_contato">Contato</string>
     <string name="Excluir">Excluir</string>
-    <string name="hint_horarios">Exemplo: 10:00; 16:00</string>
-    <string name="horarios">Horários</string>
+    <string name="hint_horario">Horário da próxima administração</string>
+    <string name="horario">Horários</string>
     <string name="dose">Dose</string>
-    <string name="hint_dose">Exemplo: 1 comprimido</string>
+    <string name="hint_dose">Dose (Exemplo: 1 comprimido)</string>
     <string name="hint_nome_do_programa">Digite o nome do programa</string>
     <string name="nome_programa">Nome do programa</string>
     <string name="horarios_programa">Horários sugeridos para notificação</string>
@@ -75,7 +75,7 @@
     <string name="msg_token_fmt">InstanceID Token: %s</string>
     <string name="registro_foto">Tire uma foto</string>
     <string name="msg_erro_validacao_idoso">Este número não está registrado para nenhum idoso. Verifique o número ou peça o regisro pelo Cuidador.</string>
-    <string name="hint_celular_idoso">Digite o número do celular do idoso</string>
+    <string name="hint_celular_idoso">O número do celular do idoso</string>
     <string name="nome_idoso">Nome do idoso</string>
     <string name="nome_cuidador">Nome do cuidador</string>
     <string name="dados_cuidador">Dados do cuidador</string>
@@ -84,5 +84,13 @@
     <string name="msg_erro_busca_contato">Erro ao buscar contato</string>
     <string name="msg_erro_salva_foto">Erro ao salvar foto</string>
     <string name="msg_sucesso_salva_foto">Foto salva com sucesso</string>
+    <string name="hint_nome_do_remedio">Nome do remédio</string>
+    <string name="hint_repeticao">Repete em</string>
+    <string name="repete_em">Repete em (horas)</string>
+    <string name="hint_nome_idoso">Nome do idoso</string>
+    <string name="nao_repete">Não repete</string>
+    <string name="diariamente">Diariamente</string>
+    <string name="horas">Horas</string>
+    <string name="ajustar_administracao">Ajustar ao tomar</string>
 
 </resources>

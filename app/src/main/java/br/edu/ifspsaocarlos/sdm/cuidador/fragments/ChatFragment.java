@@ -45,7 +45,7 @@ public class ChatFragment extends Fragment {
         dialogAudioListener.setButton(DialogAudioListener.TipoBotao.POSITIVO, R.string.enviar, new Runnable() {
             @Override
             public void run() {
-                service.salvarAudioChat(dialogAudioListener.getFileName());
+                service.salvaAudioChat(dialogAudioListener.getFileName());
             }
         });
 

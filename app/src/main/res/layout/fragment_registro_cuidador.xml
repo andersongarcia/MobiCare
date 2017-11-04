@@ -14,6 +14,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+
         <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,6 +26,7 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <EditText
             android:id="@+id/registro_cuidador_nome"
             android:layout_width="match_parent"
@@ -38,6 +41,8 @@
             android:id="@+id/registro_cuidador_telefone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="phone"
             android:hint="@string/hint_seu_celular" />
 
     </android.support.design.widget.TextInputLayout>
@@ -56,7 +61,7 @@
             android:id="@+id/registro_idoso_nome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_nome" />
+            android:hint="@string/hint_nome_idoso" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -67,6 +72,8 @@
             android:id="@+id/registro_idoso_telefone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="phone"
             android:hint="@string/hint_celular_idoso" />
 
     </android.support.design.widget.TextInputLayout>

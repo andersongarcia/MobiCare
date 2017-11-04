@@ -77,7 +77,7 @@ public abstract class CadastroBaseFragment extends Fragment {
 
                     @Override
                     public void run(File arquivoFoto) {
-                        service.salvarFoto(no, getIdCadastro(), arquivoFoto).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        service.salvaFoto(no, getIdCadastro(), arquivoFoto).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 FotoService.carregarAvatar(service, no, getIdCadastro(), ivAvatar);

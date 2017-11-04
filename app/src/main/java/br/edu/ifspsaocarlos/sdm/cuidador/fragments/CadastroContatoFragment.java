@@ -80,7 +80,7 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
 
     @Override
     protected void excluir() {
-        service.removerContato(id, new Runnable() {
+        service.removeContato(id, new Runnable() {
             @Override
             public void run() {
                 //redirecionaParaLista();

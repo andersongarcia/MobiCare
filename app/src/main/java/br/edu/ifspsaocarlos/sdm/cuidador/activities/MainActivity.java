@@ -6,8 +6,6 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatIdosoFragment;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.IMService;
 
 public class MainActivity extends BaseActivity {
 
@@ -21,12 +19,12 @@ public class MainActivity extends BaseActivity {
 
         //IMService.getToken(this);
         //AlarmeReceiver alarm = new AlarmeReceiver();
-        //alarm.setAlarm(this);
+        //alarm.defineAlarmeRecorrente(this);
 
         // Verifica perfil
         switch (service.obterPerfilLogado()){
             case Usuario.CUIDADOR:
-                service.carregarListas();
+                service.carregaListas();
                 openFragment(ChatFragment.newInstance());
                 break;
             case Usuario.IDOSO:

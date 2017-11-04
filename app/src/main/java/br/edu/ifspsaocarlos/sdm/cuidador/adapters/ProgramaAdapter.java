@@ -41,7 +41,7 @@ public class ProgramaAdapter extends RecyclerView.Adapter<ProgramaAdapter.Progra
     public void onBindViewHolder(ProgramaAdapter.ProgramaHolder holder, int position) {
 
         holder.tvNome.setText(lista.get(position).getNome());
-        holder.tvHorarios.setText(lista.get(position).getHorarios());
+        holder.tvHorarios.setText(lista.get(position).getHorario());
     }
 
     @Override

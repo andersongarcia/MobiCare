@@ -12,6 +12,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.BaseActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 
 /**
  * Fragment do chat do idoso
@@ -47,7 +48,7 @@ public class ChatIdosoFragment extends Fragment {
         tvDescription = (TextView) view.findViewById(R.id.tv_description);
 
         if(mensagem != null){
-            //activity.carregarAvatar(CuidadorService.NO.CONTATOS, mensagem.getEmissorId(), ivAvatar);
+            FotoService.carregarAvatar(service, CuidadorService.NO.CONTATOS, mensagem.getEmissorId(), ivAvatar);
         }
 
         return view;

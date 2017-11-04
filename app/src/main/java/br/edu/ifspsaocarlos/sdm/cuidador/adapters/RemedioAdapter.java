@@ -43,7 +43,7 @@ public class RemedioAdapter extends RecyclerView.Adapter<RemedioAdapter.RemedioH
     public void onBindViewHolder(RemedioHolder holder, int position) {
 
         holder.tvNome.setText(lista.get(position).getNome());
-        holder.tvHorarios.setText(lista.get(position).getHorarios());
+        holder.tvHorarios.setText(lista.get(position).getHorario());
     }
 
     @Override

@@ -3,29 +3,16 @@ package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
-
-import java.io.File;
-import java.io.IOException;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatFragment;
@@ -192,7 +179,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (id == R.id.action_sair) {
-            service.efetuarLogout();
+            service.efetuaLogout();
             Intent intent = new Intent(this, RegistroActivity.class);
             startActivity(intent);
         }

@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
-
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -31,6 +29,7 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public abstract class FotoService {
+    private static final String TAG = "FotoService";
     public static final int TAKE_PHOTO_CODE = 1;
 
     public abstract void run(File file);
@@ -123,13 +122,13 @@ public abstract class FotoService {
 
     public static void carregarAvatar(final CuidadorService service, CuidadorService.NO no, String id, final ImageView imageView) {
         if(id != null){
-            service.carregarFotoURI(no, id, new OnSuccessListener<Uri>(){
+            service.carregaFotoURI(no, id, new OnSuccessListener<Uri>(){
                 @Override
                 public void onSuccess(Uri uri) {
                     // Got the download URL
                     try {
                         final File localFile = File.createTempFile("foto", ".jpg");
-                        service.carregarArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        service.carregaArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                 if(localFile.exists()){
@@ -151,8 +150,10 @@ public abstract class FotoService {
             }, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
+                    Log.d(TAG, "Foto não encontrada");
                 }
             });
         }
 
-    }}
+    }
+}
