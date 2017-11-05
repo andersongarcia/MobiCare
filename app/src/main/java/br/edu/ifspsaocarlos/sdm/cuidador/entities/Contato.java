@@ -15,9 +15,12 @@ public class Contato implements Serializable {
 
     private String nome;
 
+    private String fotoUri;
+
     public Contato(){}
 
     public Contato(String nome, String telefone) {
+        this.id = telefone;
         this.nome = nome;
         this.telefone = telefone;
     }
@@ -37,5 +40,13 @@ public class Contato implements Serializable {
     public String getNome() { return nome; }
 
     public void setNome(String nome) { this.nome = nome; }
+
+    public String getFotoUri() {
+        return fotoUri;
+    }
+
+    public void setFotoUri(String fotoUri) {
+        this.fotoUri = fotoUri;
+    }
 }
 

@@ -16,6 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.UploadTask;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
@@ -103,7 +106,12 @@ public class RegistroFotoFragment extends Fragment {
 
             case R.id.salvar:
                 if(activity.getLocalFile() != null && activity.getLocalFile().exists()){
-                    activity.getCuidadorService().salvaFotoPerfil(activity.getLocalFile());
+                    activity.getCuidadorService().salvaFotoPerfil(activity.getLocalFile()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            activity.getCuidadorService().salvaUriPerfil(taskSnapshot.getDownloadUrl().toString());
+                        }
+                    });
                 }
                 Intent intent = new Intent(activity, MainActivity.class);
                 startActivity(intent);

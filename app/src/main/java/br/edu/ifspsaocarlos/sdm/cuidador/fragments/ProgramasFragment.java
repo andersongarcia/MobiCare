@@ -14,7 +14,7 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
-import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ProgramaAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ProgramaListAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
@@ -44,7 +44,7 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
         mRecyclerView.setLayoutManager(llm);
 
         listaProgramas = CuidadorFirebaseRepository.getInstance().getProgramas();
-        ProgramaAdapter adapter = new ProgramaAdapter(getActivity(), listaProgramas);
+        ProgramaListAdapter adapter = new ProgramaListAdapter(getActivity(), listaProgramas);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);
 

@@ -13,7 +13,6 @@ import android.widget.EditText;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 
 /**
@@ -58,12 +57,12 @@ public class RegistroIdosoFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                String telefone = tvTelefone.getText().toString().trim();
-                activity.getCuidadorService().buscaContato(telefone, new CallbackGenerico<Contato>() {
+                final String telefone = tvTelefone.getText().toString().trim();
+                activity.getCuidadorService().buscaIdoso(telefone, new CallbackGenerico<Boolean>() {
                     @Override
-                    public void OnComplete(Contato contatoIdoso) {
-                        if(contatoIdoso != null){
-                            activity.getCuidadorService().registraUsuarioIdoso(contatoIdoso.getId());
+                    public void OnComplete(Boolean existe) {
+                        if(existe){
+                            activity.getCuidadorService().registraUsuarioIdoso(telefone);
                             activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.IDOSO));
                         }else {
                             tvTelefone.setError(getResources().getString(R.string.msg_erro_validacao_idoso));

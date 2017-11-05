@@ -19,11 +19,11 @@ public class Programa implements Serializable {
 
     private String link;
 
-    private int repeticao;
-
     private Semana semana;
 
     private int codigoAlarme;
+
+    private String fotoUri;
 
     public Programa(){
         this.semana = new Semana();
@@ -66,20 +66,20 @@ public class Programa implements Serializable {
         this.codigoAlarme = codigoAlarme;
     }
 
-    public int getRepeticao() {
-        return repeticao;
-    }
-
-    public void setRepeticao(int repeticao) {
-        this.repeticao = repeticao;
-    }
-
     public Semana getSemana() {
         return semana;
     }
 
     public void setSemana(Semana semana) {
         this.semana = semana;
+    }
+
+    public String getFotoUri() {
+        return fotoUri;
+    }
+
+    public void setFotoUri(String fotoUri) {
+        this.fotoUri = fotoUri;
     }
 
     public Calendar obterProximaExibicao() {

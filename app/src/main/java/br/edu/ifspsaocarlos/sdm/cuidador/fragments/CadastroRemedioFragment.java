@@ -96,6 +96,9 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     }
 
     @Override
+    protected String getUriAvatar() { return remedio.getFotoUri(); }
+
+    @Override
     protected void criarReferenciasLayout() {
         // referencia componentes do layout
         etNome = (EditText)view.findViewById(R.id.remedio_nome);
@@ -135,7 +138,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
     @Override
     protected void carregarOutrasReferencias() {
-        setLinkParaInstrucao();
+        setLinkParaInstrucao(remedio.getInstrucaoUri());
 
         // Cria timepicker para campo de horário
         etHorario.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +175,9 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                setLinkParaInstrucao();
+                                String uri = taskSnapshot.getDownloadUrl().toString();
+                                service.salvaUriInstrucao(remedio.getId(), uri);
+                                setLinkParaInstrucao(uri);
                             }
                         });
             }
@@ -218,37 +223,29 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         }
     }
 
-    private final void setLinkParaInstrucao() {
-        if(remedio.getId() != null){
-            service.carregaInstrucaoURI(remedio.getId(), new OnSuccessListener<Uri>(){
+    private final void setLinkParaInstrucao(String uri) {
+        if(uri == null || uri.isEmpty()){
+            btnOuvirInstrucao.setEnabled(true);
+            return;
+        }
+        try {
+            final File localFile = File.createTempFile(remedio.getId(), ".3gp");
+            service.carregaArquivo(Uri.parse(uri), localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
-                public void onSuccess(Uri uri) {
-                    // Got the download URL
-                    try {
-                        final File localFile = File.createTempFile(remedio.getId(), ".3gp");
-                        service.carregaArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                fileName = localFile.getAbsolutePath();
-                                Log.e("firebase ",";local tem file created  created " + localFile.toString());
-                            }
-                        }, new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                Log.e("firebase ",";local tem file not created  created " +exception.toString());
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    fileName = localFile.getAbsolutePath();
                     btnOuvirInstrucao.setEnabled(true);
+                    Log.e("firebase ",";local tem file created  created " + localFile.toString());
                 }
             }, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    btnOuvirInstrucao.setEnabled(false);
+                    Log.e("firebase ",";local tem file not created  created " +exception.toString());
                 }
             });
+        } catch (IOException e) {
+            e.printStackTrace();
+            btnOuvirInstrucao.setEnabled(false);
         }
     }
 
@@ -272,7 +269,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
                 horasRepeticao = 0;
         }
 
-        Remedio remedio = new Remedio();
+        final Remedio remedio = new Remedio();
         remedio.setId(this.remedio.getId());
         remedio.setNome(nome);
         remedio.setDose(dose);
@@ -282,10 +279,17 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
         // salva remédio
         // retorna id, já que pode ser novo
-        String id = service.salvaRemedio(remedio);
+        final String id = service.salvaRemedio(remedio);
 
         if(localFile != null && localFile.exists()){
-            service.salvaFoto(CuidadorService.NO.REMEDIOS, id, localFile);
+            service.salvaFoto(CuidadorService.NO.REMEDIOS, id, localFile)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri uri = taskSnapshot.getDownloadUrl();
+                    service.salvaUri(CuidadorService.NO.REMEDIOS, id, uri.toString());
+                }
+            });
         }
     }
 

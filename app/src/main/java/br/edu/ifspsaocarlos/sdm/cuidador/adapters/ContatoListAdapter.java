@@ -19,13 +19,13 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
  *
  * @author Anderson Canale Garcia
  */
-public class ContatoAdapter extends RecyclerView.Adapter<ContatoAdapter.ContatoHolder> {
+public class ContatoListAdapter extends RecyclerView.Adapter<ContatoListAdapter.ContatoHolder> {
 
     private List<Contato> listaContatos;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
 
-    public ContatoAdapter(Context c, List<Contato> l) {
+    public ContatoListAdapter(Context c, List<Contato> l) {
 
         listaContatos = l;
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

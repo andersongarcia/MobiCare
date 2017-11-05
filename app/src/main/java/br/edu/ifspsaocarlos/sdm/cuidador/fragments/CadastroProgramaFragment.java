@@ -10,6 +10,9 @@ import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.UploadTask;
+
 import java.util.Calendar;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
@@ -97,10 +100,17 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
 
         // salva programa
         // retorna id, já que pode ser novo
-        String id = service.salvaPrograma(programa);
+        final String id = service.salvaPrograma(programa);
 
         if(localFile != null && localFile.exists()){
-            service.salvaFoto(CuidadorService.NO.PROGRAMAS, id, localFile);
+            service.salvaFoto(CuidadorService.NO.PROGRAMAS, id, localFile)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Uri uri = taskSnapshot.getDownloadUrl();
+                            service.salvaUri(CuidadorService.NO.PROGRAMAS, id, uri.toString());
+                        }
+                    });
         }
     }
 
@@ -118,6 +128,9 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
     protected String getIdCadastro() {
         return programa.getId();
     }
+
+    @Override
+    protected String getUriAvatar() { return programa.getFotoUri(); }
 
     @Override
     protected void criarReferenciasLayout() {

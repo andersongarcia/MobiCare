@@ -1,17 +1,15 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.Window;
 import android.view.WindowManager;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatIdosoFragment;
+import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 public class IdosoActivity extends BaseActivity {
-    private RecyclerView drawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +21,7 @@ public class IdosoActivity extends BaseActivity {
         Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
-            Mensagem mensagem = (Mensagem) extras.get(String.valueOf(CuidadorService.NO.MENSAGENS));
+            IMensagem mensagem = (IMensagem) extras.get(String.valueOf(CuidadorService.NO.MENSAGENS));
             openFragment(ChatIdosoFragment.newInstance(mensagem));
         }
 

@@ -13,7 +13,7 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
-import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ContatoAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ContatoListAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
@@ -44,7 +44,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         mRecyclerView.setLayoutManager(llm);
 
         listaContatos = CuidadorFirebaseRepository.getInstance().getContatos();
-        ContatoAdapter adapter = new ContatoAdapter(getActivity(), listaContatos);
+        ContatoListAdapter adapter = new ContatoListAdapter(getActivity(), listaContatos);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);
 
@@ -56,7 +56,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         view.findViewById(R.id.btn_cadastrar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CadastroContatoFragment fragment = CadastroContatoFragment.newInstance("", "", "");
+                CadastroContatoFragment fragment = CadastroContatoFragment.newInstance(new Contato());
                 activity.openFragment(fragment);
             }
 
@@ -70,7 +70,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
 
         Contato contato = listaContatos.get(posicao);
 
-        CadastroContatoFragment fragment = CadastroContatoFragment.newInstance(contato.getId(), contato.getNome(), contato.getTelefone());
+        CadastroContatoFragment fragment = CadastroContatoFragment.newInstance(new Contato(contato.getNome(), contato.getTelefone()));
         activity.openFragment(fragment);
     }
 

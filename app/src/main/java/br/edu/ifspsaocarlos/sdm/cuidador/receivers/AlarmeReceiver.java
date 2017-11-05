@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.IdosoActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService.NO;
 
 /**
@@ -45,14 +46,8 @@ public class AlarmeReceiver extends BroadcastReceiver {
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         if(extras != null){
-            NO no = (NO)extras.get(TARGET);
-            switch (no){
-                case MENSAGENS:
-                    Mensagem mensagem = (Mensagem) extras.get(String.valueOf(NO.MENSAGENS));
-                    newIntent.putExtra(TARGET, NO.MENSAGENS);
-                    newIntent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
-                    break;
-            }
+            IMensagem mensagem = (IMensagem) extras.get(String.valueOf(NO.MENSAGENS));
+            newIntent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
         }
 
         context.startActivity(newIntent);
@@ -71,10 +66,11 @@ public class AlarmeReceiver extends BroadcastReceiver {
         alarmManager.cancel(sender);
     }
 
-    public void defineAlarmeRecorrente(Context context, int requestCode, String horario, int recorrencia)
+    public void defineAlarmeRecorrente(Context context, IMensagem mensagem, int requestCode, String horario, int recorrencia)
     {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmeReceiver.class);
+        intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
         intent.putExtra(ONE_TIME, Boolean.FALSE);
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
 
@@ -86,16 +82,16 @@ public class AlarmeReceiver extends BroadcastReceiver {
         am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), intervaloRecorrencia , pi);
     }
 
-    public void defineAlarmeUnico(Context context, int requestCode, String horario, boolean deveAjustarProximo){
+    public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, String horario, boolean deveAjustarProximo){
         // calcula intervalo do alarme
         Calendar cal = calculaIntervalo(horario);
-        defineAlarmeUnico(context, requestCode, cal, deveAjustarProximo);
+        defineAlarmeUnico(context, mensagem, requestCode, cal, deveAjustarProximo);
     }
 
-    public void defineAlarmeUnico(Context context, int requestCode, Calendar agenda, boolean deveAjustarProximo) {
+    public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, Calendar agenda, boolean deveAjustarProximo) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        intent.putExtra(ONE_TIME, Boolean.TRUE);
+        intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
         intent.putExtra(REAGENDA, deveAjustarProximo);
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
@@ -104,7 +100,6 @@ public class AlarmeReceiver extends BroadcastReceiver {
     public void mostraNovaMensagem(Context context, Mensagem mensagem) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        intent.putExtra(TARGET, NO.MENSAGENS);
         intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
         PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);

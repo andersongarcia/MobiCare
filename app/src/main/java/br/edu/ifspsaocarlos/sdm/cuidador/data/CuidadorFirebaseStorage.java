@@ -85,7 +85,7 @@ public class CuidadorFirebaseStorage {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                Mensagem mensagem = new Mensagem(contatoId, idosoId, fileName);
+                Mensagem mensagem = new Mensagem(contatoId, idosoId, downloadUrl.toString());
 
                 CuidadorFirebaseRepository.getInstance().salvaMensagem(idosoId, mensagem);
             }

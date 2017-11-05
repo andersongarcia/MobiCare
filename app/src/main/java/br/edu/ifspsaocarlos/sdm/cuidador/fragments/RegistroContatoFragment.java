@@ -69,7 +69,7 @@ public class RegistroContatoFragment extends Fragment {
                             activity.getCuidadorService().registraUsuarioContato(contato.getId());
                             activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.CONTATO));
                         }else {
-                            tvTelefone.setError(getResources().getString(R.string.msg_erro_validacao_idoso));
+                            tvTelefone.setError(getResources().getString(R.string.msg_erro_validacao_contato));
                         }
                     }
                 });

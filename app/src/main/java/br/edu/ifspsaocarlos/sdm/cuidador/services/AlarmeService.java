@@ -5,9 +5,12 @@ import android.content.Context;
 import java.util.Calendar;
 import java.util.List;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ProgramaMensagemAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.adapters.RemedioMensagemAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
+import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
 /**
@@ -30,11 +33,12 @@ public class AlarmeService {
         List<Remedio> remedios = repositorio.getRemedios();
 
         for (Remedio remedio : remedios) {
+            IMensagem mensagem = new RemedioMensagemAdapter(remedio);
             alarmeReceiver.cancelaAlarme(contexto, remedio.getCodigoAlarme());
             if(remedio.isAjustavel()){
-                alarmeReceiver.defineAlarmeUnico(contexto, remedio.getCodigoAlarme(), remedio.getHorario(), true);
+                alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), true);
             }else {
-                alarmeReceiver.defineAlarmeRecorrente(contexto, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao());
+                alarmeReceiver.defineAlarmeRecorrente(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao());
             }
         }
     }
@@ -43,9 +47,10 @@ public class AlarmeService {
         List<Programa> programas = repositorio.getProgramas();
 
         for (Programa programa : programas) {
+            IMensagem mensagem = new ProgramaMensagemAdapter(programa);
             alarmeReceiver.cancelaAlarme(contexto, programa.getCodigoAlarme());
             Calendar proximaExibicao = programa.obterProximaExibicao();
-            alarmeReceiver.defineAlarmeUnico(contexto, programa.getCodigoAlarme(), proximaExibicao, false);
+            alarmeReceiver.defineAlarmeUnico(contexto, mensagem, programa.getCodigoAlarme(), proximaExibicao, false);
         }
     }
 }

@@ -4,8 +4,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.UploadTask;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -15,17 +17,12 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  * @author Anderson Canale Garcia
  */
 public class CadastroContatoFragment extends CadastroBaseFragment {
-    private static final String ID = "ID";
-    private static final String NOME = "NOME";
-    private static final String TELEFONE = "TELEFONE";
-
-    private String id;
-    private String nome;
-    private String telefone;
+    private static final String CONTATO = "CONTATO";
 
     private OnFragmentInteractionListener mListener;
     private EditText etNome;
     private EditText etTelefone;
+    private Contato contato;
 
     public CadastroContatoFragment() {
         // Required empty public constructor
@@ -37,17 +34,14 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
      * this fragment using the provided parameters.
      *
      *
-     * @param nome Nome do contato
-     * @param telefone Telefone do contato
+     * @param contato Dados do contato
      * @return Uma nova instância do fragment CadastroContatoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CadastroContatoFragment newInstance(String id, String nome, String telefone) {
+    public static CadastroContatoFragment newInstance(Contato contato) {
         CadastroContatoFragment fragment = new CadastroContatoFragment();
         Bundle args = new Bundle();
-        args.putString(ID, id);
-        args.putString(NOME, nome);
-        args.putString(TELEFONE, telefone);
+        args.putSerializable(CONTATO, contato);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,9 +51,7 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
         super.onCreate(savedInstanceState);
         service = new CuidadorService(getActivity());
         if (getArguments() != null) {
-            id = getArguments().getString(ID);
-            nome = getArguments().getString(NOME);
-            telefone = getArguments().getString(TELEFONE);
+            this.contato = (Contato) getArguments().getSerializable(CONTATO);
         }
     }
 
@@ -69,21 +61,23 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
         String telefone = etTelefone.getText().toString().trim();
 
         final Contato contato = new Contato(nome, telefone);
-        contato.setId(id);
-        service.salvaContato(contato, new CallbackGenerico<Contato>() {
-                    @Override
-                    public void OnComplete(Contato c) {
-                        if(localFile != null && localFile.exists()){
-                            service.salvaFoto(CuidadorService.NO.CONTATOS, c.getId(), localFile);
+        service.salvaContato(contato);
+        if(localFile != null && localFile.exists()){
+            service.salvaFoto(CuidadorService.NO.CONTATOS, contato.getId(), localFile);
+            service.salvaFoto(CuidadorService.NO.CONTATOS, contato.getId(), localFile)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Uri uri = taskSnapshot.getDownloadUrl();
+                            service.salvaUriContato(contato.getId(), uri.toString());
                         }
-                    }
-                }
-        );
+                    });
+        }
     }
 
     @Override
     protected void excluir() {
-        service.removeContato(id, new Runnable() {
+        service.removeContato(contato.getId(), new Runnable() {
             @Override
             public void run() {
                 //redirecionaParaLista();
@@ -98,8 +92,11 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
 
     @Override
     protected String getIdCadastro() {
-        return id;
+        return contato.getId();
     }
+
+    @Override
+    protected String getUriAvatar() { return contato.getFotoUri(); }
 
     @Override
     protected void criarReferenciasLayout() {
@@ -109,8 +106,8 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
 
     @Override
     protected void carregarInformacoesCadastradas() {
-        etNome.setText(nome);
-        etTelefone.setText(telefone);
+        etNome.setText(contato.getNome());
+        etTelefone.setText(contato.getTelefone());
     }
 
     @Override

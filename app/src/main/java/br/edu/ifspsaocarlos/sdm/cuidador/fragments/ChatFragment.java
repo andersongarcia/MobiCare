@@ -1,7 +1,10 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.app.Fragment;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +21,26 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  */
 public class ChatFragment extends Fragment {
     private static final String FILE_PREFIX = "chat_";
+    protected static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
+    // Permissões a serem solicitadas
+    private boolean permissionToRecordAccepted = false;
+    protected String [] permissions = {android.Manifest.permission.RECORD_AUDIO};
 
     private CuidadorService service;
     private MainActivity activity;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+
+        }
+        if (!permissionToRecordAccepted ) getActivity().finish();
+    }
 
     public static ChatFragment newInstance() {
         ChatFragment fragment = new ChatFragment();
@@ -41,6 +61,8 @@ public class ChatFragment extends Fragment {
         final DialogAudioListener dialogAudioListener = new DialogAudioListener(activity, fileName);
 
         view.findViewById(R.id.btn_cadastrar).setOnClickListener(dialogAudioListener);
+
+        ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
         dialogAudioListener.setButton(DialogAudioListener.TipoBotao.POSITIVO, R.string.enviar, new Runnable() {
             @Override

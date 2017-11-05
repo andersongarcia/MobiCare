@@ -74,7 +74,7 @@
     <string name="action_sair">Sair</string>
     <string name="msg_token_fmt">InstanceID Token: %s</string>
     <string name="registro_foto">Tire uma foto</string>
-    <string name="msg_erro_validacao_idoso">Este número não está registrado para nenhum idoso. Verifique o número ou peça o regisro pelo Cuidador.</string>
+    <string name="msg_erro_validacao_idoso">Este número não está registrado para nenhum idoso. Verifique o número ou peça o registro pelo Cuidador.</string>
     <string name="hint_celular_idoso">O número do celular do idoso</string>
     <string name="nome_idoso">Nome do idoso</string>
     <string name="nome_cuidador">Nome do cuidador</string>
@@ -100,5 +100,6 @@
     <string name="semana_sexta">Sexta-feira</string>
     <string name="semana_sabado">Sábado</string>
     <string name="quais_dias">Em quais dias da semana passa?</string>
+    <string name="msg_erro_validacao_contato">Este número não está registrado para nenhum contato. Verifique o número ou peça o registro pelo Cuidador.</string>
 
 </resources>

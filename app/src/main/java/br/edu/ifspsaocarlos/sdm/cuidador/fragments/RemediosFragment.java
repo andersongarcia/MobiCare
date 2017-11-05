@@ -13,7 +13,7 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
-import br.edu.ifspsaocarlos.sdm.cuidador.adapters.RemedioAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.adapters.RemedioListAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
@@ -42,7 +42,7 @@ public class RemediosFragment extends Fragment implements RecyclerViewOnItemSele
         mRecyclerView.setLayoutManager(llm);
 
         listaRemedios = CuidadorFirebaseRepository.getInstance().getRemedios();
-        RemedioAdapter adapter = new RemedioAdapter(getActivity(), listaRemedios);
+        RemedioListAdapter adapter = new RemedioListAdapter(getActivity(), listaRemedios);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);
 

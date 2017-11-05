@@ -48,8 +48,9 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
         // inscreve usuário logado para receber notificações a ele direcionadas
         String idLogado = service.obterIdLogado();
-        if(!idLogado.isEmpty())
+        if(!idLogado.isEmpty()){
             IMService.subscribe(idLogado);
+        }
 
         // configura toolbar do app
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -2,21 +2,30 @@ package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
 import java.io.Serializable;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+
 /**
  * Classe que representa uma mensagem de áudio.
  *
  * @author Anderson Canale Garcia
  */
-public class Mensagem implements Serializable {
+public class Mensagem implements Serializable, IMensagem {
     private String id;
     private String emissorId;
     private String destinatarioId;
-    private String fileName;
+    private String fotoUri;
+    private String audioUri;
 
-    public Mensagem(String emissorId, String destinatarioId, String fileName) {
+    public Mensagem(String emissorId, String destinatarioId, String audioUri) {
         this.emissorId = emissorId;
         this.destinatarioId = destinatarioId;
-        this.fileName = fileName;
+        this.audioUri = audioUri;
+    }
+
+    @Override
+    public String getOrigem() {
+        return CuidadorService.NO.getNo(CuidadorService.NO.MENSAGENS);
     }
 
     public String getId() {
@@ -43,11 +52,19 @@ public class Mensagem implements Serializable {
         this.destinatarioId = destinatarioId.trim();
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFotoUri() {
+        return fotoUri;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName.trim();
+    public void setFotoUri(String fotoUri) {
+        this.fotoUri = fotoUri;
+    }
+
+    public String getAudioUri() {
+        return audioUri;
+    }
+
+    public void setAudioUri(String audioUri) {
+        this.audioUri = audioUri;
     }
 }

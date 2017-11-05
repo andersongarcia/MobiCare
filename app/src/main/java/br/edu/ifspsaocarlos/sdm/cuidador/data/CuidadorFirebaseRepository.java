@@ -110,7 +110,7 @@ public class CuidadorFirebaseRepository {
      * Salva (cria) cuidador na base
      * @param id telefone do cuidador
      */
-    public void salvarCuidador(String id) {
+    public void salvaCuidador(String id) {
         cuidadorEndPoint.child(id).setValue(true);
     }
     //endregion
@@ -119,6 +119,20 @@ public class CuidadorFirebaseRepository {
 
     public void salvaIdoso(String id) {
         idosoEndPoint.child(id).setValue(true);
+    }
+
+    public void buscaIdoso(String telefone, final CallbackGenerico<Boolean> callback) {
+        idosoEndPoint.child(telefone).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                callback.OnComplete(dataSnapshot.exists());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.toString());
+            }
+        });
     }
 
     /**
@@ -235,26 +249,12 @@ public class CuidadorFirebaseRepository {
 
     //region Contatos
 
-    public void buscaContatoPeloTelefone(String telefone, ValueEventListener listener){
-        contatoEndPoint.orderByChild("telefone").startAt(telefone).limitToFirst(1).addListenerForSingleValueEvent(listener);
+    public void buscaContato(String id, ValueEventListener listener){
+        contatoEndPoint.child(id).addListenerForSingleValueEvent(listener);
     }
 
-    public void salvaContato(final Contato contato, final CallbackGenerico<Contato> callback) {
-        String id = contato.getId();
-        final boolean isNew = id == null || id.isEmpty();
-        if (isNew) {
-            id = contatoEndPoint.push().getKey();
-            contato.setId(id);
-        }
-        contatoEndPoint.child(id).setValue(contato).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                if(isNew){
-                    contatos.add(contato);
-                }
-                callback.OnComplete(contato);
-            }
-        });
+    public void salvaContato(final Contato contato) {
+        contatoEndPoint.child(contato.getTelefone()).setValue(contato);
     }
 
     public void removeContato(final String contatoId, final String idosoId, final Runnable runnable) {
@@ -374,16 +374,33 @@ public class CuidadorFirebaseRepository {
 
     //region Mensagens
 
-    public void salvaMensagem(String idosoId, Mensagem mensagem) {
-        DatabaseReference reference = mensagemEndPoint.child(idosoId);
-        String id = reference.push().getKey();
+    public void salvaMensagem(String idosoId, final Mensagem mensagem) {
+        final DatabaseReference reference = mensagemEndPoint.child(idosoId);
+        final String id = reference.push().getKey();
         mensagem.setId(id);
-        reference.child(id).setValue(mensagem).addOnFailureListener(new OnFailureListener() {
+
+        // busca foto do emissor
+        contatoEndPoint.child(mensagem.getEmissorId()).child(CuidadorService.NO.getNo(CuidadorService.NO.FOTO_URI))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, e.getMessage());
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){  // foto encontrada
+                    mensagem.setFotoUri(String.valueOf(dataSnapshot.getValue()));
+                    reference.child(id).setValue(mensagem).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, e.getMessage());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage());
             }
         });
+
     }
 
     public void leNovasMensagens(String idosoId, ChildEventListener listener) {
@@ -399,8 +416,14 @@ public class CuidadorFirebaseRepository {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() != null){   // contador já iniciado
-                    // pega contagem atual
-                    contadorAlarme = Integer.valueOf(String.valueOf(dataSnapshot.getValue()));
+                    try {
+                        // pega contagem atual
+                        contadorAlarme = Integer.valueOf(String.valueOf(dataSnapshot.getValue()));
+                    }catch (NumberFormatException ex){
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            contadorAlarme = Integer.valueOf(String.valueOf(snapshot.getValue()));
+                        }
+                    }
                 }else {     // contador não iniciado
                     // inicia contador em 0
                     contadorAlarme = 0;
@@ -418,6 +441,21 @@ public class CuidadorFirebaseRepository {
         contadorAlarme++;
         contadorAlarmeEndPoint.child(idosoId).setValue(contadorAlarme);
         return contadorAlarme;
+    }
+
+    public void salvaUri(CuidadorService.NO no, String idosoId, String id, String uri) {
+        mDatabase.child(CuidadorService.NO.getNo(no))
+                .child(idosoId).child(id)
+                .child(CuidadorService.NO.getNo(CuidadorService.NO.FOTO_URI))
+                .setValue(uri);
+    }
+
+    public void salvaUriContato(String id, String uri) {
+        contatoEndPoint.child(id).child(CuidadorService.NO.getNo(CuidadorService.NO.FOTO_URI)).setValue(uri);
+    }
+
+    public void salvaUriInstrucao(String idosoId, String id, String uri) {
+        remedioEndPoint.child(idosoId).child(id).child(CuidadorService.NO.getNo(CuidadorService.NO.INSTRUCAO_URI)).setValue(uri);
     }
 
     //endregion

@@ -17,28 +17,28 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
  * Created by ander on 11/09/2017.
  */
 
-public class ProgramaAdapter extends RecyclerView.Adapter<ProgramaAdapter.ProgramaHolder> {
+public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapter.ProgramaHolder> {
     private List<Programa> lista;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
 
-    public ProgramaAdapter(Context c, List<Programa> l) {
+    public ProgramaListAdapter(Context c, List<Programa> l) {
 
         lista = l;
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
-    public ProgramaAdapter.ProgramaHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ProgramaListAdapter.ProgramaHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View v = mLayoutInflater.inflate(R.layout.item_lista, parent, false);
-        ProgramaAdapter.ProgramaHolder mvh = new ProgramaAdapter.ProgramaHolder(v);
+        ProgramaListAdapter.ProgramaHolder mvh = new ProgramaListAdapter.ProgramaHolder(v);
 
         return mvh;
     }
 
     @Override
-    public void onBindViewHolder(ProgramaAdapter.ProgramaHolder holder, int position) {
+    public void onBindViewHolder(ProgramaListAdapter.ProgramaHolder holder, int position) {
 
         holder.tvNome.setText(lista.get(position).getNome());
         holder.tvHorarios.setText(lista.get(position).getHorario());

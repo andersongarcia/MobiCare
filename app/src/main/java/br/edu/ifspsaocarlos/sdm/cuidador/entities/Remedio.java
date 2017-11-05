@@ -23,6 +23,10 @@ public class Remedio implements Serializable {
 
     private int codigoAlarme;
 
+    private String fotoUri;
+
+    private String instrucaoUri;
+
 
     public String getId() { return id; }
 
@@ -74,5 +78,21 @@ public class Remedio implements Serializable {
 
     public void setAjustavel(boolean ajustavel) {
         this.ajustavel = ajustavel;
+    }
+
+    public String getFotoUri() {
+        return fotoUri;
+    }
+
+    public void setFotoUri(String fotoUri) {
+        this.fotoUri = fotoUri;
+    }
+
+    public String getInstrucaoUri() {
+        return instrucaoUri;
+    }
+
+    public void setInstrucaoUri(String instrucaoUri) {
+        this.instrucaoUri = instrucaoUri;
     }
 }

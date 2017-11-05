@@ -18,13 +18,13 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
  *
  * @author Anderson Canale Garcia
  */
-public class RemedioAdapter extends RecyclerView.Adapter<RemedioAdapter.RemedioHolder> {
+public class RemedioListAdapter extends RecyclerView.Adapter<RemedioListAdapter.RemedioHolder> {
 
     private List<Remedio> lista;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
 
-    public RemedioAdapter(Context c, List<Remedio> l) {
+    public RemedioListAdapter(Context c, List<Remedio> l) {
 
         lista = l;
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -120,40 +120,27 @@ public abstract class FotoService {
         }
     }
 
-    public static void carregarAvatar(final CuidadorService service, CuidadorService.NO no, String id, final ImageView imageView) {
-        if(id != null){
-            service.carregaFotoURI(no, id, new OnSuccessListener<Uri>(){
+    public static void carregarAvatar(final CuidadorService service, String uri, final ImageView imageView) {
+        final File localFile;
+        try {
+            localFile = File.createTempFile("foto", ".jpg");
+            service.carregaArquivo(Uri.parse(uri), localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
-                public void onSuccess(Uri uri) {
-                    // Got the download URL
-                    try {
-                        final File localFile = File.createTempFile("foto", ".jpg");
-                        service.carregaArquivo(uri, localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                if(localFile.exists()){
-                                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                    imageView.setImageBitmap(bitmap);
-                                }
-                                Log.e("firebase ",";local tem file created  created " + localFile.toString());
-                            }
-                        }, new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                Log.e("firebase ",";local tem file not created  created " +exception.toString());
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    if(localFile.exists()){
+                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                        imageView.setImageBitmap(bitmap);
                     }
+                    Log.e("firebase ",";local tem file created  created " + localFile.toString());
                 }
             }, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    Log.d(TAG, "Foto não encontrada");
+                    Log.e("firebase ",";local tem file not created  created " +exception.toString());
                 }
             });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
     }
 }
