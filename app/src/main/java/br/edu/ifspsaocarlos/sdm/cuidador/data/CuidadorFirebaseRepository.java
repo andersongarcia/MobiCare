@@ -177,7 +177,7 @@ public class CuidadorFirebaseRepository {
 
     //region Remédios
 
-    public Remedio adicionaRemedio(String idosoId, Remedio remedio) {
+    public String adicionaRemedio(String idosoId, Remedio remedio) {
         DatabaseReference reference = remedioEndPoint.child(idosoId);
 
         // cria identificador
@@ -191,7 +191,7 @@ public class CuidadorFirebaseRepository {
 
         remedios.add(remedio);
 
-        return remedio;
+        return key;
     }
 
     public void atualizaRemedio(String idosoId, Remedio remedio) {
@@ -203,7 +203,7 @@ public class CuidadorFirebaseRepository {
         removeRemedioDaLista(remedioId);
     }
 
-    private void carregaRemedios(String idosoId) {
+    public void carregaRemedios(String idosoId) {
         remedioEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -236,7 +236,7 @@ public class CuidadorFirebaseRepository {
     //region Contatos
 
     public void buscaContatoPeloTelefone(String telefone, ValueEventListener listener){
-        contatoEndPoint.orderByChild("telefone").equalTo(telefone).addListenerForSingleValueEvent(listener);
+        contatoEndPoint.orderByChild("telefone").startAt(telefone).limitToFirst(1).addListenerForSingleValueEvent(listener);
     }
 
     public void salvaContato(final Contato contato, final CallbackGenerico<Contato> callback) {
@@ -317,7 +317,7 @@ public class CuidadorFirebaseRepository {
 
     //region Programas
 
-    public Programa adicionaPrograma(String idosoId, Programa programa) {
+    public String adicionaPrograma(String idosoId, Programa programa) {
         DatabaseReference reference = programaEndPoint.child(idosoId);
 
         String key = reference.push().getKey();
@@ -330,7 +330,7 @@ public class CuidadorFirebaseRepository {
 
         programas.add(programa);
 
-        return programa;
+        return key;
     }
 
     public void atualizaPrograma(String idosoId, Programa programa) {
@@ -342,7 +342,7 @@ public class CuidadorFirebaseRepository {
         removeProgramaDaLista(programaId);
     }
 
-    private void carregaProgramas(String idosoId) {
+    public void carregaProgramas(String idosoId) {
         programaEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

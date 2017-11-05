@@ -19,6 +19,9 @@ import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
+    private static final String NOTIFICACAO_NOVA_MENSAGEM = "mensagem";
+    private static final String NOTIFICACAO_SINCRONIZAR_REMEDIOS = "remedios";
+    private static final String NOTIFICACAO_SINCRONIZAR_PROGRAMAS = "programas";
 
     /**
      * Chamado quando uma mensagem é recebida
@@ -29,42 +32,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        // TODO(developer): Handle FCM messages here.
-
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        Log.d(TAG, "Data: " + remoteMessage.getData());
-
-        Map<String, String> data = remoteMessage.getData();
-
-        Mensagem mensagem = new Mensagem(data.get("emissorId"), data.get("destinatarioId"), data.get("fileName"));
-
-        AlarmeReceiver alarm = new AlarmeReceiver();
-        alarm.mostraNovaMensagem(getBaseContext(), mensagem);
-        //alarm.startActivityOnetime(getBaseContext(), intent);
-
-
-        // Check if message contains a data payload.
+        // Checa se a mensagem contém payload de dados
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
+            // mapeia dados do payload
+            Map<String, String> data = remoteMessage.getData();
+
+            CuidadorService cuidadorService = new CuidadorService(getBaseContext());
+
+            // identifica a que se destina a mensagem
+            switch (data.get("label")){
+                case NOTIFICACAO_NOVA_MENSAGEM:
+                    Mensagem mensagem = new Mensagem(data.get("emissorId"), data.get("destinatarioId"), data.get("fileName"));
+                    AlarmeReceiver alarm = new AlarmeReceiver();
+                    alarm.mostraNovaMensagem(getBaseContext(), mensagem);
+                    break;
+                case NOTIFICACAO_SINCRONIZAR_REMEDIOS:
+                    cuidadorService.sincronizarRemedios();
+                    break;
+                case NOTIFICACAO_SINCRONIZAR_PROGRAMAS:
+                    cuidadorService.sincronizarProgramas();
+                    break;
             }
 
         }
 
-        // Check if message contains a notification payload.
+        // Checa se a mensagem contém payload de notificação
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
     // [END receive_message]
 

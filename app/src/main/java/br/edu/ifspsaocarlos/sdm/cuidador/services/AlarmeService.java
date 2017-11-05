@@ -2,6 +2,7 @@ package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
 import android.content.Context;
 
+import java.util.Calendar;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
@@ -43,11 +44,8 @@ public class AlarmeService {
 
         for (Programa programa : programas) {
             alarmeReceiver.cancelaAlarme(contexto, programa.getCodigoAlarme());
-            if(programa.getRepeticao() > 0){
-                alarmeReceiver.defineAlarmeRecorrente(contexto, programa.getCodigoAlarme(), programa.getHorario(), programa.getRepeticao());
-            }else {
-                alarmeReceiver.defineAlarmeUnico(contexto, programa.getCodigoAlarme(), programa.getHorario(), true);
-            }
+            Calendar proximaExibicao = programa.obterProximaExibicao();
+            alarmeReceiver.defineAlarmeUnico(contexto, programa.getCodigoAlarme(), proximaExibicao, false);
         }
     }
 }

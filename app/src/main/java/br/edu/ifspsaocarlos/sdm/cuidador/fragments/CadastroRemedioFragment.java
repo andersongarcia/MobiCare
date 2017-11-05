@@ -280,7 +280,13 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         remedio.setAjustavel(isAjustavel);
         remedio.setRepeticao(horasRepeticao);
 
-        service.salvaRemedio(remedio);
+        // salva remédio
+        // retorna id, já que pode ser novo
+        String id = service.salvaRemedio(remedio);
+
+        if(localFile != null && localFile.exists()){
+            service.salvaFoto(CuidadorService.NO.REMEDIOS, id, localFile);
+        }
     }
 
     @Override

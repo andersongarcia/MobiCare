@@ -14,13 +14,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.File;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatFragment;
+import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatIdosoFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ContatosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ProgramasFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RemediosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.IMService;
 
 /**
@@ -31,8 +34,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     CuidadorService service;
     private ActionBarDrawerToggle drawerToggle;
     private boolean toolBarNavigationListenerIsRegistered;
-
-    private FotoService fotoService;
+    private File localFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         drawerToggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().setGroupVisible(R.id.grupoMenuCuidador, service.obterPerfilLogado().equals(Usuario.CUIDADOR));
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -194,7 +197,17 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_chat) {
-            openFragment(ChatFragment.newInstance());
+            switch (service.obterPerfilLogado()){
+                case Usuario.CUIDADOR:
+                    openFragment(ChatFragment.newInstance());
+                    break;
+                case Usuario.IDOSO:
+                    openFragment(ChatIdosoFragment.newInstance(null));
+                    break;
+                case Usuario.CONTATO:
+                    openFragment(ChatFragment.newInstance());
+                    break;
+            }
         } else if (id == R.id.nav_remedios) {
             openFragment(RemediosFragment.newInstance());
         } else if (id == R.id.nav_contatos) {
@@ -210,19 +223,5 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        fotoService.retornaFoto(requestCode, resultCode, this);
-    }
-
-    public void setFotoService(FotoService fotoService) {
-        this.fotoService = fotoService;
-    }
-
-    public FotoService getFotoService() {
-        return fotoService;
     }
 }

@@ -22,10 +22,12 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService.NO;
 
 public class AlarmeReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmeReceiver";
-    final public static String ONE_TIME = "onetime";
-    final public static String TARGET = "target";
     private static final String DADOS = "dados";
     private  static final int REQUEST_ALARM_DEFAULT = 0;
+
+    final public static String ONE_TIME = "onetime";
+    final public static String TARGET = "target";
+    private static final String REAGENDA = "reagenda";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -85,22 +87,23 @@ public class AlarmeReceiver extends BroadcastReceiver {
     }
 
     public void defineAlarmeUnico(Context context, int requestCode, String horario, boolean deveAjustarProximo){
-        AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmeReceiver.class);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(ONE_TIME, Boolean.TRUE);
-        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
-
         // calcula intervalo do alarme
         Calendar cal = calculaIntervalo(horario);
+        defineAlarmeUnico(context, requestCode, cal, deveAjustarProximo);
+    }
 
-        am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
+    public void defineAlarmeUnico(Context context, int requestCode, Calendar agenda, boolean deveAjustarProximo) {
+        AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmeReceiver.class);
+        intent.putExtra(ONE_TIME, Boolean.TRUE);
+        intent.putExtra(REAGENDA, deveAjustarProximo);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+        am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
     }
 
     public void mostraNovaMensagem(Context context, Mensagem mensagem) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(TARGET, NO.MENSAGENS);
         intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
         PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);

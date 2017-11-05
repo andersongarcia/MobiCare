@@ -31,11 +31,11 @@
     <string name="horario">Horários</string>
     <string name="dose">Dose</string>
     <string name="hint_dose">Dose (Exemplo: 1 comprimido)</string>
-    <string name="hint_nome_do_programa">Digite o nome do programa</string>
+    <string name="hint_nome_do_programa">Nome do programa</string>
     <string name="nome_programa">Nome do programa</string>
     <string name="horarios_programa">Horários sugeridos para notificação</string>
     <string name="link">Link</string>
-    <string name="hint_link">http://</string>
+    <string name="hint_link">Disponível online? Deixe o link (http://...)</string>
     <string name="registro_usuario">Registro de usuário</string>
     <string name="escolha_seu_perfil">Escolha seu perfil</string>
     <string name="Idoso">Idoso</string>
@@ -92,5 +92,13 @@
     <string name="diariamente">Diariamente</string>
     <string name="horas">Horas</string>
     <string name="ajustar_administracao">Ajustar ao tomar</string>
+    <string name="semana_domingo">Domingo</string>
+    <string name="semana_segunda">Segunda-feira</string>
+    <string name="semana_terca">Terça-feira</string>
+    <string name="semana_quarta">Quarta-feira</string>
+    <string name="semana_quinta">Quinta-feira</string>
+    <string name="semana_sexta">Sexta-feira</string>
+    <string name="semana_sabado">Sábado</string>
+    <string name="quais_dias">Em quais dias da semana passa?</string>
 
 </resources>

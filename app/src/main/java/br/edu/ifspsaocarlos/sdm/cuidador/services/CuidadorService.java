@@ -79,7 +79,6 @@ public class CuidadorService {
     private final Context contexto;
     private final PreferenciaHelper preferencias;
     private final CuidadorFirebaseRepository repositorio;
-    private String idosoId;
 
     public CuidadorService(Context context){
         this.contexto = context;
@@ -233,20 +232,38 @@ public class CuidadorService {
         repositorio.removeContato(idContato, preferencias.getIdosoSelecionadoId(), runnable);
     }
 
-    public void salvaRemedio(Remedio remedio) {
+    public void sincronizarRemedios() {
+        repositorio.carregaRemedios(preferencias.getIdosoSelecionadoId());
+        AlarmeService alarmeService = new AlarmeService(contexto);
+        alarmeService.atualizaAlarmesRemedios();
+    }
+
+    public String salvaRemedio(Remedio remedio) {
+        String id = remedio.getId();
         if(remedio.getId() == null || remedio.getId().isEmpty()){
-            repositorio.adicionaRemedio(preferencias.getIdosoSelecionadoId(), remedio);
+            id = repositorio.adicionaRemedio(preferencias.getIdosoSelecionadoId(), remedio);
         }else {
             repositorio.atualizaRemedio(preferencias.getIdosoSelecionadoId(), remedio);
         }
+
+        return id;
     }
 
-    public void salvaPrograma(Programa programa) {
+    public void sincronizarProgramas() {
+        repositorio.carregaProgramas(preferencias.getIdosoSelecionadoId());
+        AlarmeService alarmeService = new AlarmeService(contexto);
+        alarmeService.atualizaAlarmesProgramas();
+    }
+
+    public String salvaPrograma(Programa programa) {
+        String id = programa.getId();
         if(programa.getId() == null || programa.getId().isEmpty()){
-            repositorio.adicionaPrograma(preferencias.getIdosoSelecionadoId(), programa);
+            id = repositorio.adicionaPrograma(preferencias.getIdosoSelecionadoId(), programa);
         }else {
             repositorio.atualizaPrograma(preferencias.getIdosoSelecionadoId(), programa);
         }
+
+        return id;
     }
 
     public void salvaAudioInstrucao(String fileName, String remedioId, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {

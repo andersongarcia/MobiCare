@@ -1,6 +1,8 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Classe que representa um Programa de TV
@@ -19,7 +21,13 @@ public class Programa implements Serializable {
 
     private int repeticao;
 
+    private Semana semana;
+
     private int codigoAlarme;
+
+    public Programa(){
+        this.semana = new Semana();
+    }
 
 
     public String getId() { return id; }
@@ -64,5 +72,43 @@ public class Programa implements Serializable {
 
     public void setRepeticao(int repeticao) {
         this.repeticao = repeticao;
+    }
+
+    public Semana getSemana() {
+        return semana;
+    }
+
+    public void setSemana(Semana semana) {
+        this.semana = semana;
+    }
+
+    public Calendar obterProximaExibicao() {
+        String array[];
+        array = horario.split(":");
+        int hora = Integer.parseInt(array[0]);
+        int minuto = Integer.parseInt(array[1]);
+
+        Calendar agora = new GregorianCalendar();
+        agora.setTimeInMillis(System.currentTimeMillis());
+
+        for(int i=0; i<7; i++){
+            if(semana.diaEstaSelecionado(agora.get(Calendar.DAY_OF_WEEK))){
+                Calendar agenda = new GregorianCalendar();
+                agenda.add(Calendar.DAY_OF_YEAR, agora.get(Calendar.DAY_OF_YEAR));
+                agenda.set(Calendar.HOUR_OF_DAY, hora);
+                agenda.set(Calendar.MINUTE, minuto);
+                agenda.set(Calendar.SECOND, 0);
+                agenda.set(Calendar.MILLISECOND, 0);
+                agenda.set(Calendar.DATE, agora.get(Calendar.DATE));
+                agenda.set(Calendar.MONTH, agora.get(Calendar.MONTH));
+                if(agenda.after(agora)) {
+                    return agenda;
+                }else {
+                    agenda.add(Calendar.DATE, 1);
+                }
+            }
+        }
+
+        return null;
     }
 }

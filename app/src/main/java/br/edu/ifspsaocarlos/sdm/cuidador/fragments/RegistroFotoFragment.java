@@ -131,9 +131,6 @@ public class RegistroFotoFragment extends Fragment {
         try {
             activity.setLocalFile(FotoService.getTempFile(activity.getPackageName()));
 
-            /*activity.setLocalFileUri(getActivity().getContentResolver()
-                    .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values));*/
-
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);

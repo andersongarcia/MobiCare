@@ -25,42 +25,131 @@
             android:paddingRight="@dimen/text_margin"
             android:orientation="vertical" >
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="@string/nome_programa" />
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/programa_nome"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_nome_do_programa" />
+                </android.support.design.widget.TextInputLayout>
+    
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/programa_horarios"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="false"
+                        android:hint="@string/hint_horario" />
+                </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/programa_nome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_nome_do_programa" />
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/programa_link"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_link" />
+                </android.support.design.widget.TextInputLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/horarios_programa" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/text_margin"
+                    android:text="@string/quais_dias"/>
 
-            <EditText
-                android:id="@+id/programa_horarios"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusableInTouchMode="false"
-                android:hint="@string/hint_horario" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/text_margin"
+                    android:orientation="vertical">
+                    <View style="@style/Divider"/>
+                    <CheckedTextView
+                        android:id="@+id/cb_domingo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:checkMark="@drawable/ic_check_black_36dp"
+                        android:padding="@dimen/tile_padding"
+                        android:text="@string/semana_domingo" />
+                    <View style="@style/Divider"/>
+                    <CheckedTextView
+                        android:id="@+id/cb_segunda"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:checkMark="@drawable/ic_check_black_36dp"
+                        android:padding="@dimen/tile_padding"
+                        android:text="@string/semana_segunda" />
+                    <View style="@style/Divider"/>
+                    <CheckedTextView
+                        android:id="@+id/cb_terca"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:checkMark="@drawable/ic_check_black_36dp"
+                        android:padding="@dimen/tile_padding"
+                        android:text="@string/semana_terca" />
+                    <View style="@style/Divider"/>
+                    <CheckedTextView
+                        android:id="@+id/cb_quarta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:checkMark="@drawable/ic_check_black_36dp"
+                        android:padding="@dimen/tile_padding"
+                        android:text="@string/semana_quarta" />
+                    <View style="@style/Divider"/>
+                    <CheckedTextView
+                        android:id="@+id/cb_quinta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:checkMark="@drawable/ic_check_black_36dp"
+                        android:padding="@dimen/tile_padding"
+                        android:text="@string/semana_quinta" />
+                    <View style="@style/Divider"/>
+                    <CheckedTextView
+                        android:id="@+id/cb_sexta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:checkMark="@drawable/ic_check_black_36dp"
+                        android:padding="@dimen/tile_padding"
+                        android:text="@string/semana_sexta" />
+                    <View style="@style/Divider"/>
+                    <CheckedTextView
+                        android:id="@+id/cb_sabado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:checkMark="@drawable/ic_check_black_36dp"
+                        android:padding="@dimen/tile_padding"
+                        android:text="@string/semana_sabado" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/link" />
-
-            <EditText
-                android:id="@+id/programa_link"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_link" />
+                </LinearLayout>
+                
+            </LinearLayout>
         </LinearLayout>
-        </LinearLayout>
+
     </ScrollView>
 
 </FrameLayout>

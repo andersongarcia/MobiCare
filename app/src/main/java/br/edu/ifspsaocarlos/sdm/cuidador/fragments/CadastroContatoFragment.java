@@ -68,11 +68,14 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
         String nome = etNome.getText().toString().trim();
         String telefone = etTelefone.getText().toString().trim();
 
-        Contato contato = new Contato(nome, telefone);
+        final Contato contato = new Contato(nome, telefone);
         contato.setId(id);
         service.salvaContato(contato, new CallbackGenerico<Contato>() {
                     @Override
                     public void OnComplete(Contato c) {
+                        if(localFile != null && localFile.exists()){
+                            service.salvaFoto(CuidadorService.NO.CONTATOS, c.getId(), localFile);
+                        }
                     }
                 }
         );

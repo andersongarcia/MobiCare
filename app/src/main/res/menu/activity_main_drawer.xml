@@ -8,22 +8,27 @@
             android:title="@string/menu_chat" />
     </group>
 
-    <item android:title="@string/menu_gerenciar">
-        <menu>
-            <item
-                android:id="@+id/nav_remedios"
-                android:icon="@drawable/ic_alarm_add_black_48dp"
-                android:title="@string/menu_remedios" />
-            <item
-                android:id="@+id/nav_contatos"
-                android:icon="@drawable/ic_contacts_black_48dp"
-                android:title="@string/menu_contatos" />
-            <item
-                android:id="@+id/nav_programas"
-                android:icon="@drawable/ic_live_tv_black_48dp"
-                android:title="@string/menu_programas_favoritos" />
-        </menu>
-    </item>
+    <group
+        android:id="@+id/grupoMenuCuidador"
+        android:checkableBehavior="single"
+        android:visible="false">
+        <item android:title="@string/menu_gerenciar">
+            <menu>
+                <item
+                    android:id="@+id/nav_remedios"
+                    android:icon="@drawable/ic_alarm_add_black_48dp"
+                    android:title="@string/menu_remedios" />
+                <item
+                    android:id="@+id/nav_contatos"
+                    android:icon="@drawable/ic_contacts_black_48dp"
+                    android:title="@string/menu_contatos" />
+                <item
+                    android:id="@+id/nav_programas"
+                    android:icon="@drawable/ic_live_tv_black_48dp"
+                    android:title="@string/menu_programas_favoritos" />
+            </menu>
+        </item>
+    </group>
 
 
     <item android:title="@string/menu_sobre">
