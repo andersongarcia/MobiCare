@@ -2,8 +2,10 @@ package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -42,9 +44,12 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(FirebaseAuth.getInstance().getCurrentUser() == null){
-            Intent intent = new Intent(this, PhoneAuthActivity.class);
-            startActivity(intent);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean("authFirebase", false)){
+            if(FirebaseAuth.getInstance().getCurrentUser() == null){
+                Intent intent = new Intent(this, PhoneAuthActivity.class);
+                startActivity(intent);
+            }
         }
 
         // verifica se tem usuário logado
@@ -187,6 +192,12 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_configuracoes) {
             return true;
+        }
+
+        if (id == R.id.action_configuracoes) {
+            service.efetuaLogout();
+            Intent intent = new Intent(this, ConfiguracoesActivity.class);
+            startActivity(intent);
         }
 
         if (id == R.id.action_sair) {

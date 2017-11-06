@@ -43,7 +43,6 @@ public class AlarmeReceiver extends BroadcastReceiver {
         //You can do the processing here.
         //Bundle extras = intent.getExtras();
         Bundle bundle = intent.getBundleExtra(BUNDLE);
-        StringBuilder msgStr = new StringBuilder();
 
         Intent newIntent = new Intent(context, IdosoActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -84,8 +83,7 @@ public class AlarmeReceiver extends BroadcastReceiver {
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
 
         // calcula intervalo do primeiro alarme
-        //Calendar cal = calculaIntervalo(horario);
-        Calendar cal = new GregorianCalendar();
+        Calendar cal = calculaIntervalo(horario);
         Log.d(TAG, "primeiro alarme definido para " + cal.get(Calendar.DATE));
         // calcula intervalo de recorrência
         long intervaloRecorrencia = TimeUnit.HOURS.toMillis(recorrencia);
@@ -96,7 +94,7 @@ public class AlarmeReceiver extends BroadcastReceiver {
     public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, String horario, boolean deveAjustarProximo){
         // calcula intervalo do alarme
         Calendar cal = calculaIntervalo(horario);
-        //Calendar cal = new GregorianCalendar();
+        //Calendar cal = new GregorianCalendar();  // testes para execução imediata
         defineAlarmeUnico(context, mensagem, requestCode, cal, deveAjustarProximo);
     }
 
@@ -108,9 +106,10 @@ public class AlarmeReceiver extends BroadcastReceiver {
         bundle.putBoolean(REAGENDA, deveAjustarProximo);
 
         Intent intent = new Intent(context, AlarmeReceiver.class);
+        intent.putExtra(NO.getNo(NO.REMEDIOS), mensagem.getId());
         intent.putExtra(BUNDLE, bundle);
 
-        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
     }
 

@@ -2,9 +2,11 @@ package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -13,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.Manifest;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RegistroPerfilFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -35,10 +38,12 @@ public class RegistroActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        if(FirebaseAuth.getInstance().getCurrentUser() == null){
-            Intent intent = new Intent(this, PhoneAuthActivity.class);
-            startActivity(intent);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean("authFirebase", false)){
+            if(FirebaseAuth.getInstance().getCurrentUser() == null){
+                Intent intent = new Intent(this, PhoneAuthActivity.class);
+                startActivity(intent);
+            }
         }
 
         setContentView(R.layout.activity_registro);

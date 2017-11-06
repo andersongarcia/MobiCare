@@ -135,6 +135,7 @@
     <string name="instant_validation">(instant validation)</string>
     <string name="firebase_status_fmt">Firebase User: %s</string>
     <string name="hint_horario_programa">Horário de exibição</string>
+    <string name="autenticacao_firebase">Autenticação com Firebase</string>
 
 
 </resources>
