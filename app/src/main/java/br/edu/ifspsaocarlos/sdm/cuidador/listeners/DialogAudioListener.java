@@ -11,6 +11,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 
@@ -25,12 +27,30 @@ public class DialogAudioListener implements View.OnClickListener {
     private MediaPlayer mPlayer;
     private String fileName;
     private MediaRecorder mRecorder;
+    private boolean isRecord;
+    private static final Map<Status, Integer> statusImage;
+    static
+    {
+        statusImage = new HashMap<>();
+        statusImage.put(Status.AGUARDANDO_GRAVACAO, R.drawable.ic_mic_none_black_48dp);
+        statusImage.put(Status.GRAVANDO, R.drawable.ic_mic_black_48dp);
+        statusImage.put(Status.GRAVACAO_CONCLUIDA, R.drawable.ic_play_arrow_black_48dp);
+        statusImage.put(Status.REPRODUZINDO, R.drawable.ic_pause_black_48dp);
+    }
 
     public String getFileName() {
         return fileName;
     }
 
     public void setStatus(Status status) { this.status = status; }
+
+    public boolean isRecord() {
+        return isRecord;
+    }
+
+    public void setRecord(boolean record) {
+        isRecord = record;
+    }
 
     // botões do dialog
     public enum TipoBotao { POSITIVO, NEGATIVO, NEUTRO };
@@ -45,8 +65,10 @@ public class DialogAudioListener implements View.OnClickListener {
 
     public DialogAudioListener(Context context, String fileName){
         this.context = context;
-        String path = context.getExternalCacheDir().getAbsolutePath();
-        this.fileName = path + "/" + fileName;
+        //String path = context.getExternalCacheDir().getAbsolutePath();
+        //this.fileName = path + "/" + fileName;
+        this.fileName = fileName;
+        this.isRecord = false;
 
         // Cria o gerador do AlertDialog
         builder = new AlertDialog.Builder(context);
@@ -110,6 +132,7 @@ public class DialogAudioListener implements View.OnClickListener {
         // Define ações do controle de gravação
         final ImageButton btnIniciarGravacao = (ImageButton) dialog.findViewById(R.id.btn_iniciar_gravacao);
         btnIniciarGravacao.setTag(status);
+        btnIniciarGravacao.setImageResource(statusImage.get(status));
         btnIniciarGravacao.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -119,24 +142,24 @@ public class DialogAudioListener implements View.OnClickListener {
                 switch (status){
                     case AGUARDANDO_GRAVACAO:
                         // inicia gravação
-                        btnIniciarGravacao.setImageResource(R.drawable.ic_mic_black_48dp);
                         btnIniciarGravacao.setTag(Status.GRAVANDO);
+                        btnIniciarGravacao.setImageResource(statusImage.get(Status.GRAVANDO));
 
                         iniciarGravacao();
                         break;
                     case GRAVANDO:
                         // termina gravação
-                        btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
                         btnIniciarGravacao.setTag(Status.GRAVACAO_CONCLUIDA);
+                        btnIniciarGravacao.setImageResource(statusImage.get(Status.GRAVACAO_CONCLUIDA));
 
                         pararGravacao();
                         break;
                     case GRAVACAO_CONCLUIDA:
                         // inicia reproducao
-                        btnIniciarGravacao.setImageResource(R.drawable.ic_pause_black_48dp);
                         btnIniciarGravacao.setTag(Status.REPRODUZINDO);
+                        btnIniciarGravacao.setImageResource(statusImage.get(Status.REPRODUZINDO));
 
                         MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
 
@@ -153,12 +176,13 @@ public class DialogAudioListener implements View.OnClickListener {
                         break;
                     case REPRODUZINDO:
                         // termina reproducao
-                        btnIniciarGravacao.setImageResource(R.drawable.ic_play_arrow_black_48dp);
                         btnIniciarGravacao.setTag(Status.GRAVACAO_CONCLUIDA);
+                        btnIniciarGravacao.setImageResource(statusImage.get(Status.GRAVACAO_CONCLUIDA));
 
                         pararReproducao();
                         break;
                 }
+
             }
         });
     }
@@ -182,13 +206,12 @@ public class DialogAudioListener implements View.OnClickListener {
     }
 
     private void iniciarGravacao() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(fileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
         try {
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setOutputFile(fileName);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             mRecorder.prepare();
         } catch (IOException e) {
             Toast.makeText(context, R.string.msg_erro_gravacao + ": " + e.getMessage(), Toast.LENGTH_LONG);
@@ -201,5 +224,6 @@ public class DialogAudioListener implements View.OnClickListener {
         mRecorder.stop();
         mRecorder.release();
         mRecorder = null;
+        isRecord = true;
     }
 }

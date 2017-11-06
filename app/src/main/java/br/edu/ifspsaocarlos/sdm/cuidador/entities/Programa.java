@@ -94,7 +94,7 @@ public class Programa implements Serializable {
         for(int i=0; i<7; i++){
             if(semana.diaEstaSelecionado(agora.get(Calendar.DAY_OF_WEEK))){
                 Calendar agenda = new GregorianCalendar();
-                agenda.add(Calendar.DAY_OF_YEAR, agora.get(Calendar.DAY_OF_YEAR));
+                agenda.set(Calendar.DAY_OF_YEAR, agora.get(Calendar.DAY_OF_YEAR));
                 agenda.set(Calendar.HOUR_OF_DAY, hora);
                 agenda.set(Calendar.MINUTE, minuto);
                 agenda.set(Calendar.SECOND, 0);

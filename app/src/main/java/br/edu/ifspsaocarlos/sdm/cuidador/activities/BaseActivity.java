@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
@@ -39,6 +41,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Intent intent = new Intent(this, PhoneAuthActivity.class);
+            startActivity(intent);
+        }
 
         // verifica se tem usuário logado
         verificaLogado();

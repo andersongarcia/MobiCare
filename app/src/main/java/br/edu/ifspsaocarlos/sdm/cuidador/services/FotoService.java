@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
+
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -120,7 +122,7 @@ public abstract class FotoService {
         }
     }
 
-    public static void carregarAvatar(final CuidadorService service, String uri, final ImageView imageView) {
+    public static void carregarAvatar(final CuidadorService service, String uri, final ImageView imageView, final CallbackSimples callback) {
         final File localFile;
         try {
             localFile = File.createTempFile("foto", ".jpg");
@@ -130,6 +132,7 @@ public abstract class FotoService {
                     if(localFile.exists()){
                         Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                         imageView.setImageBitmap(bitmap);
+                        callback.OnComplete();
                     }
                     Log.e("firebase ",";local tem file created  created " + localFile.toString());
                 }

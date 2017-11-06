@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -29,6 +30,7 @@ public class AlarmeReceiver extends BroadcastReceiver {
     final public static String ONE_TIME = "onetime";
     final public static String TARGET = "target";
     private static final String REAGENDA = "reagenda";
+    private static final String BUNDLE = "bundle";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -39,18 +41,20 @@ public class AlarmeReceiver extends BroadcastReceiver {
         wl.acquire();
 
         //You can do the processing here.
-        Bundle extras = intent.getExtras();
+        //Bundle extras = intent.getExtras();
+        Bundle bundle = intent.getBundleExtra(BUNDLE);
         StringBuilder msgStr = new StringBuilder();
 
         Intent newIntent = new Intent(context, IdosoActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        if(extras != null){
-            IMensagem mensagem = (IMensagem) extras.get(String.valueOf(NO.MENSAGENS));
-            newIntent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
+        if(bundle != null){
+            IMensagem mensagem = (IMensagem) bundle.getSerializable(NO.getNo(NO.MENSAGENS));
+            Bundle newBundle = new Bundle();
+            newBundle.putSerializable(NO.getNo(NO.MENSAGENS), mensagem);
+            newIntent.putExtra(BUNDLE, newBundle);
+            context.startActivity(newIntent);
         }
-
-        context.startActivity(newIntent);
 
         //Toast.makeText(context, msgStr, Toast.LENGTH_LONG).show();
 
@@ -69,13 +73,20 @@ public class AlarmeReceiver extends BroadcastReceiver {
     public void defineAlarmeRecorrente(Context context, IMensagem mensagem, int requestCode, String horario, int recorrencia)
     {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(NO.getNo(NO.MENSAGENS), mensagem);
+        bundle.putBoolean(ONE_TIME, Boolean.FALSE);
+
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
-        intent.putExtra(ONE_TIME, Boolean.FALSE);
+        intent.putExtra(BUNDLE, bundle);
+
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
 
         // calcula intervalo do primeiro alarme
-        Calendar cal = calculaIntervalo(horario);
+        //Calendar cal = calculaIntervalo(horario);
+        Calendar cal = new GregorianCalendar();
+        Log.d(TAG, "primeiro alarme definido para " + cal.get(Calendar.DATE));
         // calcula intervalo de recorrência
         long intervaloRecorrencia = TimeUnit.HOURS.toMillis(recorrencia);
 
@@ -85,22 +96,33 @@ public class AlarmeReceiver extends BroadcastReceiver {
     public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, String horario, boolean deveAjustarProximo){
         // calcula intervalo do alarme
         Calendar cal = calculaIntervalo(horario);
+        //Calendar cal = new GregorianCalendar();
         defineAlarmeUnico(context, mensagem, requestCode, cal, deveAjustarProximo);
     }
 
     public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, Calendar agenda, boolean deveAjustarProximo) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(NO.getNo(NO.MENSAGENS), mensagem);
+        bundle.putBoolean(REAGENDA, deveAjustarProximo);
+
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
-        intent.putExtra(REAGENDA, deveAjustarProximo);
+        intent.putExtra(BUNDLE, bundle);
+
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
     }
 
     public void mostraNovaMensagem(Context context, Mensagem mensagem) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(NO.getNo(NO.MENSAGENS), mensagem);
+
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        intent.putExtra(String.valueOf(NO.MENSAGENS), mensagem);
+        intent.putExtra(BUNDLE, bundle);
+
         PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
     }
@@ -115,7 +137,7 @@ public class AlarmeReceiver extends BroadcastReceiver {
         agora.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
 
         Calendar cal = new GregorianCalendar();
-        cal.add(Calendar.DAY_OF_YEAR, agora.get(Calendar.DAY_OF_YEAR));
+        cal.set(Calendar.DAY_OF_YEAR, agora.get(Calendar.DAY_OF_YEAR));
         cal.set(Calendar.HOUR_OF_DAY, hora);
         cal.set(Calendar.MINUTE, minuto);
         cal.set(Calendar.SECOND, 0);

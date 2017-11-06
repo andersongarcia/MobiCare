@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
@@ -48,6 +51,12 @@ public class RegistroCuidadorFragment extends Fragment {
         etTelefone = (EditText)view.findViewById(R.id.registro_cuidador_telefone);
         etNomeIdoso = (EditText)view.findViewById(R.id.registro_idoso_nome);
         etTelefoneIdoso = (EditText)view.findViewById(R.id.registro_idoso_telefone);
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null){
+            etNome.setText(currentUser.getDisplayName());
+            etTelefone.setText(currentUser.getPhoneNumber().substring(3));
+        }
 
         return view;
     }

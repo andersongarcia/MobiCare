@@ -35,8 +35,8 @@ public class AlarmeService {
         for (Remedio remedio : remedios) {
             IMensagem mensagem = new RemedioMensagemAdapter(remedio);
             alarmeReceiver.cancelaAlarme(contexto, remedio.getCodigoAlarme());
-            if(remedio.isAjustavel()){
-                alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), true);
+            if(remedio.isAjustavel() || remedio.getRepeticao() == 0){
+                alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao() > 0);
             }else {
                 alarmeReceiver.defineAlarmeRecorrente(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao());
             }

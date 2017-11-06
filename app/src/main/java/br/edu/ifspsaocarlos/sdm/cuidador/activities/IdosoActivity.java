@@ -11,6 +11,8 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 public class IdosoActivity extends BaseActivity {
 
+    private static final String BUNDLE = "bundle";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_idoso);
@@ -18,10 +20,10 @@ public class IdosoActivity extends BaseActivity {
 
         final Window win= getWindow(); win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD); win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        Bundle extras = getIntent().getExtras();
+        Bundle extras = getIntent().getBundleExtra(BUNDLE);
 
         if (extras != null) {
-            IMensagem mensagem = (IMensagem) extras.get(String.valueOf(CuidadorService.NO.MENSAGENS));
+            IMensagem mensagem = (IMensagem) extras.get(CuidadorService.NO.getNo(CuidadorService.NO.MENSAGENS));
             openFragment(ChatIdosoFragment.newInstance(mensagem));
         }
 

@@ -4,12 +4,12 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 
@@ -34,6 +34,13 @@ public class RegistroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Intent intent = new Intent(this, PhoneAuthActivity.class);
+            startActivity(intent);
+        }
+
         setContentView(R.layout.activity_registro);
 
         cuidadorService = new CuidadorService(this);

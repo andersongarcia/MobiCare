@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,7 +38,6 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
  */
 public class CadastroRemedioFragment extends CadastroBaseFragment implements TimePickedListener {
     private static final String REMEDIO = "REMEDIO";
-    private static final String FILE_PREFIX = REMEDIO.toLowerCase() + "_";
 
     private Remedio remedio;
     private EditText etNome;
@@ -52,7 +50,9 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     private Button btnOuvirInstrucao;
     private Button btnGravarInstrucao;
 
-    private String fileName;
+    private DialogAudioListener dlgGravarInstrucaoListener;
+    private DialogAudioListener dlgOuvirInstrucaoListener;
+    private boolean instrucaoAlterada = false;
 
     public CadastroRemedioFragment() {
         // Required empty public constructor
@@ -138,7 +138,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
     @Override
     protected void carregarOutrasReferencias() {
-        setLinkParaInstrucao(remedio.getInstrucaoUri());
+        btnOuvirInstrucao.setEnabled(false);
 
         // Cria timepicker para campo de horário
         etHorario.setOnClickListener(new View.OnClickListener() {
@@ -160,26 +160,57 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
         ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-        fileName = FILE_PREFIX + remedio.getId();
+        final String path = activity.getExternalCacheDir().getAbsolutePath();
+        final String filename = String.valueOf(System.currentTimeMillis());
 
+        // Tenta carregar instrução já gravada
+        if(remedio.getInstrucaoUri() != null && !remedio.getInstrucaoUri().isEmpty()){
+            try {
+                final File localFile = File.createTempFile(filename, ".3gp");
+
+                service.carregaArquivo(Uri.parse(remedio.getInstrucaoUri()), localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        criaDialogs(localFile.getAbsolutePath());
+                        dlgOuvirInstrucaoListener.setRecord(true);
+                        btnOuvirInstrucao.setEnabled(true);
+                    }
+                }, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        criaDialogs(path + "/" + filename);
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            criaDialogs(path + "/" + filename);
+        }
+
+
+    }
+
+    private void criaDialogs(String fullPathFilename) {
         //region Dialog para gravação da instrução
-        final DialogAudioListener dlgGravarInstrucaoListener = new DialogAudioListener(activity, fileName);
+        dlgGravarInstrucaoListener = new DialogAudioListener(activity, fullPathFilename);
         dlgGravarInstrucaoListener.setTitle(R.string.gravar_instrucao);
         btnGravarInstrucao.setOnClickListener(dlgGravarInstrucaoListener);
 
         dlgGravarInstrucaoListener.setButton(DialogAudioListener.TipoBotao.POSITIVO, R.string.btn_usar, new Runnable() {
             @Override
             public void run() {
-                service.salvaAudioInstrucao(dlgGravarInstrucaoListener.getFileName(), remedio.getId(),
-                        new OnSuccessListener<UploadTask.TaskSnapshot>(){
+                dlgGravarInstrucaoListener.setStatus(DialogAudioListener.Status.AGUARDANDO_GRAVACAO);
+                dlgOuvirInstrucaoListener.setRecord(true);
+                btnOuvirInstrucao.setEnabled(true);
+                instrucaoAlterada = true;
+            }
+        });
 
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                String uri = taskSnapshot.getDownloadUrl().toString();
-                                service.salvaUriInstrucao(remedio.getId(), uri);
-                                setLinkParaInstrucao(uri);
-                            }
-                        });
+        dlgGravarInstrucaoListener.setButton(DialogAudioListener.TipoBotao.NEGATIVO, R.string.btn_cancelar, new Runnable() {
+            @Override
+            public void run() {
+                dlgGravarInstrucaoListener.setRecord(true);
             }
         });
 
@@ -192,7 +223,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         //endregion
 
         //region Dialog para reprodução da instrução gravada
-        final DialogAudioListener dlgOuvirInstrucaoListener = new DialogAudioListener(activity, fileName);
+        dlgOuvirInstrucaoListener = new DialogAudioListener(activity, fullPathFilename);
         dlgOuvirInstrucaoListener.setTitle(R.string.ouvir_instrucao);
         btnOuvirInstrucao.setOnClickListener(dlgOuvirInstrucaoListener);
         dlgOuvirInstrucaoListener.setStatus(DialogAudioListener.Status.GRAVACAO_CONCLUIDA);
@@ -223,32 +254,6 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         }
     }
 
-    private final void setLinkParaInstrucao(String uri) {
-        if(uri == null || uri.isEmpty()){
-            btnOuvirInstrucao.setEnabled(true);
-            return;
-        }
-        try {
-            final File localFile = File.createTempFile(remedio.getId(), ".3gp");
-            service.carregaArquivo(Uri.parse(uri), localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    fileName = localFile.getAbsolutePath();
-                    btnOuvirInstrucao.setEnabled(true);
-                    Log.e("firebase ",";local tem file created  created " + localFile.toString());
-                }
-            }, new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.e("firebase ",";local tem file not created  created " +exception.toString());
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            btnOuvirInstrucao.setEnabled(false);
-        }
-    }
-
     @Override
     protected void salvar() {
         String nome = etNome.getText().toString().trim();
@@ -269,8 +274,6 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
                 horasRepeticao = 0;
         }
 
-        final Remedio remedio = new Remedio();
-        remedio.setId(this.remedio.getId());
         remedio.setNome(nome);
         remedio.setDose(dose);
         remedio.setHorario(horario);
@@ -281,15 +284,35 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
         // retorna id, já que pode ser novo
         final String id = service.salvaRemedio(remedio);
 
-        if(localFile != null && localFile.exists()){
-            service.salvaFoto(CuidadorService.NO.REMEDIOS, id, localFile)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri uri = taskSnapshot.getDownloadUrl();
-                    service.salvaUri(CuidadorService.NO.REMEDIOS, id, uri.toString());
-                }
-            });
+        // verifica se foto foi alterada
+        if(fotoAlterada){
+            // se foi, salva nova foto
+            if(localFile != null && localFile.exists()){
+                service.salvaFoto(CuidadorService.NO.REMEDIOS, id, localFile)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Uri uri = taskSnapshot.getDownloadUrl();
+                                service.salvaUri(CuidadorService.NO.REMEDIOS, id, uri.toString());
+                            }
+                        });
+            }
+        }
+
+        // verifica se instrução foi alterada
+        if(instrucaoAlterada){
+            // se foi, salva nova instrução
+            if(dlgGravarInstrucaoListener.getFileName() != null && !dlgGravarInstrucaoListener.getFileName().isEmpty()) {
+                service.salvaAudioInstrucao(dlgGravarInstrucaoListener.getFileName(), remedio.getId(),
+                        new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                String uri = taskSnapshot.getDownloadUrl().toString();
+                                service.salvaUriInstrucao(remedio.getId(), uri);
+                            }
+                        });
+            }
         }
     }
 

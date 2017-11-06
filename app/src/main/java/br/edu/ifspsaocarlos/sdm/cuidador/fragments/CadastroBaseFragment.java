@@ -22,6 +22,7 @@ import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
@@ -54,6 +55,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     protected FloatingActionButton btnTirarFoto;
     protected ImageView ivAvatar;
     protected File localFile;
+    protected boolean fotoAlterada = false;
 
     public CadastroBaseFragment(Fragment fragmentLista, CuidadorService.NO no) {
         this.fragmentLista = fragmentLista;
@@ -107,7 +109,11 @@ public abstract class CadastroBaseFragment extends Fragment {
 
     private void carregarAvatar() {
         if(getUriAvatar() != null && !getUriAvatar().isEmpty()){
-            FotoService.carregarAvatar(service, getUriAvatar(), ivAvatar);
+            FotoService.carregarAvatar(service, getUriAvatar(), ivAvatar, new CallbackSimples() {
+                @Override
+                public void OnComplete() {
+                }
+            });
         }
     }
 
@@ -172,6 +178,7 @@ public abstract class CadastroBaseFragment extends Fragment {
                     if(localFile.exists()){
                         Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                         ivAvatar.setImageBitmap(bitmap);
+                        fotoAlterada = true;
                     }
                     break;
             }

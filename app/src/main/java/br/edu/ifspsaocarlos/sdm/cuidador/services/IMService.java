@@ -22,6 +22,10 @@ public class IMService {
         FirebaseMessaging.getInstance().subscribeToTopic(topic);
     }
 
+    public static void unsubscribe(String topic){
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+    }
+
     public static void unsubscribe(){
         try {
             FirebaseInstanceId.getInstance().deleteInstanceId();

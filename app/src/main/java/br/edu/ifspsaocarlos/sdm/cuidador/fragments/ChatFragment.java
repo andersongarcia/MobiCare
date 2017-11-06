@@ -56,9 +56,10 @@ public class ChatFragment extends Fragment {
 
         service = new CuidadorService(activity);
 
-        Long l = System.currentTimeMillis() / 1000;
-        String fileName = FILE_PREFIX + l.toString();
-        final DialogAudioListener dialogAudioListener = new DialogAudioListener(activity, fileName);
+        String path = activity.getExternalCacheDir().getAbsolutePath();
+        String filename = String.valueOf(System.currentTimeMillis());
+        filename = path + "/" + filename;
+        final DialogAudioListener dialogAudioListener = new DialogAudioListener(activity, filename);
 
         view.findViewById(R.id.btn_cadastrar).setOnClickListener(dialogAudioListener);
 
@@ -67,7 +68,10 @@ public class ChatFragment extends Fragment {
         dialogAudioListener.setButton(DialogAudioListener.TipoBotao.POSITIVO, R.string.enviar, new Runnable() {
             @Override
             public void run() {
-                service.salvaAudioChat(dialogAudioListener.getFileName());
+                if(dialogAudioListener.getFileName() != null && !dialogAudioListener.getFileName().isEmpty()){
+                    dialogAudioListener.setStatus(DialogAudioListener.Status.AGUARDANDO_GRAVACAO);
+                    service.salvaAudioChat(dialogAudioListener.getFileName());
+                }
             }
         });
 

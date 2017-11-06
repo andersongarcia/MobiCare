@@ -43,7 +43,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusableInTouchMode="false"
-                        android:hint="@string/hint_horario" />
+                        android:hint="@string/hint_horario_programa" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
