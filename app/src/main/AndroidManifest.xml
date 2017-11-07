@@ -68,7 +68,8 @@
         </provider>
 
         <activity android:name=".activities.PhoneAuthActivity" />
-        <activity android:name=".activities.ConfiguracoesActivity"></activity>
+        <activity android:name=".activities.ConfiguracoesActivity" />
+        <activity android:name=".activities.ConfirmaRemedioActivity"></activity>
     </application>
 
 </manifest>

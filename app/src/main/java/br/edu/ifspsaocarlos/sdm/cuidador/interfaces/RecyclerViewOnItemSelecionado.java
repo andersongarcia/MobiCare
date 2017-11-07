@@ -6,7 +6,6 @@ import android.view.View;
  * Interface de enventos do RecyclerView.
  *
  * @author Anderson Canale Garcia
- * @author Lucas Petto
  */
 public interface RecyclerViewOnItemSelecionado {
 

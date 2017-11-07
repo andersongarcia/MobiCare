@@ -139,6 +139,8 @@
     <string name="excluir">Excluir</string>
     <string name="msg_confirma_excluir">Tem certeza que deseja excluir este item?</string>
     <string name="btn_excluir">Excluir</string>
+    <string name="chat_empty">Envie uma mensagem de voz ao idoso</string>
+    <string name="ouvir_mensagem">Ouvir mensagem</string>
 
 
 </resources>

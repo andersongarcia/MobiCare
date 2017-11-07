@@ -20,6 +20,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -54,6 +55,7 @@ public class CuidadorFirebaseRepository {
     private final DatabaseReference programaEndPoint;
     private final DatabaseReference mensagemEndPoint;
     private final DatabaseReference contadorAlarmeEndPoint;
+    private List<MensagemSet> mensagens;
 
     //endregion
 
@@ -68,6 +70,8 @@ public class CuidadorFirebaseRepository {
     }
 
     public List<Programa> getProgramas() { return programas; }
+
+    public List<MensagemSet> getMensagens() { return mensagens; }
 
     //endregion
 
@@ -87,6 +91,7 @@ public class CuidadorFirebaseRepository {
         contatos = new ArrayList<>();
         remedios = new ArrayList<>();
         programas = new ArrayList<>();
+        mensagens = new ArrayList<>();
     }
 
     // Singleton
@@ -102,6 +107,7 @@ public class CuidadorFirebaseRepository {
         carregaContatos(idosoId);
         carregaRemedios(idosoId);
         carregaProgramas(idosoId);
+        carregaMensagens(idosoId);
         carregaContadorAlarme(idosoId);
     }
 
@@ -374,6 +380,56 @@ public class CuidadorFirebaseRepository {
 
     //region Mensagens
 
+    /**
+     * Carrega lista de mensagens enviadas para o idoso
+     * @param idosoId
+     */
+    private void carregaMensagens(String idosoId) {
+        mensagemEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                // inicia com a lista de mensagens vazia
+                mensagens.clear();
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    // carrega objeto de mensagem
+                    final Mensagem mensagem = postSnapshot.getValue(Mensagem.class);
+                    // busca dados de contato do emissor
+                    contatoEndPoint.child(mensagem.getEmissorId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot emissorSnapshot) {
+                            final Contato emissor = emissorSnapshot.getValue(Contato.class);
+                            // busca dados de contato do destinatário
+                            contatoEndPoint.child(mensagem.getDestinatarioId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot destinatarioSnapshot) {
+                                    Contato destinatario = destinatarioSnapshot.getValue(Contato.class);
+                                    // cria Model Set com dados da mensagem e dos contatos
+                                    MensagemSet mensagemSet = new MensagemSet(mensagem, emissor, destinatario);
+                                    mensagens.add(mensagemSet);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getMessage());
+            }
+        });
+    }
+
     public void salvaMensagem(String idosoId, final Mensagem mensagem) {
         final DatabaseReference reference = mensagemEndPoint.child(idosoId);
         final String id = reference.push().getKey();
@@ -457,6 +513,7 @@ public class CuidadorFirebaseRepository {
     public void salvaUriInstrucao(String idosoId, String id, String uri) {
         remedioEndPoint.child(idosoId).child(id).child(CuidadorService.NO.getNo(CuidadorService.NO.INSTRUCAO_URI)).setValue(uri);
     }
+
 
     //endregion
 
