@@ -16,6 +16,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -69,7 +70,7 @@ public class CuidadorFirebaseStorage {
         reference.getFile(localFile).addOnSuccessListener(successListener).addOnFailureListener(failureListener);
     }
 
-    public void salvaAudioChat(final String idosoId, final String contatoId, final String fileName) {
+    public void salvaAudioChat(final String idosoId, final String contatoId, final String fileName, final CallbackSimples callback) {
         Uri uri = Uri.fromFile(new File(fileName));
         UploadTask uploadTask = idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.CHAT)).child(contatoId).putFile(uri);
 
@@ -87,7 +88,7 @@ public class CuidadorFirebaseStorage {
 
                 Mensagem mensagem = new Mensagem(contatoId, idosoId, downloadUrl.toString());
 
-                CuidadorFirebaseRepository.getInstance().salvaMensagem(idosoId, mensagem);
+                CuidadorFirebaseRepository.getInstance().salvaMensagem(idosoId, mensagem, callback);
             }
         });
     }

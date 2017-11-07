@@ -18,6 +18,7 @@ import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseStorage;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
@@ -258,8 +259,8 @@ public class CuidadorService {
         return preferencias.getUsuarioLogadoPerfil();
     }
 
-    public void salvaAudioChat(String fileName) {
-        CuidadorFirebaseStorage.getInstance().salvaAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
+    public void salvaAudioChat(String fileName, CallbackSimples callback) {
+        CuidadorFirebaseStorage.getInstance().salvaAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName, callback);
     }
 
     public void leNovasMensagens(ChildEventListener listener) {

@@ -1,5 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
@@ -20,6 +21,20 @@ public class MainActivity extends BaseActivity {
         //IMService.getToken(this);
         //AlarmeReceiver alarm = new AlarmeReceiver();
         //alarm.defineAlarmeRecorrente(this);
+
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                service.carregaListas();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        };
 
         // Verifica perfil
         switch (service.obterPerfilLogado()){

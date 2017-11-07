@@ -25,6 +25,7 @@ import java.util.List;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MensagemSetListAdapter;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
@@ -85,7 +86,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
         recyclerView.setLayoutManager(llm);
 
         listaMensagens = CuidadorFirebaseRepository.getInstance().getMensagens();
-        MensagemSetListAdapter adapter = new MensagemSetListAdapter(getActivity(), listaMensagens);
+        final MensagemSetListAdapter adapter = new MensagemSetListAdapter(getActivity(), listaMensagens);
         adapter.setRecyclerViewOnItemSelecionado(this);
         recyclerView.setAdapter(adapter);
 
@@ -109,7 +110,13 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
             public void run() {
                 if(dialogAudioListener.getFileName() != null && !dialogAudioListener.getFileName().isEmpty()){
                     dialogAudioListener.setStatus(DialogAudioListener.Status.AGUARDANDO_GRAVACAO);
-                    service.salvaAudioChat(dialogAudioListener.getFileName());
+                    service.salvaAudioChat(dialogAudioListener.getFileName(), new CallbackSimples(){
+
+                        @Override
+                        public void OnComplete() {
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             }
         });

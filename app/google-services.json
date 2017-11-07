@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "778707210151-gbmk6sm26j7ve5j2hqor94hq1frb1ui3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.ifspsaocarlos.sdm.cuidador",
+            "certificate_hash": "798653527951e4466cd69c2433cd0b20c2081ef6"
+          }
+        },
+        {
           "client_id": "778707210151-g0cc08l3urr04nuecs06etvm368l890o.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -44,6 +52,37 @@
               "client_type": 3
             }
           ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778707210151:android:5920de3503a2d18c",
+        "android_client_info": {
+          "package_name": "com.google.firebase.quickstart.fcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778707210151-hv8pmsj8q1rfdd29dn57uoo9oegonqe1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4yJzNDiPlBwizYJ4b2dCc7_Rcc9f3O2U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

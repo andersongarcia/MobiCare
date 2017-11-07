@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Idoso;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
@@ -430,7 +431,7 @@ public class CuidadorFirebaseRepository {
         });
     }
 
-    public void salvaMensagem(String idosoId, final Mensagem mensagem) {
+    public void salvaMensagem(String idosoId, final Mensagem mensagem, final CallbackSimples callback) {
         final DatabaseReference reference = mensagemEndPoint.child(idosoId);
         final String id = reference.push().getKey();
         mensagem.setId(id);
@@ -442,7 +443,12 @@ public class CuidadorFirebaseRepository {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){  // foto encontrada
                     mensagem.setFotoUri(String.valueOf(dataSnapshot.getValue()));
-                    reference.child(id).setValue(mensagem).addOnFailureListener(new OnFailureListener() {
+                    reference.child(id).setValue(mensagem).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            callback.OnComplete();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.d(TAG, e.getMessage());

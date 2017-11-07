@@ -53,7 +53,6 @@ public class PhoneAuthActivity extends AppCompatActivity implements
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     private ViewGroup mPhoneNumberViews;
-    private ViewGroup mSignedInViews;
 
     private TextView mStatusText;
     private TextView mDetailText;
@@ -64,7 +63,6 @@ public class PhoneAuthActivity extends AppCompatActivity implements
     private Button mStartButton;
     private Button mVerifyButton;
     private Button mResendButton;
-    private Button mSignOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +76,6 @@ public class PhoneAuthActivity extends AppCompatActivity implements
 
         // Assign views
         mPhoneNumberViews = (ViewGroup) findViewById(R.id.phone_auth_fields);
-        mSignedInViews = (ViewGroup) findViewById(R.id.signed_in_buttons);
 
         mStatusText = (TextView) findViewById(R.id.status);
         mDetailText = (TextView) findViewById(R.id.detail);
@@ -89,13 +86,11 @@ public class PhoneAuthActivity extends AppCompatActivity implements
         mStartButton = (Button) findViewById(R.id.button_start_verification);
         mVerifyButton = (Button) findViewById(R.id.button_verify_phone);
         mResendButton = (Button) findViewById(R.id.button_resend);
-        mSignOutButton = (Button) findViewById(R.id.sign_out_button);
 
         // Assign click listeners
         mStartButton.setOnClickListener(this);
         mVerifyButton.setOnClickListener(this);
         mResendButton.setOnClickListener(this);
-        mSignOutButton.setOnClickListener(this);
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
@@ -309,7 +304,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
             case STATE_INITIALIZED:
                 // Initialized state, show only the phone number field and start button
                 enableViews(mStartButton, mPhoneNumberField);
-                disableViews(mVerifyButton, mResendButton, mVerificationField);
+                disableViews(mPhoneNumberViews, mVerificationField);
                 mDetailText.setText(null);
                 break;
             case STATE_CODE_SENT:
@@ -352,13 +347,9 @@ public class PhoneAuthActivity extends AppCompatActivity implements
         if (user == null) {
             // Signed out
             mPhoneNumberViews.setVisibility(View.VISIBLE);
-            mSignedInViews.setVisibility(View.GONE);
-
-            mStatusText.setText(R.string.signed_out);
         } else {
             // Signed in
             mPhoneNumberViews.setVisibility(View.GONE);
-            mSignedInViews.setVisibility(View.VISIBLE);
 
             enableViews(mPhoneNumberField, mVerificationField);
             mPhoneNumberField.setText(null);
@@ -381,13 +372,15 @@ public class PhoneAuthActivity extends AppCompatActivity implements
 
     private void enableViews(View... views) {
         for (View v : views) {
-            v.setEnabled(true);
+            v.setEnabled(false);
+            v.setVisibility(View.VISIBLE);
         }
     }
 
     private void disableViews(View... views) {
         for (View v : views) {
             v.setEnabled(false);
+            v.setVisibility(View.INVISIBLE);
         }
     }
 
