@@ -23,6 +23,7 @@ import java.io.File;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
+import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogDeleteListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
@@ -56,6 +57,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     protected ImageView ivAvatar;
     protected File localFile;
     protected boolean fotoAlterada = false;
+    private DialogDeleteListener dialogExcluir;
 
     public CadastroBaseFragment(Fragment fragmentLista, CuidadorService.NO no) {
         this.fragmentLista = fragmentLista;
@@ -86,6 +88,15 @@ public abstract class CadastroBaseFragment extends Fragment {
         if(getIdCadastro() != null && !getIdCadastro().isEmpty()){
             carregarAvatar();
         }
+
+        dialogExcluir = new DialogDeleteListener(activity, new CallbackSimples(){
+
+            @Override
+            public void OnComplete() {
+                excluir();
+                redirecionaParaLista();
+            }
+        });
 
         carregarOutrasReferencias();
 
@@ -153,8 +164,11 @@ public abstract class CadastroBaseFragment extends Fragment {
                 redirecionaParaLista();
                 break;
             case R.id.excluir:
-                excluir();
-                redirecionaParaLista();
+                if(getIdCadastro() != null && !getIdCadastro().isEmpty()) {
+                    dialogExcluir.onClick(view);
+                }else {
+                    redirecionaParaLista();
+                }
                 break;
             case android.R.id.home:
                 redirecionaParaLista();

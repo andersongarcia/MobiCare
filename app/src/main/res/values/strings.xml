@@ -136,6 +136,9 @@
     <string name="firebase_status_fmt">Firebase User: %s</string>
     <string name="hint_horario_programa">Horário de exibição</string>
     <string name="autenticacao_firebase">Autenticação com Firebase</string>
+    <string name="excluir">Excluir</string>
+    <string name="msg_confirma_excluir">Tem certeza que deseja excluir este item?</string>
+    <string name="btn_excluir">Excluir</string>
 
 
 </resources>
