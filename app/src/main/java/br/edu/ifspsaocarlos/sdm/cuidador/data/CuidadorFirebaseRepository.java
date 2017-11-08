@@ -235,7 +235,7 @@ public class CuidadorFirebaseRepository {
     }
 
     public void carregaRemedios(String idosoId, final CallbackSimples callback) {
-        remedioEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
+        remedioEndPoint.child(idosoId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 remedios.clear();

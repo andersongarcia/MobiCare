@@ -15,6 +15,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
@@ -37,6 +38,17 @@ public class CuidadorService {
     private static final String TAG = "CuidadorService";
     public static final String NO_INSTRUCOES = "instrucoes";
     public static final String NO_CHAT = "instrucoes";
+
+    public Contato obterContato(String contatoId) {
+        List<Contato> contatos = repositorio.getContatos();
+
+        for (Contato contato : contatos) {
+            if(contato.getId().equals(contatoId))
+                return contato;
+        }
+
+        return null;
+    }
 
     public enum NO {
         CONTATOS,
@@ -212,6 +224,16 @@ public class CuidadorService {
         }
 
         return id;
+    }
+
+    public Remedio obterRemedio(String remedioId) {
+        List<Remedio> remedios = repositorio.getRemedios();
+        for (Remedio remedio : remedios) {
+            if (remedio.getId().equals(remedioId))
+                return remedio;
+        }
+
+        return null;
     }
 
     public void notificarCuidador(String remedioId) {

@@ -61,6 +61,8 @@
                     android:id="@+id/confirma_remedio_horario"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusableInTouchMode="false"
+                    android:inputType="time"
                     android:hint="@string/hint_horario_administracao" />
             </android.support.design.widget.TextInputLayout>
 
@@ -73,6 +75,8 @@
                     android:id="@+id/confirma_remedio_proximo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusableInTouchMode="false"
+                    android:inputType="time"
                     android:hint="@string/hint_horario_proximo" />
             </android.support.design.widget.TextInputLayout>
 

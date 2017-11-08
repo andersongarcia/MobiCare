@@ -1,6 +1,12 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.entities;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import br.edu.ifspsaocarlos.sdm.cuidador.util.DatetimeHelper;
 
 /**
  * Classe que representa um remédio
@@ -94,5 +100,16 @@ public class Remedio implements Serializable {
 
     public void setInstrucaoUri(String instrucaoUri) {
         this.instrucaoUri = instrucaoUri;
+    }
+
+    @Exclude
+    public String calculaProximoHorario() {
+        Calendar ultimoHorario = DatetimeHelper.getThisTimeToday(horario);
+        ultimoHorario.add(Calendar.HOUR, repeticao);
+
+        SimpleDateFormat s = new SimpleDateFormat("HH:mm");
+        String proximoHorario = s.format(ultimoHorario.getTime());
+
+        return proximoHorario;
     }
 }

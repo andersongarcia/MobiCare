@@ -1,5 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -10,6 +11,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.activities.ConfirmaRemedioActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
@@ -22,6 +24,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String NOTIFICACAO_NOVA_MENSAGEM = "mensagem";
     private static final String NOTIFICACAO_SINCRONIZAR_REMEDIOS = "remedios";
     private static final String NOTIFICACAO_SINCRONIZAR_PROGRAMAS = "programas";
+    private static final String NOTIFICACAO_CONFIRMAR_REMEDIO = "alertaRemedio";
 
     /**
      * Chamado quando uma mensagem é recebida
@@ -57,6 +60,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     break;
                 case NOTIFICACAO_SINCRONIZAR_PROGRAMAS:
                     cuidadorService.sincronizarProgramas();
+                    break;
+                case NOTIFICACAO_CONFIRMAR_REMEDIO:
+                    /*String remedioId = data.get("remedioId");
+                    String idosoId = data.get("idosoId");
+
+                    Intent intent = new Intent(this, ConfirmaRemedioActivity.class);
+                    intent.putExtra("remedioId", remedioId);
+                    intent.putExtra("idosoId", idosoId);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);*/
                     break;
             }
 

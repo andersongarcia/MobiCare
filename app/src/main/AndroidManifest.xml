@@ -28,9 +28,18 @@
             android:theme="@style/AppMaterialTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".activities.PhoneAuthActivity" />
+        <activity android:name=".activities.ConfiguracoesActivity" />
+        <activity android:name=".activities.ConfirmaRemedioActivity">
+            <intent-filter>
+                <action android:name="CONFIRMA_REMEDIO" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
 
         <receiver android:name=".receivers.AlarmeReceiver">
@@ -67,9 +76,6 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".activities.PhoneAuthActivity" />
-        <activity android:name=".activities.ConfiguracoesActivity" />
-        <activity android:name=".activities.ConfirmaRemedioActivity"></activity>
     </application>
 
 </manifest>
