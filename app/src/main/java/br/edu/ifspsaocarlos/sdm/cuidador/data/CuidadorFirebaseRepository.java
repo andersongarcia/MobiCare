@@ -26,6 +26,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.AlarmeService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
@@ -234,7 +235,7 @@ public class CuidadorFirebaseRepository {
         removeRemedioDaLista(remedioId);
     }
 
-    public void carregaRemedios(String idosoId, final CallbackSimples callback) {
+    public void carregaRemedios(String idosoId, final AlarmeService alarmeService) {
         remedioEndPoint.child(idosoId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -243,12 +244,12 @@ public class CuidadorFirebaseRepository {
                     //Getting the data from snapshot
                     Remedio remedio = postSnapshot.getValue(Remedio.class);
                     remedios.add(remedio);
+                    if(alarmeService != null){
+                        alarmeService.atualizaAlarmeRemedio(remedio);
+                    }
                 }
                 remediosSync = true;
 
-                if(callback != null){
-                    callback.OnComplete();
-                }
             }
 
             @Override

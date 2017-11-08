@@ -17,6 +17,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.activities.IdosoActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService.NO;
+import br.edu.ifspsaocarlos.sdm.cuidador.util.DatetimeHelper;
 
 /**
  * Created by ander on 30/10/2017.
@@ -115,7 +116,7 @@ public class AlarmeReceiver extends BroadcastReceiver {
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
 
-        Log.d(TAG, "Novo alarme único definido para " + agenda.toString());
+        Log.d(TAG, "Novo alarme único definido para " + DatetimeHelper.getFormatedDate(agenda, "dd/MM/yyyy HH:mm"));
     }
 
     public void mostraNovaMensagem(Context context, Mensagem mensagem) {

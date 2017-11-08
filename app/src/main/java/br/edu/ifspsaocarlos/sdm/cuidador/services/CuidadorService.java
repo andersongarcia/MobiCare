@@ -204,15 +204,16 @@ public class CuidadorService {
     }
 
     public void sincronizarRemedios() {
-        repositorio.carregaRemedios(preferencias.getIdosoSelecionadoId(), new CallbackSimples(){
+        AlarmeService alarmeService = new AlarmeService(contexto);
+        repositorio.carregaRemedios(preferencias.getIdosoSelecionadoId(), alarmeService);
+        /*repositorio.carregaRemedios(preferencias.getIdosoSelecionadoId(), new CallbackSimples(){
 
             @Override
             public void OnComplete() {
-                AlarmeService alarmeService = new AlarmeService(contexto);
-                alarmeService.atualizaAlarmesRemedios();
-
+                //AlarmeService alarmeService = new AlarmeService(contexto);
+                //alarmeService.atualizaAlarmesRemedios();
             }
-        });
+        });*/
     }
 
     public String salvaRemedio(Remedio remedio) {

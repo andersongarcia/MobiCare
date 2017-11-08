@@ -1,5 +1,6 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -21,5 +22,10 @@ public class DatetimeHelper {
         cal.set(Calendar.MINUTE, minute);
 
         return cal;
+    }
+
+    public static String getFormatedDate(Calendar date, String format){
+        SimpleDateFormat s = new SimpleDateFormat(format);
+        return s.format(date.getTime());
     }
 }

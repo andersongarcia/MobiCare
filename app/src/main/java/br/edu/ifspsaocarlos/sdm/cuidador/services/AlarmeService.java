@@ -35,14 +35,18 @@ public class AlarmeService {
         List<Remedio> remedios = repositorio.getRemedios();
 
         for (Remedio remedio : remedios) {
-            IMensagem mensagem = new RemedioMensagemAdapter(remedio);
-            alarmeReceiver.cancelaAlarme(contexto, remedio.getCodigoAlarme());
-            Log.d(TAG, "Atualizando alarmes para remédio " + remedio.getNome());
-            if(remedio.isAjustavel() || remedio.getRepeticao() == 0){
-                alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao() > 0);
-            }else {
-                alarmeReceiver.defineAlarmeRecorrente(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao());
-            }
+            atualizaAlarmeRemedio(remedio);
+        }
+    }
+
+    public void atualizaAlarmeRemedio(Remedio remedio) {
+        IMensagem mensagem = new RemedioMensagemAdapter(remedio);
+        alarmeReceiver.cancelaAlarme(contexto, remedio.getCodigoAlarme());
+        Log.d(TAG, "Atualizando alarmes para remédio " + remedio.getNome());
+        if(remedio.isAjustavel() || remedio.getRepeticao() == 0){
+            alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao() > 0);
+        }else {
+            alarmeReceiver.defineAlarmeRecorrente(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao());
         }
     }
 
