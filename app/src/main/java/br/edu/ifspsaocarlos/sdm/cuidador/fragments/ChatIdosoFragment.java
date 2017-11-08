@@ -61,6 +61,15 @@ public class ChatIdosoFragment extends Fragment {
         tvDescription = (TextView) view.findViewById(R.id.tv_description);
 
         if(mensagem != null){
+            // Toca som padrão para chamar a atenção
+            /*try {
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+
             FotoService.carregarAvatar(service, mensagem.getFotoUri(), ivAvatar, new CallbackSimples(){
 
                 @Override
@@ -89,6 +98,10 @@ public class ChatIdosoFragment extends Fragment {
                         });
                     } catch (IOException e) {
                         e.printStackTrace();
+                    }
+
+                    if(mensagem.getOrigem().equals(CuidadorService.NO.getNo(CuidadorService.NO.REMEDIOS))){
+                        service.notificarCuidador(mensagem.getId());
                     }
 
                 }

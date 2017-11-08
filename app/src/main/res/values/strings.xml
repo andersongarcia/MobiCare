@@ -141,6 +141,10 @@
     <string name="btn_excluir">Excluir</string>
     <string name="chat_empty">Envie uma mensagem de voz ao idoso</string>
     <string name="ouvir_mensagem">Ouvir mensagem</string>
+    <string name="confirma_administracao_remedio">Confirmar a administração do remédio</string>
+    <string name="hint_horario_administracao">Horário da medicação</string>
+    <string name="hint_horario_proximo">Próximo horário</string>
+    <string name="action_confirmar">Confirmar</string>
 
 
 </resources>

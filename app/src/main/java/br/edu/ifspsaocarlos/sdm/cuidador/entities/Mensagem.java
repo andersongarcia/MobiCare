@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
@@ -28,9 +29,7 @@ public class Mensagem implements Serializable, IMensagem {
         this.emissorId = "";
         this.destinatarioId = "";
         this.audioUri = "";
-        HashMap<String, Object> timestampNow = new HashMap<>();
-        timestampNow.put("timestamp", ServerValue.TIMESTAMP);
-        this.timestampEnvio = timestampNow;
+        this.timestampEnvio = CuidadorFirebaseRepository.getTimestampNow();
     }
 
     public Mensagem(String emissorId, String destinatarioId, String audioUri) {

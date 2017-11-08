@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -57,6 +58,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
     private TextView mStatusText;
     private TextView mDetailText;
 
+    private TextInputLayout mVerificationCode;
     private EditText mPhoneNumberField;
     private EditText mVerificationField;
 
@@ -82,6 +84,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
 
         mPhoneNumberField = (EditText) findViewById(R.id.field_phone_number);
         mVerificationField = (EditText) findViewById(R.id.field_verification_code);
+        mVerificationCode = (TextInputLayout) findViewById(R.id.il_verification_code);
 
         mStartButton = (Button) findViewById(R.id.button_start_verification);
         mVerifyButton = (Button) findViewById(R.id.button_verify_phone);
@@ -304,12 +307,12 @@ public class PhoneAuthActivity extends AppCompatActivity implements
             case STATE_INITIALIZED:
                 // Initialized state, show only the phone number field and start button
                 enableViews(mStartButton, mPhoneNumberField);
-                disableViews(mPhoneNumberViews, mVerificationField);
+                disableViews(mPhoneNumberViews, mVerificationField, mVerificationCode, mVerifyButton, mResendButton);
                 mDetailText.setText(null);
                 break;
             case STATE_CODE_SENT:
                 // Code sent state, show the verification field, the
-                enableViews(mVerifyButton, mResendButton, mPhoneNumberField, mVerificationField);
+                enableViews(mVerifyButton, mResendButton, mPhoneNumberViews, mVerificationField, mVerificationCode);
                 disableViews(mStartButton);
                 mDetailText.setText(R.string.status_code_sent);
                 break;
@@ -321,8 +324,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
                 break;
             case STATE_VERIFY_SUCCESS:
                 // Verification has succeeded, proceed to firebase sign in
-                disableViews(mStartButton, mVerifyButton, mResendButton, mPhoneNumberField,
-                        mVerificationField);
+               // disableViews(mStartButton, mVerifyButton, mResendButton, mPhoneNumberField, mVerificationField);
                 mDetailText.setText(R.string.status_verification_succeeded);
 
                 // Set the verification text based on the credential
@@ -344,7 +346,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
                 break;
         }
 
-        if (user == null) {
+        /*if (user == null) {
             // Signed out
             mPhoneNumberViews.setVisibility(View.VISIBLE);
         } else {
@@ -357,7 +359,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
 
             mStatusText.setText(R.string.signed_in);
             mDetailText.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-        }
+        }*/
     }
 
     private boolean validatePhoneNumber() {
@@ -372,7 +374,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
 
     private void enableViews(View... views) {
         for (View v : views) {
-            v.setEnabled(false);
+            v.setEnabled(true);
             v.setVisibility(View.VISIBLE);
         }
     }
@@ -380,7 +382,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
     private void disableViews(View... views) {
         for (View v : views) {
             v.setEnabled(false);
-            v.setVisibility(View.INVISIBLE);
+            v.setVisibility(View.GONE);
         }
     }
 

@@ -1,6 +1,7 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.List;
@@ -19,6 +20,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
 public class AlarmeService {
 
+    private static final String TAG = "AlarmeService";
     private final Context contexto;
     private final CuidadorFirebaseRepository repositorio;
     private final AlarmeReceiver alarmeReceiver;
@@ -35,6 +37,7 @@ public class AlarmeService {
         for (Remedio remedio : remedios) {
             IMensagem mensagem = new RemedioMensagemAdapter(remedio);
             alarmeReceiver.cancelaAlarme(contexto, remedio.getCodigoAlarme());
+            Log.d(TAG, "Atualizando alarmes para remédio " + remedio.getNome());
             if(remedio.isAjustavel() || remedio.getRepeticao() == 0){
                 alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao() > 0);
             }else {
@@ -48,6 +51,7 @@ public class AlarmeService {
 
         for (Programa programa : programas) {
             IMensagem mensagem = new ProgramaMensagemAdapter(programa);
+            Log.d(TAG, "Atualizando alarmes para programa " + programa.getNome());
             alarmeReceiver.cancelaAlarme(contexto, programa.getCodigoAlarme());
             Calendar proximaExibicao = programa.obterProximaExibicao();
             alarmeReceiver.defineAlarmeUnico(contexto, mensagem, programa.getCodigoAlarme(), proximaExibicao, false);

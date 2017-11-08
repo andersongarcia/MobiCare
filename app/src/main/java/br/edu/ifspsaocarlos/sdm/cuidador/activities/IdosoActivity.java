@@ -1,6 +1,7 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -10,6 +11,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 public class IdosoActivity extends BaseActivity {
+    private static final String TAG = "IdosoActivity";
 
     private static final String BUNDLE = "bundle";
 
@@ -19,6 +21,8 @@ public class IdosoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         final Window win= getWindow(); win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD); win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
+        Log.d(TAG, "Nova mensagem a ser exibida para idoso");
 
         Bundle extras = getIntent().getBundleExtra(BUNDLE);
 

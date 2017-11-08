@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class MensagemSetListAdapter extends RecyclerView.Adapter<MensagemSetList
     @Override
     public void onBindViewHolder(MensagemSetListAdapter.MensagemSetHolder holder, int position) {
 
+        holder.ivAvatar.setImageResource(R.drawable.ic_play_circle_outline_black_36dp);
         holder.tvNome.setText(lista.get(position).getEmissor().getNome());
         holder.tvHora.setText(lista.get(position).getMensagem().obterDataHora());
     }
@@ -57,11 +59,13 @@ public class MensagemSetListAdapter extends RecyclerView.Adapter<MensagemSetList
 
         public TextView tvNome;
         public TextView tvHora;
+        public ImageView ivAvatar;
 
         public MensagemSetHolder(View itemView) {
 
             super(itemView);
 
+            ivAvatar = (ImageView) itemView.findViewById(R.id.list_avatar);
             tvNome = (TextView) itemView.findViewById(R.id.lista_titulo);
             tvHora = (TextView) itemView.findViewById(R.id.lista_descricao);
 

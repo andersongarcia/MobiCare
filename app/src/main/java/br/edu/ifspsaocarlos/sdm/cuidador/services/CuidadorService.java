@@ -50,7 +50,8 @@ public class CuidadorService {
         MENSAGENS,
         CONTADOR_ALARME,
         FOTO_URI,
-        INSTRUCAO_URI;
+        INSTRUCAO_URI,
+        ALERTA_REMEDIO;
 
         public static String getNo(NO no) {
             switch (no) {
@@ -78,6 +79,8 @@ public class CuidadorService {
                     return "fotoUri";
                 case INSTRUCAO_URI:
                     return "instrucaoUri";
+                case ALERTA_REMEDIO:
+                    return "alertaRemedio";
                 default:
                     return "";
             }
@@ -121,14 +124,10 @@ public class CuidadorService {
 
         repositorio.salvaContato(cuidador);
         repositorio.salvaContato(idoso);
+        repositorio.relacionaCuidadorIdoso(cuidador.getId(), idoso.getId());
 
-        registraCuidador(cuidador.getId());
-        registraIdoso(idoso.getId());
-    }
-
-    private void registraCuidador(String id) {
-        registraUsuario(id, Usuario.CUIDADOR);
-        repositorio.salvaCuidador(id);
+        registraUsuario(cuidador.getId(), Usuario.CUIDADOR);
+        preferencias.setIdosoSelecionadoId(idoso.getId());
     }
 
     public void registraUsuario(String id, String perfil) {
@@ -149,15 +148,6 @@ public class CuidadorService {
                 preferencias.setIdosoSelecionadoId(idosoId);
             }
         });
-    }
-
-    /**
-     * Registra idoso para cuidador selecionado
-     * @param idIdoso id do idoso (identificação)
-     */
-    public void registraIdoso(String idIdoso) {
-        preferencias.setIdosoSelecionadoId(idIdoso);
-        repositorio.salvaIdoso(idIdoso);
     }
 
     public void carregaListas() {
@@ -202,9 +192,15 @@ public class CuidadorService {
     }
 
     public void sincronizarRemedios() {
-        repositorio.carregaRemedios(preferencias.getIdosoSelecionadoId());
-        AlarmeService alarmeService = new AlarmeService(contexto);
-        alarmeService.atualizaAlarmesRemedios();
+        repositorio.carregaRemedios(preferencias.getIdosoSelecionadoId(), new CallbackSimples(){
+
+            @Override
+            public void OnComplete() {
+                AlarmeService alarmeService = new AlarmeService(contexto);
+                alarmeService.atualizaAlarmesRemedios();
+
+            }
+        });
     }
 
     public String salvaRemedio(Remedio remedio) {
@@ -218,10 +214,19 @@ public class CuidadorService {
         return id;
     }
 
+    public void notificarCuidador(String remedioId) {
+        repositorio.salvaAlertaRemedio(preferencias.getIdosoSelecionadoId(), remedioId);
+    }
+
     public void sincronizarProgramas() {
-        repositorio.carregaProgramas(preferencias.getIdosoSelecionadoId());
-        AlarmeService alarmeService = new AlarmeService(contexto);
-        alarmeService.atualizaAlarmesProgramas();
+        repositorio.carregaProgramas(preferencias.getIdosoSelecionadoId(), new CallbackSimples(){
+
+            @Override
+            public void OnComplete() {
+                AlarmeService alarmeService = new AlarmeService(contexto);
+                alarmeService.atualizaAlarmesProgramas();
+            }
+        });
     }
 
     public String salvaPrograma(Programa programa) {

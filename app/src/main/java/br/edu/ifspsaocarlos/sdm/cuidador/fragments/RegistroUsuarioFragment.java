@@ -40,7 +40,7 @@ public class RegistroUsuarioFragment extends Fragment {
         activity.getSupportActionBar().setTitle(R.string.registro_usuario);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //tvTelefone = (EditText) view.findViewById(R.id.registro_usuario);
+        //etTelefone = (EditText) view.findViewById(R.id.registro_usuario);
 
         return view;
     }

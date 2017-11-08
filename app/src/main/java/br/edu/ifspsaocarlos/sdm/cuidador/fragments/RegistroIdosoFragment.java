@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
@@ -23,7 +26,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 public class RegistroIdosoFragment extends Fragment {
     private RegistroActivity activity;
 
-    EditText tvTelefone;
+    EditText etTelefone;
 
     public static Fragment newInstance() {
         RegistroIdosoFragment fragment = new RegistroIdosoFragment();
@@ -40,7 +43,12 @@ public class RegistroIdosoFragment extends Fragment {
         activity.getSupportActionBar().setTitle(R.string.registro_idoso);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        tvTelefone = (EditText) view.findViewById(R.id.registro_idoso_telefone);
+        etTelefone = (EditText) view.findViewById(R.id.registro_idoso_telefone);
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null){
+            etTelefone.setText(currentUser.getPhoneNumber().substring(3));
+        }
 
         return view;
     }
@@ -57,7 +65,7 @@ public class RegistroIdosoFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                final String telefone = tvTelefone.getText().toString().trim();
+                final String telefone = etTelefone.getText().toString().trim();
                 activity.getCuidadorService().buscaIdoso(telefone, new CallbackGenerico<Boolean>() {
                     @Override
                     public void OnComplete(Boolean existe) {
@@ -65,7 +73,7 @@ public class RegistroIdosoFragment extends Fragment {
                             activity.getCuidadorService().registraUsuarioIdoso(telefone);
                             activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.IDOSO));
                         }else {
-                            tvTelefone.setError(getResources().getString(R.string.msg_erro_validacao_idoso));
+                            etTelefone.setError(getResources().getString(R.string.msg_erro_validacao_idoso));
                         }
                     }
                 });

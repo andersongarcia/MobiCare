@@ -44,6 +44,7 @@ public abstract class FotoService {
             int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                     ExifInterface.ORIENTATION_UNDEFINED);
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.fromFile(file) );
+            bitmap = Bitmap.createScaledBitmap(bitmap,(int)(bitmap.getWidth()*0.5), (int)(bitmap.getHeight()*0.5), true);
             Bitmap rotatedBitmap = null;
             switch(orientation) {
 

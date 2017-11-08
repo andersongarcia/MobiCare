@@ -10,9 +10,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,6 +47,11 @@ public class CuidadorFirebaseRepository {
     //endregion
 
     private int contadorAlarme;
+
+    //region Flags de sincronização
+    private boolean remediosSync;
+    private boolean programasSync;
+    //endregions
 
     //region Referencias
 
@@ -93,6 +100,9 @@ public class CuidadorFirebaseRepository {
         remedios = new ArrayList<>();
         programas = new ArrayList<>();
         mensagens = new ArrayList<>();
+
+        remediosSync = false;
+        programasSync = false;
     }
 
     // Singleton
@@ -106,8 +116,8 @@ public class CuidadorFirebaseRepository {
 
     public void carregaListas(String idosoId) {
         carregaContatos(idosoId);
-        carregaRemedios(idosoId);
-        carregaProgramas(idosoId);
+        carregaRemedios(idosoId, null);
+        carregaProgramas(idosoId, null);
         carregaMensagens(idosoId);
         carregaContadorAlarme(idosoId);
     }
@@ -149,7 +159,7 @@ public class CuidadorFirebaseRepository {
      */
     public void relacionaCuidadorIdoso(String cuidadorId, String idodoId) {
         cuidadorEndPoint.child(cuidadorId).child(CuidadorService.NO.getNo(CuidadorService.NO.IDOSOS)).child(idodoId).setValue(true);
-        idosoEndPoint.child(idodoId).child("cuidadores").child(cuidadorId).setValue(true);
+        idosoEndPoint.child(idodoId).child(CuidadorService.NO.getNo(CuidadorService.NO.CUIDADORES)).child(cuidadorId).setValue(true);
     }
 
     /**
@@ -224,7 +234,7 @@ public class CuidadorFirebaseRepository {
         removeRemedioDaLista(remedioId);
     }
 
-    public void carregaRemedios(String idosoId) {
+    public void carregaRemedios(String idosoId, final CallbackSimples callback) {
         remedioEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -233,6 +243,11 @@ public class CuidadorFirebaseRepository {
                     //Getting the data from snapshot
                     Remedio remedio = postSnapshot.getValue(Remedio.class);
                     remedios.add(remedio);
+                }
+                remediosSync = true;
+
+                if(callback != null){
+                    callback.OnComplete();
                 }
             }
 
@@ -250,6 +265,11 @@ public class CuidadorFirebaseRepository {
             if(remedio.getId() == remedioId)
                 i.remove();
         }
+    }
+
+    public void salvaAlertaRemedio(String idosoId, String remedioId) {
+        mDatabase.child(CuidadorService.NO.getNo(CuidadorService.NO.ALERTA_REMEDIO))
+                .child(idosoId).child(remedioId).setValue(getTimestampNow());
     }
 
     //endregion
@@ -349,7 +369,7 @@ public class CuidadorFirebaseRepository {
         removeProgramaDaLista(programaId);
     }
 
-    public void carregaProgramas(String idosoId) {
+    public void carregaProgramas(String idosoId, CallbackSimples callback) {
         programaEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -359,6 +379,7 @@ public class CuidadorFirebaseRepository {
                     Programa programa = postSnapshot.getValue(Programa.class);
                     programas.add(programa);
                 }
+                programasSync = true;
             }
 
             @Override
@@ -522,5 +543,11 @@ public class CuidadorFirebaseRepository {
 
 
     //endregion
+
+    public static HashMap<String, Object> getTimestampNow(){
+        HashMap<String, Object> timestampNow = new HashMap<>();
+        timestampNow.put("timestamp", ServerValue.TIMESTAMP);
+        return timestampNow;
+    }
 
 }

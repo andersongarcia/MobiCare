@@ -37,6 +37,8 @@ public class AlarmeReceiver extends BroadcastReceiver {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
 
+        Log.d(TAG, "Alarme disparado");
+
         //Acquire the lock
         wl.acquire();
 
@@ -55,7 +57,6 @@ public class AlarmeReceiver extends BroadcastReceiver {
             context.startActivity(newIntent);
         }
 
-        //Toast.makeText(context, msgStr, Toast.LENGTH_LONG).show();
 
         //Release the lock
         wl.release();
@@ -80,7 +81,7 @@ public class AlarmeReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, AlarmeReceiver.class);
         intent.putExtra(BUNDLE, bundle);
 
-        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // calcula intervalo do primeiro alarme
         Calendar cal = calculaIntervalo(horario);
@@ -89,6 +90,8 @@ public class AlarmeReceiver extends BroadcastReceiver {
         long intervaloRecorrencia = TimeUnit.HOURS.toMillis(recorrencia);
 
         am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), intervaloRecorrencia , pi);
+
+        Log.d(TAG, "Novo alarme único definido para " + cal.toString());
     }
 
     public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, String horario, boolean deveAjustarProximo){
@@ -109,8 +112,10 @@ public class AlarmeReceiver extends BroadcastReceiver {
         intent.putExtra(NO.getNo(NO.REMEDIOS), mensagem.getId());
         intent.putExtra(BUNDLE, bundle);
 
-        PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
+
+        Log.d(TAG, "Novo alarme único definido para " + agenda.toString());
     }
 
     public void mostraNovaMensagem(Context context, Mensagem mensagem) {
@@ -124,6 +129,8 @@ public class AlarmeReceiver extends BroadcastReceiver {
 
         PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+
+        Log.d(TAG, "Nova mensagem enviada");
     }
 
     private Calendar calculaIntervalo(String horario) {
