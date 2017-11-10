@@ -145,6 +145,8 @@
     <string name="hint_horario_administracao">Horário da medicação</string>
     <string name="hint_horario_proximo">Próximo horário</string>
     <string name="action_confirmar">Confirmar</string>
+    <string name="menu_confirmar_remedio">Já tomei!</string>
+    <string name="menu_repetir">Repetir</string>
 
 
 </resources>

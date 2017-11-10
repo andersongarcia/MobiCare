@@ -236,7 +236,7 @@ public class CuidadorFirebaseRepository {
     }
 
     public void carregaRemedios(String idosoId, final AlarmeService alarmeService) {
-        remedioEndPoint.child(idosoId).addListenerForSingleValueEvent(new ValueEventListener() {
+        remedioEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 remedios.clear();

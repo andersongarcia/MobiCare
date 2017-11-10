@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/action_repetir"
+        android:title="@string/menu_repetir"
+        android:icon="@drawable/ic_replay_white_36dp" />
+    <item android:id="@+id/action_confirmar"
+        android:title="@string/menu_confirmar_remedio"
+        android:icon="@drawable/ic_check_black_36dp" />
+
+</menu>

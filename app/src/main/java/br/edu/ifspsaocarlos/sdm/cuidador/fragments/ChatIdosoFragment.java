@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.BaseActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
@@ -35,7 +35,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.util.MediaPlayerHelper;
 public class ChatIdosoFragment extends Fragment {
 
     private CuidadorService service;
-    private BaseActivity activity;
+    private MainActivity activity;
     private TextView tvDescription;
     private IMensagem mensagem;
 
@@ -50,7 +50,7 @@ public class ChatIdosoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat_idoso, container, false);
 
-        activity = (BaseActivity) getActivity();
+        activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.app_name));
 
         service = new CuidadorService(activity);
