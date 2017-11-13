@@ -8,8 +8,7 @@
         android:type="linear" />-->
     <gradient
         android:type="linear"
-        android:startColor="@color/colorPrimaryLight"
-        android:centerColor="@color/colorPrimary"
-        android:endColor="@color/colorPrimaryDark"
+        android:startColor="@android:color/white"
+        android:endColor="@color/colorAccent"
         android:angle="135"/>
 </shape>
