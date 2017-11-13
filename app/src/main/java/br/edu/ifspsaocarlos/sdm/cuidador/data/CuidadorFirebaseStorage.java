@@ -16,7 +16,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
@@ -73,7 +73,7 @@ public class CuidadorFirebaseStorage {
         reference.getFile(localFile).addOnSuccessListener(successListener).addOnFailureListener(failureListener);
     }
 
-    public void salvaAudioChat(final String idosoId, final String contatoId, final String fileName, final CallbackSimples callback) {
+    public void salvaAudioChat(final String idosoId, final String contatoId, final String fileName) {
         Uri uri = Uri.fromFile(new File(fileName));
         UploadTask uploadTask = idosoEndPoint.child(idosoId).child(NO.getNo(NO.CHAT)).child(contatoId).putFile(uri);
 
@@ -87,14 +87,18 @@ public class CuidadorFirebaseStorage {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                Contato contato = ContatosRepository.getInstance().obterContato(contatoId);
+                ContatosRepository.getInstance().buscaContato(contatoId, new CallbackGenerico<Contato>() {
+                    @Override
+                    public void OnComplete(Contato contato) {
+                        Mensagem mensagem = new Mensagem(contatoId, idosoId, downloadUrl.toString());
+                        mensagem.setTitulo(String.format("Mensagem de %s", contato.getNome()));
 
-                Mensagem mensagem = new Mensagem(contatoId, idosoId, downloadUrl.toString());
-                mensagem.setTitulo(String.format("Mensagem de %s", contato.getNome()));
+                        MensagensRepository.getInstance().salvaMensagem(idosoId, mensagem);
+                    }
+                });
 
-                MensagensRepository.getInstance().salvaMensagem(idosoId, mensagem, callback);
             }
         });
     }

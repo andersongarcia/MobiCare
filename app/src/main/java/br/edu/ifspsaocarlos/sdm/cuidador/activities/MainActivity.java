@@ -21,8 +21,6 @@ import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatIdosoFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ContatosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ProgramasFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RemediosFragment;
-import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 
@@ -229,12 +227,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void abrirContatos() {
-        ContatosRepository.getInstance().carregaContatos(preferencias.getIdosoSelecionadoId(), new CallbackSimples() {
-            @Override
-            public void OnComplete() {
-                openFragment(ContatosFragment.newInstance());
-            }
-        });
+        openFragment(ContatosFragment.newInstance());
     }
 
     private void abrirProgramas() {
@@ -256,12 +249,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void abrirMensagens() {
-        MensagensRepository.getInstance().carregaMensagens(preferencias.getIdosoSelecionadoId(), new CallbackSimples() {
-            @Override
-            public void OnComplete() {
-                openFragment(ChatFragment.newInstance());
-            }
-        });
+        openFragment(ChatFragment.newInstance());
     }
 
 

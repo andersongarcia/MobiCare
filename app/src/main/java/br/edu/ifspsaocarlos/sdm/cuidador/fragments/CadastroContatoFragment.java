@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.UploadTask;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
@@ -81,11 +82,17 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
                 }
             }
         });
+        redirecionaParaLista();
     }
 
     @Override
     protected void exclui() {
-        ContatosRepository.getInstance().removeContato(contato.getId(), activity.getPreferencias().getIdosoSelecionadoId());
+        ContatosRepository.getInstance().removeContato(contato.getId(), activity.getPreferencias().getIdosoSelecionadoId(), new CallbackSimples() {
+            @Override
+            public void OnComplete() {
+                redirecionaParaLista();
+            }
+        });
     }
 
     @Override

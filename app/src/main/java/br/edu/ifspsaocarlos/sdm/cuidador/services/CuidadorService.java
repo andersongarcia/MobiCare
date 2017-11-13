@@ -12,12 +12,11 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
-import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseStorage;
-import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
@@ -116,8 +115,8 @@ public class CuidadorService {
         return preferencias.getUsuarioLogadoPerfil();
     }
 
-    public void salvaAudioChat(String fileName, CallbackSimples callback) {
-        CuidadorFirebaseStorage.getInstance().salvaAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName, callback);
+    public void salvaAudioChat(String fileName) {
+        CuidadorFirebaseStorage.getInstance().salvaAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
     }
 
     public void efetuaLogout() {

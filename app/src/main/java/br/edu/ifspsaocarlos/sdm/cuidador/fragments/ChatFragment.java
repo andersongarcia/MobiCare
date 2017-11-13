@@ -20,16 +20,13 @@ import com.google.firebase.storage.FileDownloadTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MensagemSetListAdapter;
-import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogAudioListener;
-import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +49,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
 
     @BindView(R.id.rv_chat)
     RecyclerView recyclerView;
-    private List<MensagemSet> listaMensagens;
+    private MensagemSetListAdapter adapter;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -88,8 +85,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(llm);
 
-        listaMensagens = MensagensRepository.getInstance().getMensagens();
-        final MensagemSetListAdapter adapter = new MensagemSetListAdapter(getActivity(), listaMensagens);
+        adapter = new MensagemSetListAdapter(activity, activity.getPreferencias().getIdosoSelecionadoId());
         adapter.setRecyclerViewOnItemSelecionado(this);
         recyclerView.setAdapter(adapter);
 
@@ -113,13 +109,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
             public void run() {
                 if(dialogAudioListener.getFileName() != null && !dialogAudioListener.getFileName().isEmpty()){
                     dialogAudioListener.setStatus(DialogAudioListener.Status.AGUARDANDO_GRAVACAO);
-                    service.salvaAudioChat(dialogAudioListener.getFileName(), new CallbackSimples(){
-
-                        @Override
-                        public void OnComplete() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
+                    service.salvaAudioChat(dialogAudioListener.getFileName());
                 }
             }
         });
@@ -129,7 +119,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
 
     @Override
     public void onItemSelecionado(final View view, int posicao) {
-        MensagemSet mensagemSet = listaMensagens.get(posicao);
+        MensagemSet mensagemSet = adapter.getItem(posicao);
 
         final String path = activity.getExternalCacheDir().getAbsolutePath();
         final String filename = String.valueOf(System.currentTimeMillis());

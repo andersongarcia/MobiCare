@@ -9,23 +9,42 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
 
 /**
  * Created by ander on 07/11/2017.
  */
 
 public class MensagemSetListAdapter extends RecyclerView.Adapter<MensagemSetListAdapter.MensagemSetHolder> {
+    private MensagensRepository repositorio;
     private List<MensagemSet> lista;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
 
-    public MensagemSetListAdapter(Context c, List<MensagemSet> l) {
-        lista = l;
+    Observer observer = new Observer() {
+        @Override
+        public void update(Observable observable, Object o) {
+            notifyDataSetChanged();
+        }
+    };
+
+    public MensagemSetListAdapter(Context c, String idosoId) {
+        repositorio = MensagensRepository.getInstance();
+        lista = repositorio.getMensagens();
+
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        setHasStableIds(true);
+
+        // define observer
+        repositorio.addObserver(observer);
+
+        repositorio.carregaMensagens(idosoId);
     }
 
     @Override
@@ -53,6 +72,10 @@ public class MensagemSetListAdapter extends RecyclerView.Adapter<MensagemSetList
     public void setRecyclerViewOnItemSelecionado(RecyclerViewOnItemSelecionado r){
 
         meuRecyclerViewOnItemSelecionado = r;
+    }
+
+    public MensagemSet getItem(int posicao) {
+        return lista.get(posicao);
     }
 
     public class MensagemSetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -24,7 +24,7 @@ public class BaseActivity extends AppCompatActivity {
 
         preferencias = new PreferenciaHelper(this);
 
-        if(preferencias.obterPreferenciaBoolean("authFirebase", true)){
+        if(preferencias.obterPreferenciaBoolean("authFirebase", false)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
                 Intent intent = new Intent(this, PhoneAuthActivity.class);
                 startActivity(intent);

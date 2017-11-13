@@ -9,10 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 
 /**
  * Adapter de contato.
@@ -21,15 +24,29 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
  */
 public class ContatoListAdapter extends RecyclerView.Adapter<ContatoListAdapter.ContatoHolder> {
 
+    private ContatosRepository repositorio;
     private List<Contato> listaContatos;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
 
-    public ContatoListAdapter(Context c, List<Contato> l) {
+    Observer observer = new Observer() {
+        @Override
+        public void update(Observable observable, Object o) {
+            notifyDataSetChanged();
+        }
+    };
 
-        listaContatos = l;
+    public ContatoListAdapter(Context c, String idosoId) {
+        repositorio = ContatosRepository.getInstance();
+        listaContatos = repositorio.getContatos();
+
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         setHasStableIds(true);
+
+        // define observer
+        repositorio.addObserver(observer);
+
+        repositorio.carregarContatosIdoso(idosoId);
     }
 
     @Override
@@ -41,16 +58,8 @@ public class ContatoListAdapter extends RecyclerView.Adapter<ContatoListAdapter.
         return mvh;
     }
 
-    public void adicionarItemLista(Contato c, int position) {
-
-        listaContatos.add(c);
-        notifyItemInserted(position);
-
-    }
-
     @Override
     public void onBindViewHolder(ContatoHolder holder, int position) {
-
         holder.tvNome.setText(listaContatos.get(position).getNome());
         holder.tvTelefone.setText(listaContatos.get(position).getTelefone());
         holder.ivAvatar.setImageResource(R.drawable.ic_person_black_48dp);
@@ -77,6 +86,10 @@ public class ContatoListAdapter extends RecyclerView.Adapter<ContatoListAdapter.
     public void setRecyclerViewOnItemSelecionado(RecyclerViewOnItemSelecionado r){
 
         meuRecyclerViewOnItemSelecionado = r;
+    }
+
+    public Contato getItem(int posicao) {
+        return listaContatos.get(posicao);
     }
 
     public class ContatoHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

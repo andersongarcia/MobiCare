@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +34,7 @@ public class ContatosRepository extends Observable {
     private final DatabaseReference contatoEndPoint;
     private final DatabaseReference cuidadorEndPoint;
     private final DatabaseReference idosoEndPoint;
+    private final ArrayList<String> mKeys;
     private List<Contato> contatos;
 
     private ContatosRepository() {
@@ -41,6 +43,7 @@ public class ContatosRepository extends Observable {
         cuidadorEndPoint = firebaseDatabase.getReference().child(NO.getNo(NO.CUIDADORES));
         idosoEndPoint = firebaseDatabase.getReference().child(NO.getNo(NO.IDOSOS));
         contatos = new ArrayList<>();
+        mKeys = new ArrayList<String>();
     }
 
     // Singleton
@@ -84,14 +87,16 @@ public class ContatosRepository extends Observable {
         });
     }
 
-    public void removeContato(final String contatoId, final String idosoId) {
-        contatoEndPoint.child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+    public void removeContato(final String contatoId, final String idosoId, final CallbackSimples callback) {
+        idosoEndPoint.child(idosoId).child(NO.getNo(NO.CONTATOS)).child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                idosoEndPoint.child(idosoId).child(NO.getNo(NO.CONTATOS)).child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                contatoEndPoint.child(contatoId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         removeContatoDaLista(contatoId);
+                        if(callback != null)
+                            callback.OnComplete();
                     }
                 });
             }
@@ -107,60 +112,94 @@ public class ContatosRepository extends Observable {
         }
     }
 
-    public void carregaContatos(String idosoId, final CallbackSimples callback) {
+    public void carregarContatosIdoso(String idosoId){
         contatos.clear();
-        final DatabaseReference reference = idosoEndPoint.child(idosoId).child(NO.getNo(NO.CONTATOS));
-        reference.addValueEventListener(new ValueEventListener() {
+        mKeys.clear();
+        DatabaseReference reference = idosoEndPoint.child(idosoId).child(NO.getNo(NO.CONTATOS));
+        reference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                final long total = snapshot.getChildrenCount();
-                if(total == 0){
-                    if(callback != null){
-                        callback.OnComplete();
-                    }
-                }else {
-                    final int[] contador = {0};
-                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                        String contatoId = postSnapshot.getKey();
-                        contatoEndPoint.child(contatoId).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Contato contato = dataSnapshot.getValue(Contato.class);
-                                contatos.add(contato);
+            public void onChildAdded(DataSnapshot dataSnapshot, final String previousChildName) {
+                contatoEndPoint.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Contato model = dataSnapshot.getValue(Contato.class);
+                        String key = dataSnapshot.getKey();
 
-                                // verifica se carregou todos
-                                contador[0]++;
-                                if (contador[0] == total) { // se carregou tudo, chama callback
-                                    if (callback != null) {
-                                        callback.OnComplete();
-                                    }
-                                }
+                        int i = mKeys.indexOf(key);
+                        if(i > 0)
+                            return;
+                        // Insert into the correct location, based on previousChildName
+                        if (previousChildName == null) {
+                            contatos.add(0, model);
+                            mKeys.add(0, key);
+                        } else {
+                            int previousIndex = mKeys.indexOf(previousChildName);
+                            int nextIndex = previousIndex + 1;
+                            if (nextIndex == contatos.size()) {
+                                contatos.add(model);
+                                mKeys.add(key);
+                            } else {
+                                contatos.add(nextIndex, model);
+                                mKeys.add(nextIndex, key);
                             }
+                        }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
+                        setChanged();
+                        notifyObservers();
                     }
-                }
-                reference.removeEventListener(this);
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, final String previousChildName) {
+                contatoEndPoint.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // One of the mModels changed. Replace it in our list and name mapping
+                        String key = dataSnapshot.getKey();
+                        Contato newModel = dataSnapshot.getValue(Contato.class);
+                        int index = mKeys.indexOf(key);
+
+                        contatos.set(index, newModel);
+
+                        setChanged();
+                        notifyObservers();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                // A model was removed from the list. Remove it from our list and the name mapping
+                String key = dataSnapshot.getKey();
+                int index = mKeys.indexOf(key);
+
+                mKeys.remove(index);
+                contatos.remove(index);
+
+                setChanged();
+                notifyObservers();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                reference.removeEventListener(this);
-                System.out.println("The read failed: " + databaseError.getMessage());
+                Log.e(TAG, "Listen was cancelled, no more updates will occur");
             }
         });
-    }
-
-    public Contato obterContato(String contatoId) {
-        for (Contato contato : contatos) {
-            if(contato.getId().equals(contatoId))
-                return contato;
-        }
-
-        return null;
     }
 
     //region Idosos
@@ -198,17 +237,7 @@ public class ContatosRepository extends Observable {
         contatoEndPoint.child(contatoId).child(NO.getNo(NO.IDOSOS)).child(idodoId).setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                idosoEndPoint.child(idodoId).child(NO.getNo(NO.CONTATOS)).child(contatoId).setValue(true)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                carregaContatos(idodoId, new CallbackSimples() {
-                                    @Override
-                                    public void OnComplete() {
-                                    }
-                                });
-                            }
-                        });
+                idosoEndPoint.child(idodoId).child(NO.getNo(NO.CONTATOS)).child(contatoId).setValue(true);
             }
         });
     }

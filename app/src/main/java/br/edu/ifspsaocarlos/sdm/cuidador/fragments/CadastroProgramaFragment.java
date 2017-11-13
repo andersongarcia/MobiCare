@@ -109,6 +109,7 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Uri uri = taskSnapshot.getDownloadUrl();
                             FirebaseRepository.getInstance().salvaUri(NO.PROGRAMAS, activity.getPreferencias().getIdosoSelecionadoId(), id, uri.toString());
+                            redirecionaParaLista();
                         }
                     });
         }
