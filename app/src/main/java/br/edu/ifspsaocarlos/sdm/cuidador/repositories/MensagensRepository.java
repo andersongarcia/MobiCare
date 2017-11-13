@@ -203,7 +203,9 @@ public class MensagensRepository extends Observable {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){  // foto encontrada
                             mensagem.setFotoUri(String.valueOf(dataSnapshot.getValue()));
-                            reference.push().setValue(mensagem)
+                            String key = reference.push().getKey();
+                            mensagem.setId(key);
+                            reference.child(key).setValue(mensagem)
                                     .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
