@@ -23,6 +23,7 @@ import java.io.File;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogDeleteListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
@@ -41,7 +42,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     protected static final int REQUEST_IMAGE_CAPTURE_PERMISSION = 201;
     protected static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 202;
     private final Fragment fragmentLista;
-    private final CuidadorService.NO no;
+    private final NO no;
 
     protected CuidadorService service;
     MainActivity activity;
@@ -59,7 +60,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     protected boolean fotoAlterada = false;
     private DialogDeleteListener dialogExcluir;
 
-    public CadastroBaseFragment(Fragment fragmentLista, CuidadorService.NO no) {
+    public CadastroBaseFragment(Fragment fragmentLista, NO no) {
         this.fragmentLista = fragmentLista;
         this.no = no;
     }
@@ -74,8 +75,8 @@ public abstract class CadastroBaseFragment extends Fragment {
         activity.showBackButton(true);
 
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
-        criarReferenciasLayout();
-        carregarInformacoesCadastradas();
+        criaReferenciasLayout();
+        carregaInformacoesCadastradas();
 
         btnTirarFoto = (FloatingActionButton) view.findViewById(R.id.btn_add_avatar);
         btnTirarFoto.setOnClickListener(new View.OnClickListener() {
@@ -85,15 +86,11 @@ public abstract class CadastroBaseFragment extends Fragment {
             }
         });
 
-        if(getIdCadastro() != null && !getIdCadastro().isEmpty()){
-            carregarAvatar();
-        }
-
         dialogExcluir = new DialogDeleteListener(activity, new CallbackSimples(){
 
             @Override
             public void OnComplete() {
-                excluir();
+                exclui();
                 redirecionaParaLista();
             }
         });
@@ -118,7 +115,7 @@ public abstract class CadastroBaseFragment extends Fragment {
 
     }
 
-    private void carregarAvatar() {
+    protected void carregaAvatar() {
         if(getUriAvatar() != null && !getUriAvatar().isEmpty()){
             FotoService.carregarAvatar(service, getUriAvatar(), ivAvatar, new CallbackSimples() {
                 @Override
@@ -160,8 +157,8 @@ public abstract class CadastroBaseFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.salvar:
-                salvar();
-                redirecionaParaLista();
+                salva();
+                //redirecionaParaLista();
                 break;
             case R.id.excluir:
                 if(getIdCadastro() != null && !getIdCadastro().isEmpty()) {
@@ -178,7 +175,7 @@ public abstract class CadastroBaseFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void redirecionaParaLista() {
+    protected void redirecionaParaLista() {
         activity.showBackButton(false);
         activity.openFragment(fragmentLista);
     }
@@ -199,9 +196,9 @@ public abstract class CadastroBaseFragment extends Fragment {
         }
     }
 
-    protected abstract void salvar();
+    protected abstract void salva();
 
-    protected abstract void excluir();
+    protected abstract void exclui();
 
     protected abstract int getLayoutCadastro();
 
@@ -212,9 +209,9 @@ public abstract class CadastroBaseFragment extends Fragment {
 
     protected abstract String getUriAvatar();
 
-    protected abstract void criarReferenciasLayout();
+    protected abstract void criaReferenciasLayout();
 
-    protected abstract void carregarInformacoesCadastradas();
+    protected abstract void carregaInformacoesCadastradas();
 
     protected abstract void carregarOutrasReferencias();
 

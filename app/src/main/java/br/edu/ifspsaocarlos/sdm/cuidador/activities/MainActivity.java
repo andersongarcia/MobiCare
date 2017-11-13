@@ -14,12 +14,17 @@ import android.view.MenuItem;
 import android.view.View;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatIdosoFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ContatosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ProgramasFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RemediosFragment;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     private ActionBarDrawerToggle drawerToggle;
@@ -38,13 +43,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Verifica perfil
         switch (service.obterPerfilLogado()){
             case Usuario.CUIDADOR:
-                service.carregaListas();
-                openFragment(ChatFragment.newInstance());
+                abrirMensagens();
                 break;
             case Usuario.IDOSO:
                 openFragment(ChatIdosoFragment.newInstance(null));
                 break;
             case Usuario.CONTATO:
+                abrirMensagens();
                 break;
         }
     }
@@ -93,9 +98,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
     public void openFragment(Fragment fragment) {
-        getFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack("").commit();
+        getFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack("").commitAllowingStateLoss();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
+        outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -191,21 +202,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (id == R.id.nav_chat) {
             switch (service.obterPerfilLogado()){
                 case Usuario.CUIDADOR:
-                    openFragment(ChatFragment.newInstance());
+                    abrirMensagens();
                     break;
                 case Usuario.IDOSO:
                     openFragment(ChatIdosoFragment.newInstance(null));
                     break;
                 case Usuario.CONTATO:
-                    openFragment(ChatFragment.newInstance());
+                    abrirMensagens();
                     break;
             }
         } else if (id == R.id.nav_remedios) {
-            openFragment(RemediosFragment.newInstance());
+            abrirRemedios();
         } else if (id == R.id.nav_contatos) {
-            openFragment(ContatosFragment.newInstance());
+            abrirContatos();
         } else if (id == R.id.nav_programas) {
-            openFragment(ProgramasFragment.newInstance());
+            abrirProgramas();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -215,6 +226,42 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void abrirContatos() {
+        ContatosRepository.getInstance().carregaContatos(preferencias.getIdosoSelecionadoId(), new CallbackSimples() {
+            @Override
+            public void OnComplete() {
+                openFragment(ContatosFragment.newInstance());
+            }
+        });
+    }
+
+    private void abrirProgramas() {
+        ProgramasRepository.getInstance().carregaProgramas(preferencias.getIdosoSelecionadoId(), null, new CallbackSimples() {
+            @Override
+            public void OnComplete() {
+                openFragment(ProgramasFragment.newInstance());
+            }
+        });
+    }
+
+    private void abrirRemedios() {
+        RemediosRepository.getInstance().carregaRemedios(preferencias.getIdosoSelecionadoId(), null, new CallbackSimples() {
+            @Override
+            public void OnComplete() {
+                openFragment(RemediosFragment.newInstance());
+            }
+        });
+    }
+
+    private void abrirMensagens() {
+        MensagensRepository.getInstance().carregaMensagens(preferencias.getIdosoSelecionadoId(), new CallbackSimples() {
+            @Override
+            public void OnComplete() {
+                openFragment(ChatFragment.newInstance());
+            }
+        });
     }
 
 

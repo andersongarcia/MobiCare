@@ -2,13 +2,18 @@ package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.UploadTask;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
@@ -26,7 +31,7 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
 
     public CadastroContatoFragment() {
         // Required empty public constructor
-        super(ContatosFragment.newInstance(), CuidadorService.NO.CONTATOS);
+        super(ContatosFragment.newInstance(), NO.CONTATOS);
     }
 
     /**
@@ -56,33 +61,31 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
     }
 
     @Override
-    protected void salvar() {
+    protected void salva() {
         String nome = etNome.getText().toString().trim();
         String telefone = etTelefone.getText().toString().trim();
 
         final Contato contato = new Contato(nome, telefone);
-        service.salvaContato(contato);
-        if(localFile != null && localFile.exists()){
-            service.salvaFoto(CuidadorService.NO.CONTATOS, contato.getId(), localFile);
-            service.salvaFoto(CuidadorService.NO.CONTATOS, contato.getId(), localFile)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Uri uri = taskSnapshot.getDownloadUrl();
-                            service.salvaUriContato(contato.getId(), uri.toString());
-                        }
-                    });
-        }
+        ContatosRepository.getInstance().salvaContato(activity.getPreferencias().getIdosoSelecionadoId(), contato).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(localFile != null && localFile.exists()){
+                    service.salvaFoto(NO.CONTATOS, contato.getId(), localFile)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Uri uri = taskSnapshot.getDownloadUrl();
+                                    ContatosRepository.getInstance().salvaUriContato(contato.getId(), uri.toString());
+                                }
+                            });
+                }
+            }
+        });
     }
 
     @Override
-    protected void excluir() {
-        service.removeContato(contato.getId(), new Runnable() {
-            @Override
-            public void run() {
-                //redirecionaParaLista();
-            }
-        });
+    protected void exclui() {
+        ContatosRepository.getInstance().removeContato(contato.getId(), activity.getPreferencias().getIdosoSelecionadoId());
     }
 
     @Override
@@ -99,15 +102,17 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
     protected String getUriAvatar() { return contato.getFotoUri(); }
 
     @Override
-    protected void criarReferenciasLayout() {
+    protected void criaReferenciasLayout() {
         etNome = (EditText)view.findViewById(R.id.contato_nome);
         etTelefone = (EditText) view.findViewById(R.id.contato_telefone);
     }
 
     @Override
-    protected void carregarInformacoesCadastradas() {
+    protected void carregaInformacoesCadastradas() {
         etNome.setText(contato.getNome());
         etTelefone.setText(contato.getTelefone());
+
+        carregaAvatar();
     }
 
     @Override

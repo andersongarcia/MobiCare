@@ -1,6 +1,7 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,32 +11,41 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.TimePickerFragment;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class ConfirmaRemedioActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "ConfirmaRemedioActivity";
+    PreferenciaHelper preferencias;
+
+    @BindView(R.id.confirma_remedio_idoso)
     TextView tvNomeIdoso;
+    @BindView(R.id.confirma_remedio_remedio)
     TextView tvNomeRemedio;
+    @BindView(R.id.confirma_remedio_horario)
     EditText etHoraMedicacao;
+    @BindView(R.id.confirma_remedio_proximo)
     EditText etProximaMedicacao;
 
     Button btConfirma;
+    private String remedioId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirma_remedio);
 
-        CuidadorService service = new CuidadorService(this);
+        ButterKnife.bind(this);
 
-        tvNomeIdoso = (TextView) findViewById(R.id.confirma_remedio_idoso);
-        tvNomeRemedio = (TextView) findViewById(R.id.confirma_remedio_remedio);
-        etHoraMedicacao = (EditText) findViewById(R.id.confirma_remedio_horario);
-        etProximaMedicacao = (EditText) findViewById(R.id.confirma_remedio_proximo);
+        preferencias = new PreferenciaHelper(this);
 
         btConfirma = (Button) findViewById(R.id.btn_confirma_remedio);
         btConfirma.setOnClickListener(this);
@@ -59,21 +69,36 @@ public class ConfirmaRemedioActivity extends AppCompatActivity implements View.O
         Bundle extras = getIntent().getExtras();
 
         if(extras != null){
-            String remedioId = extras.getString("remedioId");
+            remedioId = extras.getString("remedioId");
             String idosoId = extras.getString("idosoId");
 
-            Remedio remedio = service.obterRemedio(remedioId);
-            Contato idoso = service.obterContato(idosoId);
+            final Remedio remedio = RemediosRepository.getInstance().obterRemedio(remedioId);
 
-            //tvNomeIdoso.setText(idoso.getNome());
-            tvNomeRemedio.setText(remedio.getNome());
-            etHoraMedicacao.setText(remedio.getHorario());
-            etProximaMedicacao.setText(remedio.calculaProximoHorario());
+            ContatosRepository.getInstance().buscaContato(idosoId, new CallbackGenerico<Contato>() {
+                        @Override
+                        public void OnComplete(Contato idoso) {
+                            tvNomeIdoso.setText(idoso.getNome());
+                            tvNomeRemedio.setText(remedio.getNome());
+                            etHoraMedicacao.setText(remedio.getHorario());
+                            etProximaMedicacao.setText(remedio.calculaProximoHorario());
+                        }
+                    });
+
         }
     }
 
     @Override
     public void onClick(View view) {
-        Log.d(TAG, "Confirmando remédio " + tvNomeRemedio.getText());
+        if(!remedioId.isEmpty()){
+            Log.d(TAG, "Confirmando remédio " + tvNomeRemedio.getText());
+            String horaMedicacao = etHoraMedicacao.getText().toString();
+            String proximaMedicacao = etProximaMedicacao.getText().toString();
+
+            RemediosRepository.getInstance().confirmarHorario(preferencias.getIdosoSelecionadoId(), remedioId, horaMedicacao, proximaMedicacao);
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        }
     }
 }

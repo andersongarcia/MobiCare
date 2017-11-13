@@ -1,8 +1,8 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.adapters;
 
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
  * Created by ander on 05/11/2017.
@@ -22,8 +22,18 @@ public class RemedioMensagemAdapter implements IMensagem {
     }
 
     @Override
+    public String getTitulo() {
+        String titulo = remedio.getNome();
+        if(remedio.getDose() != null && !remedio.getDose().isEmpty()){
+            titulo += " (" + remedio.getDose() + ")";
+        }
+
+        return titulo;
+    }
+
+    @Override
     public String getOrigem() {
-        return CuidadorService.NO.getNo(CuidadorService.NO.REMEDIOS);
+        return NO.getNo(NO.REMEDIOS);
     }
 
     @Override

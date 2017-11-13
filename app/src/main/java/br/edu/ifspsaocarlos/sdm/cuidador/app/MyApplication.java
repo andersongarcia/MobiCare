@@ -2,8 +2,7 @@ package br.edu.ifspsaocarlos.sdm.cuidador.app;
 
 import android.app.Application;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MyApplication extends Application {
 
@@ -11,12 +10,7 @@ public class MyApplication extends Application {
     public void onCreate() {
 
         super.onCreate();
-        /*Realm.init(this);
-        RealmConfiguration config =
-                new RealmConfiguration.Builder()
-                        .schemaVersion(5)
-                        .name("myrealm.realm")
-                        .build();
-        Realm.setDefaultConfiguration(config);*/
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase.setPersistenceEnabled(true);
     }
 }

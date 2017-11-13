@@ -4,11 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.Calendar;
-import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ProgramaMensagemAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.RemedioMensagemAdapter;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
@@ -22,21 +21,13 @@ public class AlarmeService {
 
     private static final String TAG = "AlarmeService";
     private final Context contexto;
-    private final CuidadorFirebaseRepository repositorio;
     private final AlarmeReceiver alarmeReceiver;
+    private final PreferenciaHelper preferencias;
 
     public AlarmeService(Context contexto){
         this.contexto = contexto;
-        this.repositorio = CuidadorFirebaseRepository.getInstance();
         this.alarmeReceiver = new AlarmeReceiver();
-    }
-    
-    public void atualizaAlarmesRemedios(){
-        List<Remedio> remedios = repositorio.getRemedios();
-
-        for (Remedio remedio : remedios) {
-            atualizaAlarmeRemedio(remedio);
-        }
+        this.preferencias = new PreferenciaHelper(contexto);
     }
 
     public void atualizaAlarmeRemedio(Remedio remedio) {
@@ -48,17 +39,23 @@ public class AlarmeService {
         }else {
             alarmeReceiver.defineAlarmeRecorrente(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao());
         }
+        // salva código do alarme nas preferências
+        preferencias.setAlarmeId(remedio.getCodigoAlarme(), PreferenciaHelper.ALARMES_REMEDIOS);
     }
 
-    public void atualizaAlarmesProgramas(){
-        List<Programa> programas = repositorio.getProgramas();
+    public void atualizaAlarmePrograma(Programa programa) {
+        IMensagem mensagem = new ProgramaMensagemAdapter(programa);
+        Log.d(TAG, "Atualizando alarmes para programa " + programa.getNome());
+        alarmeReceiver.cancelaAlarme(contexto, programa.getCodigoAlarme());
+        Calendar proximaExibicao = programa.obterProximaExibicao();
+        alarmeReceiver.defineAlarmeUnico(contexto, mensagem, programa.getCodigoAlarme(), proximaExibicao, false);
+        // salva código do alarme nas preferências
+        preferencias.setAlarmeId(programa.getCodigoAlarme(), PreferenciaHelper.ALARMES_PROGRAMAS);
+    }
 
-        for (Programa programa : programas) {
-            IMensagem mensagem = new ProgramaMensagemAdapter(programa);
-            Log.d(TAG, "Atualizando alarmes para programa " + programa.getNome());
-            alarmeReceiver.cancelaAlarme(contexto, programa.getCodigoAlarme());
-            Calendar proximaExibicao = programa.obterProximaExibicao();
-            alarmeReceiver.defineAlarmeUnico(contexto, mensagem, programa.getCodigoAlarme(), proximaExibicao, false);
+    public void cancelaTodos(String tagAlarme) {
+        for (int idAlarm : preferencias.getAlarmesIds(tagAlarme)) {
+            alarmeReceiver.cancelaAlarme(contexto, idAlarm);
         }
     }
 }

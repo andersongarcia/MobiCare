@@ -17,6 +17,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 
 /**
  * Fragment de para registro do idoso
@@ -66,7 +67,7 @@ public class RegistroIdosoFragment extends Fragment {
 
             case R.id.salvar:
                 final String telefone = etTelefone.getText().toString().trim();
-                activity.getCuidadorService().buscaIdoso(telefone, new CallbackGenerico<Boolean>() {
+                ContatosRepository.getInstance().buscaIdoso(telefone, new CallbackGenerico<Boolean>() {
                     @Override
                     public void OnComplete(Boolean existe) {
                         if(existe){

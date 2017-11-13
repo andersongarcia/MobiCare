@@ -26,9 +26,12 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogAudioListener;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.FirebaseRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
@@ -56,7 +59,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
     public CadastroRemedioFragment() {
         // Required empty public constructor
-        super(RemediosFragment.newInstance(), CuidadorService.NO.REMEDIOS);
+        super(RemediosFragment.newInstance(), NO.REMEDIOS);
     }
 
     /**
@@ -99,7 +102,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     protected String getUriAvatar() { return remedio.getFotoUri(); }
 
     @Override
-    protected void criarReferenciasLayout() {
+    protected void criaReferenciasLayout() {
         // referencia componentes do layout
         etNome = (EditText)view.findViewById(R.id.remedio_nome);
         etDose = (EditText)view.findViewById(R.id.remedio_dose);
@@ -113,7 +116,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     }
 
     @Override
-    protected void carregarInformacoesCadastradas() {
+    protected void carregaInformacoesCadastradas() {
         // carrega informações cadastradas
         etNome.setText(remedio.getNome());
         etHorario.setText(remedio.getHorario());
@@ -174,6 +177,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
                         criaDialogs(localFile.getAbsolutePath());
                         dlgOuvirInstrucaoListener.setRecord(true);
                         btnOuvirInstrucao.setEnabled(true);
+                        carregaAvatar();
                     }
                 }, new OnFailureListener() {
                     @Override
@@ -255,7 +259,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     }
 
     @Override
-    protected void salvar() {
+    protected void salva() {
         String nome = etNome.getText().toString().trim();
         String dose = etDose.getText().toString().trim();
         String horario = etHorario.getText().toString().trim();
@@ -282,18 +286,18 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
 
         // salva remédio
         // retorna id, já que pode ser novo
-        final String id = service.salvaRemedio(remedio);
+        final String id = RemediosRepository.getInstance().salvaRemedio(activity.getPreferencias().getIdosoSelecionadoId(), remedio);
 
         // verifica se foto foi alterada
         if(fotoAlterada){
             // se foi, salva nova foto
             if(localFile != null && localFile.exists()){
-                service.salvaFoto(CuidadorService.NO.REMEDIOS, id, localFile)
+                service.salvaFoto(NO.REMEDIOS, id, localFile)
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 Uri uri = taskSnapshot.getDownloadUrl();
-                                service.salvaUri(CuidadorService.NO.REMEDIOS, id, uri.toString());
+                                FirebaseRepository.getInstance().salvaUri(NO.REMEDIOS, activity.getPreferencias().getIdosoSelecionadoId(), id, uri.toString());
                             }
                         });
             }
@@ -309,7 +313,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 String uri = taskSnapshot.getDownloadUrl().toString();
-                                service.salvaUriInstrucao(remedio.getId(), uri);
+                                RemediosRepository.getInstance().salvaUriInstrucao(activity.getPreferencias().getIdosoSelecionadoId(), remedio.getId(), uri);
                             }
                         });
             }
@@ -317,8 +321,8 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     }
 
     @Override
-    protected void excluir() {
-        service.removeRemedio(this.remedio.getId());
+    protected void exclui() {
+        RemediosRepository.getInstance().removeRemedio(activity.getPreferencias().getIdosoSelecionadoId(), this.remedio.getId());
     }
 
     @Override

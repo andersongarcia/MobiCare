@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cuidador</string>
+    <string name="app_name">Careline</string>
     <string name="Salvar">Salvar</string>
     <string name="Buscar">Buscar</string>
     <string name="Ajuda">Ajuda</string>
@@ -147,6 +147,7 @@
     <string name="action_confirmar">Confirmar</string>
     <string name="menu_confirmar_remedio">Já tomei!</string>
     <string name="menu_repetir">Repetir</string>
+    <string name="start_chatting">iniciar chat</string>
 
 
 </resources>

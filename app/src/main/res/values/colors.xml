@@ -6,14 +6,14 @@
     <color name="colorAccent">#FF4081</color>-->
 
     <!-- Light Green -->
-    <color name="colorPrimary">#8BC34A</color>
+    <!-- <color name="colorPrimary">#8BC34A</color>
     <color name="colorPrimaryDark">#689F38</color>
-    <color name="colorAccent">#ff5252</color>
+    <color name="colorAccent">#ff5252</color>-->
 
     <!-- Purple -->
-    <!-- <color name="colorPrimary">#9B26AF</color>
+    <color name="colorPrimary">#9B26AF</color>
     <color name="colorPrimaryDark">#7A1EA1</color>
-    <color name="colorAccent">#68EFAD</color>-->
+    <color name="colorAccent">#68EFAD</color>
 
     <color name="overflowMenuBg">#ede2b2</color>
     <color name="grey_100">#F5F5F5</color>

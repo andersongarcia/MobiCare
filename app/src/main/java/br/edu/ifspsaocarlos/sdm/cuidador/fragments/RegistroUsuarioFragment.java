@@ -14,6 +14,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 
 /**
  * Fragment de para registro do usuário através do Firebase Authentications
@@ -58,7 +59,7 @@ public class RegistroUsuarioFragment extends Fragment {
 
             case R.id.salvar:
                 final String telefone = tvTelefone.getText().toString().trim();
-                activity.getCuidadorService().buscaIdoso(telefone, new CallbackGenerico<Boolean>() {
+                ContatosRepository.getInstance().buscaIdoso(telefone, new CallbackGenerico<Boolean>() {
                     @Override
                     public void OnComplete(Boolean existe) {
                         if(existe){

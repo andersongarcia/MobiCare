@@ -17,8 +17,11 @@ import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
+import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
 
 /**
  * Classe de acesso ao storage Firebase
@@ -35,8 +38,8 @@ public class CuidadorFirebaseStorage {
     private CuidadorFirebaseStorage(){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference rootRef = storage.getReference();
-        idosoEndPoint = rootRef.child(CuidadorService.NO.getNo(CuidadorService.NO.IDOSOS));
-        fotosEndPoint = rootRef.child(CuidadorService.NO.getNo(CuidadorService.NO.FOTOS));
+        idosoEndPoint = rootRef.child(NO.getNo(NO.IDOSOS));
+        fotosEndPoint = rootRef.child(NO.getNo(NO.FOTOS));
     }
 
     // Singleton
@@ -50,7 +53,7 @@ public class CuidadorFirebaseStorage {
 
     public void salvaAudioInstrucao(String idosoId, String remedioId, String fileName, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
         Uri uri = Uri.fromFile(new File(fileName));
-        UploadTask uploadTask = idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.INSTRUCOES)).child(remedioId).putFile(uri);
+        UploadTask uploadTask = idosoEndPoint.child(idosoId).child(NO.getNo(NO.INSTRUCOES)).child(remedioId).putFile(uri);
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -62,7 +65,7 @@ public class CuidadorFirebaseStorage {
     }
 
     public void carregaInstrucaoURI(String idosoId, String remedioId, OnSuccessListener<Uri> successListener, OnFailureListener failureListener) {
-        idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.INSTRUCOES)).child(remedioId).getDownloadUrl().addOnSuccessListener(successListener).addOnFailureListener(failureListener);
+        idosoEndPoint.child(idosoId).child(NO.getNo(NO.INSTRUCOES)).child(remedioId).getDownloadUrl().addOnSuccessListener(successListener).addOnFailureListener(failureListener);
     }
 
     public void carregaArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
@@ -72,7 +75,7 @@ public class CuidadorFirebaseStorage {
 
     public void salvaAudioChat(final String idosoId, final String contatoId, final String fileName, final CallbackSimples callback) {
         Uri uri = Uri.fromFile(new File(fileName));
-        UploadTask uploadTask = idosoEndPoint.child(idosoId).child(CuidadorService.NO.getNo(CuidadorService.NO.CHAT)).child(contatoId).putFile(uri);
+        UploadTask uploadTask = idosoEndPoint.child(idosoId).child(NO.getNo(NO.CHAT)).child(contatoId).putFile(uri);
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -86,9 +89,12 @@ public class CuidadorFirebaseStorage {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                Mensagem mensagem = new Mensagem(contatoId, idosoId, downloadUrl.toString());
+                Contato contato = ContatosRepository.getInstance().obterContato(contatoId);
 
-                CuidadorFirebaseRepository.getInstance().salvaMensagem(idosoId, mensagem, callback);
+                Mensagem mensagem = new Mensagem(contatoId, idosoId, downloadUrl.toString());
+                mensagem.setTitulo(String.format("Mensagem de %s", contato.getNome()));
+
+                MensagensRepository.getInstance().salvaMensagem(idosoId, mensagem, callback);
             }
         });
     }

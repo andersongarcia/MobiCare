@@ -22,7 +22,9 @@ import com.google.firebase.storage.UploadTask;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
+import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
 
@@ -109,7 +111,8 @@ public class RegistroFotoFragment extends Fragment {
                     activity.getCuidadorService().salvaFotoPerfil(activity.getLocalFile()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            activity.getCuidadorService().salvaUriPerfil(taskSnapshot.getDownloadUrl().toString());
+                            PreferenciaHelper preferencias = new PreferenciaHelper(activity);
+                            ContatosRepository.getInstance().salvaUriContato(preferencias.getUsuarioLogadoId(), taskSnapshot.getDownloadUrl().toString());
                         }
                     });
                 }

@@ -15,9 +15,12 @@ import com.google.firebase.storage.UploadTask;
 import java.util.Calendar;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Semana;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.FirebaseRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.CheckedTextViewHelper;
 
@@ -46,7 +49,7 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
 
     public CadastroProgramaFragment() {
         // Required empty public constructor
-        super(ProgramasFragment.newInstance(), CuidadorService.NO.PROGRAMAS);
+        super(ProgramasFragment.newInstance(), NO.PROGRAMAS);
     }
 
     /**
@@ -74,7 +77,7 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
     }
 
     @Override
-    protected void salvar() {
+    protected void salva() {
         String nome = ((TextView)getView().findViewById(R.id.programa_nome)).getText().toString().trim();
         String horarios = ((TextView)getView().findViewById(R.id.programa_horarios)).getText().toString().trim();
         String link = ((TextView)getView().findViewById(R.id.programa_link)).getText().toString().trim();
@@ -97,23 +100,23 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
 
         // salva programa
         // retorna id, já que pode ser novo
-        final String id = service.salvaPrograma(programa);
+        final String id = ProgramasRepository.getInstance().salvaPrograma(activity.getPreferencias().getIdosoSelecionadoId(), programa);
 
         if(localFile != null && localFile.exists()){
-            service.salvaFoto(CuidadorService.NO.PROGRAMAS, id, localFile)
+            service.salvaFoto(NO.PROGRAMAS, id, localFile)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Uri uri = taskSnapshot.getDownloadUrl();
-                            service.salvaUri(CuidadorService.NO.PROGRAMAS, id, uri.toString());
+                            FirebaseRepository.getInstance().salvaUri(NO.PROGRAMAS, activity.getPreferencias().getIdosoSelecionadoId(), id, uri.toString());
                         }
                     });
         }
     }
 
     @Override
-    protected void excluir() {
-        service.removePrograma(this.programa.getId());
+    protected void exclui() {
+        ProgramasRepository.getInstance().removePrograma(activity.getPreferencias().getIdosoSelecionadoId(), this.programa.getId());
     }
 
     @Override
@@ -130,7 +133,7 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
     protected String getUriAvatar() { return programa.getFotoUri(); }
 
     @Override
-    protected void criarReferenciasLayout() {
+    protected void criaReferenciasLayout() {
         etNome = (EditText)view.findViewById(R.id.programa_nome);
         etHorarios = (EditText) view.findViewById(R.id.programa_horarios);
         etLink = (EditText)view.findViewById(R.id.programa_link);
@@ -145,7 +148,7 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
     }
 
     @Override
-    protected void carregarInformacoesCadastradas() {
+    protected void carregaInformacoesCadastradas() {
         etNome.setText(programa.getNome());
         etHorarios.setText(programa.getHorario());
         etLink.setText(programa.getLink());

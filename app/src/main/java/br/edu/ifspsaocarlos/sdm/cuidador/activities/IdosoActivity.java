@@ -21,24 +21,39 @@ import java.io.IOException;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.AlertaRemedio;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.MediaPlayerHelper;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class IdosoActivity extends BaseActivity {
     private static final String TAG = "IdosoActivity";
 
     private static final String BUNDLE = "bundle";
-    private ImageView ivAvatar;
-    private TextView tvTituloMensagem;
-    private NestedScrollView scrollView;
+
+    @BindView(R.id.iv_avatar)
+    ImageView ivAvatar;
+    @BindView(R.id.tv_titulo_mensagem)
+    TextView tvTituloMensagem;
+    @BindView(R.id.bs_mensagem)
+    NestedScrollView scrollView;
+
     private BottomSheetBehavior bsBehavior;
+    private File localFile;
+    private IMensagem mensagem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_idoso);
         super.onCreate(savedInstanceState);
+
+        ButterKnife.bind(this);
 
         final Window win= getWindow(); win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD); win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
@@ -46,12 +61,8 @@ public class IdosoActivity extends BaseActivity {
 
         Log.d(TAG, "Nova mensagem a ser exibida para idoso");
 
-        ivAvatar = (ImageView) findViewById(R.id.iv_avatar);
         ivAvatar.setImageResource(R.drawable.logo);
-
-        tvTituloMensagem = (TextView) findViewById(R.id.tv_titulo_mensagem);
         tvTituloMensagem.getBackground().setAlpha(128);
-        scrollView = (NestedScrollView) findViewById(R.id.bs_mensagem);
         scrollView.getBackground().setAlpha(128);
         bsBehavior = BottomSheetBehavior.from(scrollView);
         mostraAcoes(false);
@@ -76,41 +87,32 @@ public class IdosoActivity extends BaseActivity {
         Bundle extras = getIntent().getBundleExtra(BUNDLE);
 
         if (extras != null) {
-            final IMensagem mensagem = (IMensagem) extras.get(CuidadorService.NO.getNo(CuidadorService.NO.MENSAGENS));
+            mensagem = (IMensagem) extras.get(NO.getNo(NO.MENSAGENS));
             //openFragment(ChatIdosoFragment.newInstance(mensagem));
             if (mensagem != null) {
+                tvTituloMensagem.setText(mensagem.getTitulo());
                 // Toca som padrão para chamar a atenção
-                /*try {
-                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                    r.play();
+                try {
+                    MediaPlayer ring= MediaPlayer.create(this, R.raw.jingle);
+                    ring.start();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }
 
                 FotoService.carregarAvatar(service, mensagem.getFotoUri(), ivAvatar, new CallbackSimples() {
 
                     @Override
                     public void OnComplete() {
+
                         // Ao terminar de carregar foto, inicia reprodução do áudio
                         try {
                             // Primeiro, carrega arquivo de áudio pela URI
-                            final File localFile = File.createTempFile(mensagem.getId(), ".3gp");
+                            localFile = File.createTempFile(mensagem.getId(), ".3gp");
                             service.carregaArquivo(Uri.parse(mensagem.getAudioUri()), localFile, new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                     // carrega arquibo no player e inicia reproducão
-                                    MediaPlayerHelper playerHelper = new MediaPlayerHelper(getBaseContext(), localFile.getAbsolutePath());
-                                    playerHelper.iniciarReproducao(new MediaPlayer.OnCompletionListener() {
-                                        @Override
-                                        public void onCompletion(MediaPlayer mediaPlayer) {
-                                            // ao completar reprodução, mostra botões de ação
-                                            if (mensagem.getOrigem().equals(CuidadorService.NO.getNo(CuidadorService.NO.REMEDIOS))) {
-                                                service.notificarCuidador(mensagem.getId());
-                                                mostraAcoes(true);
-                                            }
-                                        }
-                                    });
+                                    reproduzirAudio();
                                 }
                             }, new OnFailureListener() {
                                 @Override
@@ -128,5 +130,35 @@ public class IdosoActivity extends BaseActivity {
             }
         }
 
+    }
+
+    private void reproduzirAudio() {
+        MediaPlayerHelper playerHelper = new MediaPlayerHelper(getBaseContext(), localFile.getAbsolutePath());
+        playerHelper.iniciarReproducao(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                // ao completar reprodução, mostra botões de ação
+                if (mensagem.getOrigem().equals(NO.getNo(NO.REMEDIOS))) {
+                    RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.ENVIO, preferencias.getIdosoSelecionadoId(), mensagem.getId());
+                    mostraAcoes(true);
+                }
+            }
+        });
+    }
+
+    @OnClick(R.id.action_repetir)
+    public void onRepetirClick(){
+        mostraAcoes(false);
+        Log.d(TAG, "replay");
+        reproduzirAudio();
+    }
+
+    @OnClick(R.id.action_confirmar)
+    public void onConfirmarClick(){
+        // ao clicar na confirmação, salvar horário e fechar tela
+        if (mensagem.getOrigem().equals(NO.getNo(NO.REMEDIOS))) {
+            RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.CONFIRMACAO_IDOSO, preferencias.getIdosoSelecionadoId(), mensagem.getId());
+            finish();
+        }
     }
 }

@@ -14,9 +14,9 @@ import java.util.List;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.RemedioListAdapter;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 
 /**
  * Created by ander on 11/09/2017.
@@ -41,7 +41,7 @@ public class RemediosFragment extends Fragment implements RecyclerViewOnItemSele
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        listaRemedios = CuidadorFirebaseRepository.getInstance().getRemedios();
+        listaRemedios = RemediosRepository.getInstance().getRemedios();
         RemedioListAdapter adapter = new RemedioListAdapter(getActivity(), listaRemedios);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);

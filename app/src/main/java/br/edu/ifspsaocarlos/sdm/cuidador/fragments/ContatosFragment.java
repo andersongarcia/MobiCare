@@ -9,14 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ContatoListAdapter;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 
 /**
  * Fragment da lista de contatos.
@@ -26,8 +31,47 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
 public class ContatosFragment extends Fragment implements RecyclerViewOnItemSelecionado {
 
     private RecyclerView mRecyclerView;
-    private List<Contato> listaContatos;
+    private List<Contato> listaContatos = new ArrayList<>();
     MainActivity activity;
+
+    ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            Contato contato = dataSnapshot.getValue(Contato.class);
+            listaContatos.add(contato);
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            Contato contato = dataSnapshot.getValue(Contato.class);
+            for (Contato c : listaContatos) {
+                if(c.getId().equals(contato.getId())){
+                    c = contato;
+                }
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            Contato contato = dataSnapshot.getValue(Contato.class);
+            for (Contato c : listaContatos) {
+                if(c.getId().equals(contato.getId())){
+                    listaContatos.remove(c);
+                }
+            }
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+            // ...
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,7 +87,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        listaContatos = CuidadorFirebaseRepository.getInstance().getContatos();
+        listaContatos = ContatosRepository.getInstance().getContatos();
         ContatoListAdapter adapter = new ContatoListAdapter(getActivity(), listaContatos);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);

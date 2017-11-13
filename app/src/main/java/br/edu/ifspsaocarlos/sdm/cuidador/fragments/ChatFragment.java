@@ -26,11 +26,13 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MensagemSetListAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogAudioListener;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Fragment do chat.
@@ -48,7 +50,8 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
     private CuidadorService service;
     private MainActivity activity;
 
-    private RecyclerView recyclerView;
+    @BindView(R.id.rv_chat)
+    RecyclerView recyclerView;
     private List<MensagemSet> listaMensagens;
 
     @Override
@@ -71,6 +74,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        ButterKnife.bind(this, view);
 
         activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.app_name));
@@ -78,14 +82,13 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
         service = new CuidadorService(activity);
 
         //region Lista de mensagens
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv_chat);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(llm);
 
-        listaMensagens = CuidadorFirebaseRepository.getInstance().getMensagens();
+        listaMensagens = MensagensRepository.getInstance().getMensagens();
         final MensagemSetListAdapter adapter = new MensagemSetListAdapter(getActivity(), listaMensagens);
         adapter.setRecyclerViewOnItemSelecionado(this);
         recyclerView.setAdapter(adapter);

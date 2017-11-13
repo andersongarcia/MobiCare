@@ -2,10 +2,9 @@ package br.edu.ifspsaocarlos.sdm.cuidador.adapters;
 
 import android.media.RingtoneManager;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 
 /**
  * Created by ander on 05/11/2017.
@@ -25,8 +24,11 @@ public class ProgramaMensagemAdapter implements IMensagem {
     }
 
     @Override
+    public String getTitulo() { return programa.getNome(); }
+
+    @Override
     public String getOrigem() {
-        return CuidadorService.NO.getNo(CuidadorService.NO.PROGRAMAS);
+        return NO.getNo(NO.PROGRAMAS);
     }
 
     @Override

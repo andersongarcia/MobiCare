@@ -18,6 +18,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.activities.RegistroActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 
 /**
  * Fragment de para registro do usuário contato
@@ -70,7 +71,7 @@ public class RegistroContatoFragment extends Fragment {
             case R.id.salvar:
                 String telefone = etTelefone.getText().toString().trim();
 
-                activity.getCuidadorService().buscaContato(telefone, new CallbackGenerico<Contato>() {
+                ContatosRepository.getInstance().buscaContato(telefone, new CallbackGenerico<Contato>() {
                     @Override
                     public void OnComplete(Contato contato) {
                         if(contato != null){

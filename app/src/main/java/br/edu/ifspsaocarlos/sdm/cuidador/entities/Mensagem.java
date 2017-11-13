@@ -8,9 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.FirebaseRepository;
 
 /**
  * Classe que representa uma mensagem de áudio.
@@ -22,6 +22,7 @@ public class Mensagem implements Serializable, IMensagem {
     private String id;
     private String emissorId;
     private String destinatarioId;
+    private String titulo;
     private String fotoUri;
     private String audioUri;
 
@@ -29,7 +30,7 @@ public class Mensagem implements Serializable, IMensagem {
         this.emissorId = "";
         this.destinatarioId = "";
         this.audioUri = "";
-        this.timestampEnvio = CuidadorFirebaseRepository.getTimestampNow();
+        this.timestampEnvio = FirebaseRepository.getTimestampNow();
     }
 
     public Mensagem(String emissorId, String destinatarioId, String audioUri) {
@@ -43,7 +44,7 @@ public class Mensagem implements Serializable, IMensagem {
 
     @Override
     public String getOrigem() {
-        return CuidadorService.NO.getNo(CuidadorService.NO.MENSAGENS);
+        return NO.getNo(NO.MENSAGENS);
     }
 
     public String getId() {
@@ -69,6 +70,11 @@ public class Mensagem implements Serializable, IMensagem {
     public void setDestinatarioId(String destinatarioId) {
         this.destinatarioId = destinatarioId.trim();
     }
+
+    @Override
+    public String getTitulo() { return titulo; }
+
+    public void setTitulo(String titulo) { this.titulo = titulo; }
 
     public String getFotoUri() {
         return fotoUri;

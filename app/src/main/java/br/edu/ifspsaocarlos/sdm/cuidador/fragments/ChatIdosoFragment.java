@@ -22,7 +22,10 @@ import java.io.IOException;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.AlertaRemedio;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.MediaPlayerHelper;
@@ -100,8 +103,8 @@ public class ChatIdosoFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    if(mensagem.getOrigem().equals(CuidadorService.NO.getNo(CuidadorService.NO.REMEDIOS))){
-                        service.notificarCuidador(mensagem.getId());
+                    if(mensagem.getOrigem().equals(NO.getNo(NO.REMEDIOS))){
+                        RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.ENVIO, activity.getPreferencias().getIdosoSelecionadoId(), mensagem.getId());
                     }
 
                 }

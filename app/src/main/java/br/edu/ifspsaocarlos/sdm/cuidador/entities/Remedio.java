@@ -33,6 +33,8 @@ public class Remedio implements Serializable {
 
     private String instrucaoUri;
 
+    public Remedio() {}  // Needed for Firebase
+
 
     public String getId() { return id; }
 
@@ -104,6 +106,9 @@ public class Remedio implements Serializable {
 
     @Exclude
     public String calculaProximoHorario() {
+        if(repeticao == 0)
+            return "";
+
         Calendar ultimoHorario = DatetimeHelper.getThisTimeToday(horario);
         ultimoHorario.add(Calendar.HOUR, repeticao);
 

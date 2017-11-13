@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.IdosoActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.DatetimeHelper;
 
 /**
@@ -73,6 +73,11 @@ public class AlarmeReceiver extends BroadcastReceiver {
 
     public void defineAlarmeRecorrente(Context context, IMensagem mensagem, int requestCode, String horario, int recorrencia)
     {
+        if(horario.isEmpty()){
+            Log.d(TAG, "Horário indefinido para criação de alarme");
+            return;
+        }
+
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
         Bundle bundle = new Bundle();
@@ -96,6 +101,11 @@ public class AlarmeReceiver extends BroadcastReceiver {
     }
 
     public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, String horario, boolean deveAjustarProximo){
+        if(horario.isEmpty()){
+            Log.d(TAG, "Horário indefinido para criação de alarme");
+            return;
+        }
+
         // calcula intervalo do alarme
         Calendar cal = calculaIntervalo(horario);
         //Calendar cal = new GregorianCalendar();  // testes para execução imediata

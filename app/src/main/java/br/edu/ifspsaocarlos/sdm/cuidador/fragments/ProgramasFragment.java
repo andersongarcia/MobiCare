@@ -15,9 +15,9 @@ import java.util.List;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ProgramaListAdapter;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
 
 /**
  * Fragment da lista de programas favoritos.
@@ -43,7 +43,7 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        listaProgramas = CuidadorFirebaseRepository.getInstance().getProgramas();
+        listaProgramas = ProgramasRepository.getInstance().getProgramas();
         ProgramaListAdapter adapter = new ProgramaListAdapter(getActivity(), listaProgramas);
         adapter.setRecyclerViewOnItemSelecionado(this);
         mRecyclerView.setAdapter(adapter);

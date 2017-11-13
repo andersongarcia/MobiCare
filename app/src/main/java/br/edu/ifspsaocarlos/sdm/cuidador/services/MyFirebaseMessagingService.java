@@ -1,6 +1,5 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -11,7 +10,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.activities.ConfirmaRemedioActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
@@ -22,6 +20,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private static final String NOTIFICACAO_NOVA_MENSAGEM = "mensagem";
+    private static final String NOTIFICACAO_SINCRONIZAR_CONTATOS = "contatos";
     private static final String NOTIFICACAO_SINCRONIZAR_REMEDIOS = "remedios";
     private static final String NOTIFICACAO_SINCRONIZAR_PROGRAMAS = "programas";
     private static final String NOTIFICACAO_CONFIRMAR_REMEDIO = "alertaRemedio";
@@ -54,6 +53,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     mensagem.setFotoUri(data.get("fotoUri"));
                     AlarmeReceiver alarm = new AlarmeReceiver();
                     alarm.mostraNovaMensagem(getBaseContext(), mensagem);
+                    break;
+                case NOTIFICACAO_SINCRONIZAR_CONTATOS:
+                    Log.d(TAG, "sincronizar contatos");
+                    //cuidadorService.sincronizarContatos();
                     break;
                 case NOTIFICACAO_SINCRONIZAR_REMEDIOS:
                     cuidadorService.sincronizarRemedios();
