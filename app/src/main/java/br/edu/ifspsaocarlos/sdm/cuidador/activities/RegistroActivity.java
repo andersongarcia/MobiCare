@@ -38,7 +38,7 @@ public class RegistroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean("authFirebase", false)){
+        if(sharedPref.getBoolean("authFirebase", true)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
                 Intent intent = new Intent(this, PhoneAuthActivity.class);
                 startActivity(intent);
