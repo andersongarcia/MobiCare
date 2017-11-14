@@ -80,7 +80,7 @@ public class MensagensRepository extends Observable {
                                 MensagemSet model = new MensagemSet(mensagem, emissor, destinatario);
 
                                 int i = mKeys.indexOf(key);
-                                if (i > 0)
+                                if (i >= 0)
                                     return;
                                 // Insert into the correct location, based on previousChildName
                                 if (previousChildName == null) {

@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 
 /**
  * Adapter de contato.
@@ -20,14 +23,28 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
  */
 public class RemedioListAdapter extends RecyclerView.Adapter<RemedioListAdapter.RemedioHolder> {
 
+    private RemediosRepository repositorio;
     private List<Remedio> lista;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
+    private View emptyView;
 
-    public RemedioListAdapter(Context c, List<Remedio> l) {
+    Observer observer = new Observer() {
+        @Override
+        public void update(Observable observable, Object o) {
+            notifyDataSetChanged();
+            checkIfEmpty();
+        }
+    };
 
-        lista = l;
+    public RemedioListAdapter(Context c, String idosoId) {
+        repositorio = RemediosRepository.getInstance();
+        lista = repositorio.getRemedios();
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // define observer
+        repositorio.addObserver(observer);
+        repositorio.carregaRemedios(idosoId, null);
     }
 
     @Override
@@ -55,6 +72,22 @@ public class RemedioListAdapter extends RecyclerView.Adapter<RemedioListAdapter.
     public void setRecyclerViewOnItemSelecionado(RecyclerViewOnItemSelecionado r){
 
         meuRecyclerViewOnItemSelecionado = r;
+    }
+
+    public Remedio getItem(int posicao) {
+        return lista.get(posicao);
+    }
+
+    public void setEmptyView(View view){
+        emptyView = view;
+    }
+
+    private void checkIfEmpty() {
+        if(getItemCount() > 0){
+            emptyView.setVisibility(View.GONE);
+        }else {
+            emptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     public class RemedioHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

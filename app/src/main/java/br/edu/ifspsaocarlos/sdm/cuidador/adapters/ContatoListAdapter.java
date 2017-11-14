@@ -33,8 +33,10 @@ public class ContatoListAdapter extends RecyclerView.Adapter<ContatoListAdapter.
         @Override
         public void update(Observable observable, Object o) {
             notifyDataSetChanged();
+            checkIfEmpty();
         }
     };
+    private View emptyView;
 
     public ContatoListAdapter(Context c, String idosoId) {
         repositorio = ContatosRepository.getInstance();
@@ -90,6 +92,18 @@ public class ContatoListAdapter extends RecyclerView.Adapter<ContatoListAdapter.
 
     public Contato getItem(int posicao) {
         return listaContatos.get(posicao);
+    }
+
+    public void setEmptyView(View emptyView) {
+        this.emptyView = emptyView;
+    }
+
+    private void checkIfEmpty() {
+        if(getItemCount() > 0){
+            emptyView.setVisibility(View.GONE);
+        }else {
+            emptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     public class ContatoHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

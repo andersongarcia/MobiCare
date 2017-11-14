@@ -91,7 +91,7 @@ public abstract class CadastroBaseFragment extends Fragment {
             @Override
             public void OnComplete() {
                 exclui();
-                //redirecionaParaLista();
+                redirecionaParaLista();
             }
         });
 

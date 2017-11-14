@@ -13,8 +13,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observable;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.AlertaRemedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
@@ -24,7 +24,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.AlarmeService;
  * Created by ander on 10/11/2017.
  */
 
-public class RemediosRepository  {
+public class RemediosRepository extends Observable {
     private static final String TAG = "RemediosRepository";
 
     private static RemediosRepository repository;
@@ -80,7 +80,7 @@ public class RemediosRepository  {
         removeRemedioDaLista(remedioId);
     }
 
-    public void carregaRemedios(String idosoId, final AlarmeService alarmeService, final CallbackSimples callback) {
+    public void carregaRemedios(String idosoId, final AlarmeService alarmeService) {
         remedioEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -93,9 +93,8 @@ public class RemediosRepository  {
                         alarmeService.atualizaAlarmeRemedio(remedio);
                     }
                 }
-                if(callback != null)
-                    callback.OnComplete();
-
+                setChanged();
+                notifyObservers();
             }
 
             @Override

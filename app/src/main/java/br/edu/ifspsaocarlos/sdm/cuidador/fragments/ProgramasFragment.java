@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -17,7 +18,8 @@ import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ProgramaListAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
-import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Fragment da lista de programas favoritos.
@@ -28,13 +30,25 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
     private RecyclerView mRecyclerView;
     private List<Programa> listaProgramas;
     MainActivity activity;
+    private ProgramaListAdapter adapter;
+
+    @BindView(R.id.ll_empty_view)
+    View emptyView;
+    @BindView(R.id.tv_empty_view)
+    TextView tvEmptyView;
+    @BindView(R.id.tv_empty_view_help)
+    TextView tvEmptyViewHelp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_programas, container, false);
+        ButterKnife.bind(this, view);
 
         activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.menu_programas_favoritos));
+
+        tvEmptyView.setText(R.string.nenhum_programa);
+        tvEmptyViewHelp.setText(R.string.programas_empty);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_programas);
         mRecyclerView.setHasFixedSize(true);
@@ -43,9 +57,9 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        listaProgramas = ProgramasRepository.getInstance().getProgramas();
-        ProgramaListAdapter adapter = new ProgramaListAdapter(getActivity(), listaProgramas);
+        adapter = new ProgramaListAdapter(getActivity(), activity.getPreferencias().getIdosoSelecionadoId());
         adapter.setRecyclerViewOnItemSelecionado(this);
+        adapter.setEmptyView(emptyView);
         mRecyclerView.setAdapter(adapter);
 
         // Configurando um dividr entre linhas, para uma melhor visualização.

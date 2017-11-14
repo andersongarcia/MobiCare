@@ -8,7 +8,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="vertical" />
-    
+
+    <LinearLayout
+        android:id="@+id/ll_empty_view"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+        <include
+            layout="@layout/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_cadastrar"
         android:layout_width="wrap_content"

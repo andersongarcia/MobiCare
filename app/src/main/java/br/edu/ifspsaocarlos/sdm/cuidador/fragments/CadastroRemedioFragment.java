@@ -298,7 +298,6 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 Uri uri = taskSnapshot.getDownloadUrl();
                                 FirebaseRepository.getInstance().salvaUri(NO.REMEDIOS, activity.getPreferencias().getIdosoSelecionadoId(), id, uri.toString());
-                                redirecionaParaLista();
                             }
                         });
             }
@@ -319,6 +318,8 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
                         });
             }
         }
+
+        redirecionaParaLista();
     }
 
     @Override

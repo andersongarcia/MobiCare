@@ -90,13 +90,13 @@ public class CuidadorService {
     public void sincronizarRemedios() {
         AlarmeService alarmeService = new AlarmeService(contexto);
         alarmeService.cancelaTodos(PreferenciaHelper.ALARMES_REMEDIOS);
-        RemediosRepository.getInstance().carregaRemedios(preferencias.getIdosoSelecionadoId(), alarmeService, null);
+        RemediosRepository.getInstance().carregaRemedios(preferencias.getIdosoSelecionadoId(), alarmeService);
     }
 
     public void sincronizarProgramas() {
         AlarmeService alarmeService = new AlarmeService(contexto);
         alarmeService.cancelaTodos(PreferenciaHelper.ALARMES_PROGRAMAS);
-        ProgramasRepository.getInstance().carregaProgramas(preferencias.getIdosoSelecionadoId(), alarmeService, null);
+        ProgramasRepository.getInstance().carregaProgramas(preferencias.getIdosoSelecionadoId(), alarmeService);
     }
 
     public void salvaAudioInstrucao(String fileName, String remedioId, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {

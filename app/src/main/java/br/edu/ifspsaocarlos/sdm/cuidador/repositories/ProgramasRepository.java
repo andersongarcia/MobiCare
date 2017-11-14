@@ -9,17 +9,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observable;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
-import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
+import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.AlarmeService;
 
 /**
  * Created by ander on 11/11/2017.
  */
 
-public class ProgramasRepository {
+public class ProgramasRepository extends Observable {
     private static final String TAG = "RemediosRepository";
 
     private static ProgramasRepository repository;
@@ -72,9 +72,9 @@ public class ProgramasRepository {
         removeProgramaDaLista(programaId);
     }
 
-    public void carregaProgramas(String idosoId, final AlarmeService alarmeService, final CallbackSimples callback) {
+    public void carregaProgramas(String idosoId, final AlarmeService alarmeService) {
         final DatabaseReference reference = programaEndPoint.child(idosoId);
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 programas.clear();
@@ -86,10 +86,8 @@ public class ProgramasRepository {
                         alarmeService.atualizaAlarmePrograma(programa);
                     }
                 }
-                if(callback != null){
-                    callback.OnComplete();
-                }
-                reference.removeEventListener(this);
+                setChanged();
+                notifyObservers();
             }
 
             @Override

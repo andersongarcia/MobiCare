@@ -8,24 +8,41 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
+import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
 
 /**
  * Created by ander on 11/09/2017.
  */
 
 public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapter.ProgramaHolder> {
+    private ProgramasRepository repositorio;
     private List<Programa> lista;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
+    private View emptyView;
 
-    public ProgramaListAdapter(Context c, List<Programa> l) {
+    Observer observer = new Observer() {
+        @Override
+        public void update(Observable observable, Object o) {
+            notifyDataSetChanged();
+            checkIfEmpty();
+        }
+    };
 
-        lista = l;
+    public ProgramaListAdapter(Context c, String idosoId) {
+        repositorio = ProgramasRepository.getInstance();
+        lista = repositorio.getProgramas();
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // define observer
+        repositorio.addObserver(observer);
+        repositorio.carregaProgramas(idosoId, null);
     }
 
     @Override
@@ -53,6 +70,18 @@ public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapte
     public void setRecyclerViewOnItemSelecionado(RecyclerViewOnItemSelecionado r){
 
         meuRecyclerViewOnItemSelecionado = r;
+    }
+
+    public void setEmptyView(View view){
+        emptyView = view;
+    }
+
+    private void checkIfEmpty() {
+        if(getItemCount() > 0){
+            emptyView.setVisibility(View.GONE);
+        }else {
+            emptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     public class ProgramaHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

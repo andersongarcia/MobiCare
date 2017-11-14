@@ -36,6 +36,93 @@ public class ContatosRepository extends Observable {
     private final DatabaseReference idosoEndPoint;
     private final ArrayList<String> mKeys;
     private List<Contato> contatos;
+    private ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, final String previousChildName) {
+            contatoEndPoint.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Contato model = dataSnapshot.getValue(Contato.class);
+                    String key = dataSnapshot.getKey();
+
+                    int i = mKeys.indexOf(key);
+                    if (i >= 0)
+                        return;
+                    // Insert into the correct location, based on previousChildName
+                    if (previousChildName == null) {
+                        contatos.add(0, model);
+                        mKeys.add(0, key);
+                    } else {
+                        int previousIndex = mKeys.indexOf(previousChildName);
+                        int nextIndex = previousIndex + 1;
+                        if (nextIndex == contatos.size()) {
+                            contatos.add(model);
+                            mKeys.add(key);
+                        } else {
+                            contatos.add(nextIndex, model);
+                            mKeys.add(nextIndex, key);
+                        }
+                    }
+
+                    setChanged();
+                    notifyObservers();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, final String previousChildName) {
+            contatoEndPoint.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // One of the mModels changed. Replace it in our list and name mapping
+                    String key = dataSnapshot.getKey();
+                    Contato newModel = dataSnapshot.getValue(Contato.class);
+                    int index = mKeys.indexOf(key);
+
+                    contatos.set(index, newModel);
+
+                    setChanged();
+                    notifyObservers();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            // A model was removed from the list. Remove it from our list and the name mapping
+            String key = dataSnapshot.getKey();
+            int index = mKeys.indexOf(key);
+
+            if(index >= 0){
+                mKeys.remove(index);
+                contatos.remove(index);
+
+                setChanged();
+                notifyObservers();
+            }
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Log.e(TAG, "Listen was cancelled, no more updates will occur");
+        }
+    };
+
 
     private ContatosRepository() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -116,90 +203,7 @@ public class ContatosRepository extends Observable {
         contatos.clear();
         mKeys.clear();
         DatabaseReference reference = idosoEndPoint.child(idosoId).child(NO.getNo(NO.CONTATOS));
-        reference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, final String previousChildName) {
-                contatoEndPoint.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Contato model = dataSnapshot.getValue(Contato.class);
-                        String key = dataSnapshot.getKey();
-
-                        int i = mKeys.indexOf(key);
-                        if(i > 0)
-                            return;
-                        // Insert into the correct location, based on previousChildName
-                        if (previousChildName == null) {
-                            contatos.add(0, model);
-                            mKeys.add(0, key);
-                        } else {
-                            int previousIndex = mKeys.indexOf(previousChildName);
-                            int nextIndex = previousIndex + 1;
-                            if (nextIndex == contatos.size()) {
-                                contatos.add(model);
-                                mKeys.add(key);
-                            } else {
-                                contatos.add(nextIndex, model);
-                                mKeys.add(nextIndex, key);
-                            }
-                        }
-
-                        setChanged();
-                        notifyObservers();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, final String previousChildName) {
-                contatoEndPoint.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // One of the mModels changed. Replace it in our list and name mapping
-                        String key = dataSnapshot.getKey();
-                        Contato newModel = dataSnapshot.getValue(Contato.class);
-                        int index = mKeys.indexOf(key);
-
-                        contatos.set(index, newModel);
-
-                        setChanged();
-                        notifyObservers();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                // A model was removed from the list. Remove it from our list and the name mapping
-                String key = dataSnapshot.getKey();
-                int index = mKeys.indexOf(key);
-
-                mKeys.remove(index);
-                contatos.remove(index);
-
-                setChanged();
-                notifyObservers();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Listen was cancelled, no more updates will occur");
-            }
-        });
+        reference.addChildEventListener(childEventListener);
     }
 
     //region Idosos
@@ -266,6 +270,11 @@ public class ContatosRepository extends Observable {
 
     public Task<Void> salvaUriContato(String id, String uri) {
         return contatoEndPoint.child(id).child(NO.getNo(NO.FOTO_URI)).setValue(uri);
+    }
+
+    public void removeListener(String idosoId){
+        DatabaseReference reference = idosoEndPoint.child(idosoId).child(NO.getNo(NO.CONTATOS));
+        reference.removeEventListener(childEventListener);
     }
 
     //endregion

@@ -8,12 +8,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ContatoListAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Fragment da lista de contatos.
@@ -26,12 +29,23 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
     MainActivity activity;
     private ContatoListAdapter adapter;
 
+    @BindView(R.id.ll_empty_view)
+    View emptyView;
+    @BindView(R.id.tv_empty_view)
+    TextView tvEmptyView;
+    @BindView(R.id.tv_empty_view_help)
+    TextView tvEmptyViewHelp;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contatos, container, false);
+        ButterKnife.bind(this, view);
 
         activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.menu_contatos));
+
+        tvEmptyView.setText(R.string.nenhum_contato);
+        tvEmptyViewHelp.setText(R.string.contatos_empty);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_contatos);
         mRecyclerView.setHasFixedSize(true);
@@ -42,6 +56,7 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
 
         adapter = new ContatoListAdapter(getActivity(), activity.getPreferencias().getIdosoSelecionadoId());
         adapter.setRecyclerViewOnItemSelecionado(this);
+        adapter.setEmptyView(emptyView);
         mRecyclerView.setAdapter(adapter);
 
         // Configurando um dividr entre linhas, para uma melhor visualização.
@@ -74,4 +89,6 @@ public class ContatosFragment extends Fragment implements RecyclerViewOnItemSele
         ContatosFragment fragment = new ContatosFragment();
         return fragment;
     }
+
+
 }

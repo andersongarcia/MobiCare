@@ -14,15 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
-import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatIdosoFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ContatosFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ProgramasFragment;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RemediosFragment;
-import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     private ActionBarDrawerToggle drawerToggle;
@@ -231,22 +228,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void abrirProgramas() {
-        ProgramasRepository.getInstance().carregaProgramas(preferencias.getIdosoSelecionadoId(), null, new CallbackSimples() {
-            @Override
-            public void OnComplete() {
-                openFragment(ProgramasFragment.newInstance());
-            }
-        });
+        openFragment(ProgramasFragment.newInstance());
     }
 
-    private void abrirRemedios() {
-        RemediosRepository.getInstance().carregaRemedios(preferencias.getIdosoSelecionadoId(), null, new CallbackSimples() {
-            @Override
-            public void OnComplete() {
-                openFragment(RemediosFragment.newInstance());
-            }
-        });
-    }
+    private void abrirRemedios() { openFragment(RemediosFragment.newInstance()); }
 
     private void abrirMensagens() {
         openFragment(ChatFragment.newInstance());

@@ -152,6 +152,13 @@
     <string name="action_confirmar_mensagem">Já ouvi!</string>
     <string name="nenhum_resultado">Nenhum resultado</string>
     <string name="nenhuma_mensagem">Nenhuma mensagem</string>
+    <string name="nenhum_remedio">Nenhum remédio</string>
+    <string name="remedios_empty">Use o botão abaixo para agendar lembrete de remédio</string>
+    <string name="nenhum_programa">Nenhum programa</string>
+    <string name="programas_empty">Use o botão abaixo para criar um lembrete de programa</string>
+    <string name="contatos_empty">Use o botão abaixo para cadastrar um contato</string>
+    <string name="nenhum_contato">Nenhum contato</string>
+    <string name="hint_numero_celular">Número do celular do contato</string>
 
 
 </resources>
