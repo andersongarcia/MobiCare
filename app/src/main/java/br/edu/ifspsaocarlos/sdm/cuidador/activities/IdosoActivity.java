@@ -61,7 +61,6 @@ public class IdosoActivity extends BaseActivity {
 
         Log.d(TAG, "Nova mensagem a ser exibida para idoso");
 
-        ivAvatar.setImageResource(R.drawable.logo);
         tvTituloMensagem.getBackground().setAlpha(128);
         scrollView.getBackground().setAlpha(128);
         bsBehavior = BottomSheetBehavior.from(scrollView);
@@ -112,7 +111,7 @@ public class IdosoActivity extends BaseActivity {
                                 @Override
                                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                     // carrega arquibo no player e inicia reproducão
-                                    reproduzirAudio();
+                                    reproduzirAudio(true);
                                 }
                             }, new OnFailureListener() {
                                 @Override
@@ -132,14 +131,16 @@ public class IdosoActivity extends BaseActivity {
 
     }
 
-    private void reproduzirAudio() {
+    private void reproduzirAudio(final boolean alerta) {
         MediaPlayerHelper playerHelper = new MediaPlayerHelper(getBaseContext(), localFile.getAbsolutePath());
         playerHelper.iniciarReproducao(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 // ao completar reprodução, mostra botões de ação
                 if (mensagem.getOrigem().equals(NO.getNo(NO.REMEDIOS))) {
-                    RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.ENVIO, preferencias.getIdosoSelecionadoId(), mensagem.getId());
+                    if(alerta){
+                        RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.ENVIO, preferencias.getIdosoSelecionadoId(), mensagem.getId());
+                    }
                     mostraAcoes(true);
                 }
             }
@@ -150,7 +151,7 @@ public class IdosoActivity extends BaseActivity {
     public void onRepetirClick(){
         mostraAcoes(false);
         Log.d(TAG, "replay");
-        reproduzirAudio();
+        reproduzirAudio(false);
     }
 
     @OnClick(R.id.action_confirmar)

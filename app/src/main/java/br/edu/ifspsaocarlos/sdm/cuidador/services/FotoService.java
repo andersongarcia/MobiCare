@@ -133,6 +133,7 @@ public abstract class FotoService {
                     if(localFile.exists()){
                         Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                         imageView.setImageBitmap(bitmap);
+                        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         callback.OnComplete();
                     }
                     Log.e("firebase ",";local tem file created  created " + localFile.toString());

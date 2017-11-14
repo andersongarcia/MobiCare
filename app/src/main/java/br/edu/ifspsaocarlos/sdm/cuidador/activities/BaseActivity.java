@@ -24,16 +24,6 @@ public class BaseActivity extends AppCompatActivity {
 
         preferencias = new PreferenciaHelper(this);
 
-        if(preferencias.obterPreferenciaBoolean("authFirebase", true)){
-            if(FirebaseAuth.getInstance().getCurrentUser() == null){
-                Intent intent = new Intent(this, PhoneAuthActivity.class);
-                startActivity(intent);
-            }
-        }
-
-        // verifica se tem usuário logado
-        verificaLogado();
-
         // inicia classe de serviço com o contexto
         service = new CuidadorService(this);
 
@@ -44,19 +34,35 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(preferencias.obterPreferenciaBoolean("authFirebase", false)){
+            if(FirebaseAuth.getInstance().getCurrentUser() == null){
+                Intent intent = new Intent(this, PhoneAuthActivity.class);
+                startActivity(intent);
+            }
+        }
+
+        // verifica se tem usuário logado
+        verificaLogado();
+    }
+
     // verifica se tem usuário logado
     public void verificaLogado() {
         CuidadorService service = new CuidadorService(this);
 
+        Intent intent;
         if(!service.verificaUsuarioLogado()){
             // Se não estiver logado, redireciona para tela de registro do usuário
-            Intent intent = new Intent(this, RegistroActivity.class);
+            intent = new Intent(this, RegistroActivity.class);
             startActivity(intent);
         }else {
             // Se estiver logado, verifica se tem idoso registrado
             if(!service.verificaIdosoSelecionado()){
                 // Se não tiver idoso selecionado, redireciona para registro do idoso
-                Intent intent = new Intent(this, RegistroActivity.class);
+                intent = new Intent(this, RegistroActivity.class);
                 startActivity(intent);
             }
         }

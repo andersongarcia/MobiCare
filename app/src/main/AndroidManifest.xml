@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppMaterialTheme">
-        <activity android:name=".activities.IdosoActivity" />
+        <activity android:name=".activities.IdosoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity android:name=".activities.RegistroActivity" />
         <activity
             android:name=".activities.MainActivity"

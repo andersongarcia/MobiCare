@@ -59,7 +59,7 @@ public class ChatIdosoFragment extends Fragment {
         service = new CuidadorService(activity);
 
         final ImageView ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
-        ivAvatar.setImageResource(R.drawable.logo);
+        ivAvatar.setImageResource(R.drawable.mobicare_logo);
 
         tvDescription = (TextView) view.findViewById(R.id.tv_description);
 

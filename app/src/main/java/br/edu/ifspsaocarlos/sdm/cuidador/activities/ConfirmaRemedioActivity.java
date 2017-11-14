@@ -97,7 +97,6 @@ public class ConfirmaRemedioActivity extends AppCompatActivity implements View.O
             RemediosRepository.getInstance().confirmarHorario(preferencias.getIdosoSelecionadoId(), remedioId, horaMedicacao, proximaMedicacao);
 
             Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         }
     }
