@@ -9,6 +9,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +44,11 @@ public class IdosoActivity extends BaseActivity {
     TextView tvTituloMensagem;
     @BindView(R.id.bs_mensagem)
     NestedScrollView scrollView;
+    @BindView(R.id.action_repetir)
+    Button btRepetir;
+    @BindView(R.id.action_confirmar)
+    Button btConfirmar;
+
 
     private BottomSheetBehavior bsBehavior;
     private File localFile;
@@ -138,11 +144,15 @@ public class IdosoActivity extends BaseActivity {
             public void onCompletion(MediaPlayer mediaPlayer) {
                 // ao completar reprodução, mostra botões de ação
                 if (mensagem.getOrigem().equals(NO.getNo(NO.REMEDIOS))) {
+                    btConfirmar.setText(R.string.action_confirmar);
                     if(alerta){
                         RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.ENVIO, preferencias.getIdosoSelecionadoId(), mensagem.getId());
                     }
-                    mostraAcoes(true);
                 }
+                if(mensagem.getOrigem().equals(NO.getNo(NO.MENSAGENS))){
+                    btConfirmar.setText(R.string.action_confirmar_mensagem);
+                }
+                mostraAcoes(true);
             }
         });
     }
@@ -159,7 +169,7 @@ public class IdosoActivity extends BaseActivity {
         // ao clicar na confirmação, salvar horário e fechar tela
         if (mensagem.getOrigem().equals(NO.getNo(NO.REMEDIOS))) {
             RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.CONFIRMACAO_IDOSO, preferencias.getIdosoSelecionadoId(), mensagem.getId());
-            finish();
         }
+        finish();
     }
 }

@@ -26,11 +26,13 @@ public class MensagemSetListAdapter extends RecyclerView.Adapter<MensagemSetList
     private List<MensagemSet> lista;
     private LayoutInflater mLayoutInflater;
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
+    private View emptyView;
 
     Observer observer = new Observer() {
         @Override
         public void update(Observable observable, Object o) {
             notifyDataSetChanged();
+            checkIfEmpty();
         }
     };
 
@@ -76,6 +78,18 @@ public class MensagemSetListAdapter extends RecyclerView.Adapter<MensagemSetList
 
     public MensagemSet getItem(int posicao) {
         return lista.get(posicao);
+    }
+
+    public void setEmptyView(View view){
+        emptyView = view;
+    }
+
+    private void checkIfEmpty() {
+        if(getItemCount() > 0){
+            emptyView.setVisibility(View.GONE);
+        }else {
+            emptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     public class MensagemSetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

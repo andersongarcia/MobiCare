@@ -139,7 +139,7 @@
     <string name="excluir">Excluir</string>
     <string name="msg_confirma_excluir">Tem certeza que deseja excluir este item?</string>
     <string name="btn_excluir">Excluir</string>
-    <string name="chat_empty">Envie uma mensagem de voz ao idoso</string>
+    <string name="chat_empty">Use o botão abaixo e envie mensagem de voz ao idoso</string>
     <string name="ouvir_mensagem">Ouvir mensagem</string>
     <string name="confirma_administracao_remedio">Confirmar a administração do remédio</string>
     <string name="hint_horario_administracao">Horário da medicação</string>
@@ -149,6 +149,9 @@
     <string name="menu_repetir">Repetir</string>
     <string name="start_chatting">iniciar chat</string>
     <string name="app_subtitle">Cuidados para idosos</string>
+    <string name="action_confirmar_mensagem">Já ouvi!</string>
+    <string name="nenhum_resultado">Nenhum resultado</string>
+    <string name="nenhuma_mensagem">Nenhuma mensagem</string>
 
 
 </resources>

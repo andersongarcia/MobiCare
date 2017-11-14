@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,6 +50,13 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
 
     @BindView(R.id.rv_chat)
     RecyclerView recyclerView;
+    @BindView(R.id.ll_empty_view)
+    View emptyView;
+    @BindView(R.id.tv_empty_view)
+    TextView tvEmptyView;
+    @BindView(R.id.tv_empty_view_help)
+    TextView tvEmptyViewHelp;
+
     private MensagemSetListAdapter adapter;
 
     @Override
@@ -78,6 +86,9 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
 
         service = new CuidadorService(activity);
 
+        tvEmptyView.setText(R.string.nenhuma_mensagem);
+        tvEmptyViewHelp.setText(R.string.chat_empty);
+
         //region Lista de mensagens
         recyclerView.setHasFixedSize(true);
 
@@ -87,6 +98,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
 
         adapter = new MensagemSetListAdapter(activity, activity.getPreferencias().getIdosoSelecionadoId());
         adapter.setRecyclerViewOnItemSelecionado(this);
+        adapter.setEmptyView(emptyView);
         recyclerView.setAdapter(adapter);
 
         // Configurando um dividr entre linhas, para uma melhor visualização.

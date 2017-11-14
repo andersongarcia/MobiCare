@@ -50,6 +50,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 case NOTIFICACAO_NOVA_MENSAGEM:
                     Mensagem mensagem = new Mensagem(data.get("emissorId"), data.get("destinatarioId"), data.get("audioUri"));
                     mensagem.setId(data.get("id"));
+                    mensagem.setTitulo(data.get("titulo"));
                     mensagem.setFotoUri(data.get("fotoUri"));
                     AlarmeReceiver alarm = new AlarmeReceiver();
                     alarm.mostraNovaMensagem(getBaseContext(), mensagem);
