@@ -38,12 +38,14 @@ public class RegistroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean("authFirebase", false)){
+        if(sharedPref.getBoolean("authFirebase", true)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
                 Intent intent = new Intent(this, PhoneAuthActivity.class);
                 startActivity(intent);
             }
         }
+
+        verificaLogado();
 
         setContentView(R.layout.activity_registro);
 
@@ -53,6 +55,16 @@ public class RegistroActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         abrirFragment(RegistroPerfilFragment.newInstance());
+    }
+
+    private void verificaLogado() {
+        CuidadorService service = new CuidadorService(this);
+
+        if(service.verificaUsuarioLogado()){
+            // Se não estiver logado, redireciona para tela de registro do usuário
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 
     public void abrirFragment(Fragment fragment){

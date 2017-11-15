@@ -54,14 +54,14 @@ public class ConfirmaRemedioActivity extends AppCompatActivity implements View.O
         etHoraMedicacao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.remedio_horario);
+                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.confirma_remedio_horario);
                 newFragment.show(getFragmentManager(), "timePicker");
             }
         });
         etProximaMedicacao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.remedio_horario);
+                DialogFragment newFragment = TimePickerFragment.newInstance(R.id.confirma_remedio_proximo);
                 newFragment.show(getFragmentManager(), "timePicker");
             }
         });
