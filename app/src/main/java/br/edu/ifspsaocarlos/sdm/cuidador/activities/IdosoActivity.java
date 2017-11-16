@@ -144,7 +144,7 @@ public class IdosoActivity extends BaseActivity {
             public void onCompletion(MediaPlayer mediaPlayer) {
                 // ao completar reprodução, mostra botões de ação
                 if (mensagem.getOrigem().equals(NO.getNo(NO.REMEDIOS))) {
-                    btConfirmar.setText(R.string.confirma_administracao_remedio);
+                    btConfirmar.setText(R.string.menu_confirmar_remedio);
                     if(alerta){
                         RemediosRepository.getInstance().salvaAlertaRemedio(AlertaRemedio.ENVIO, preferencias.getIdosoSelecionadoId(), mensagem.getId());
                     }
