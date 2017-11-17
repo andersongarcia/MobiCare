@@ -16,7 +16,7 @@
     <string name="nome">Nome</string>
     <string name="hint_nome">Seu nome</string>
     <string name="telefone">Número do celular</string>
-    <string name="hint_seu_celular">Seu número de celular</string>
+    <string name="hint_seu_celular">Seu número de celular com DDD</string>
     <string name="salvar">Salvar</string>
     <string name="configuracoes">Configurações</string>
     <string name="busca">Busca</string>

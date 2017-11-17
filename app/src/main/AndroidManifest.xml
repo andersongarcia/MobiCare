@@ -76,8 +76,6 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".activities.TesteActivity">
-        </activity>
     </application>
 
 </manifest>
