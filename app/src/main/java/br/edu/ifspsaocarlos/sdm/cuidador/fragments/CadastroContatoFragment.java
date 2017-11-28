@@ -15,7 +15,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 
 /**
  * Fragment de cadastro de contato.
@@ -55,7 +55,7 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        service = new CuidadorService(getActivity());
+        service = new UsuarioService(getActivity());
         if (getArguments() != null) {
             this.contato = (Contato) getArguments().getSerializable(CONTATO);
         }

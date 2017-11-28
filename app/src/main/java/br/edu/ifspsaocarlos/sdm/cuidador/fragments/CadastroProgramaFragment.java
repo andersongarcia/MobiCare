@@ -21,7 +21,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Semana;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.FirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.CheckedTextViewHelper;
 
 /**
@@ -70,7 +70,7 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        service = new CuidadorService(getActivity());
+        service = new UsuarioService(getActivity());
         if (getArguments() != null) {
             programa = (Programa) getArguments().getSerializable(PROGRAMA);
         }

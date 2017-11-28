@@ -9,9 +9,9 @@ import com.firebase.jobdispatcher.JobService;
  * Created by ander on 29/10/2017.
  */
 
-public class MyJobService extends JobService {
+public class CustomJobService extends JobService {
 
-    private static final String TAG = "MyJobService";
+    private static final String TAG = "CustomJobService";
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {

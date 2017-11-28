@@ -108,7 +108,7 @@ public class RegistroFotoFragment extends Fragment {
 
             case R.id.salvar:
                 if(activity.getLocalFile() != null && activity.getLocalFile().exists()){
-                    activity.getCuidadorService().salvaFotoPerfil(activity.getLocalFile()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    activity.getUsuarioService().salvaFotoPerfil(activity.getLocalFile()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             PreferenciaHelper preferencias = new PreferenciaHelper(activity);

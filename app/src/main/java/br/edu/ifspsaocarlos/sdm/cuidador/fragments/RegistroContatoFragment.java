@@ -75,7 +75,7 @@ public class RegistroContatoFragment extends Fragment {
                     @Override
                     public void OnComplete(Contato contato) {
                         if(contato != null){
-                            activity.getCuidadorService().registraUsuarioContato(contato.getId());
+                            activity.getUsuarioService().registraUsuarioContato(contato.getId());
                             activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.CONTATO));
                         }else {
                             etTelefone.setError(getResources().getString(R.string.msg_erro_validacao_contato));

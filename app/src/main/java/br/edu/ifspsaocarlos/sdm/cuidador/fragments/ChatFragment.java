@@ -28,7 +28,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.adapters.MensagemSetListAdapter;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionado;
 import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogAudioListener;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -45,7 +45,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
     private boolean permissionToRecordAccepted = false;
     protected String [] permissions = {android.Manifest.permission.RECORD_AUDIO};
 
-    private CuidadorService service;
+    private UsuarioService service;
     private MainActivity activity;
 
     @BindView(R.id.rv_chat)
@@ -84,7 +84,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
         activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.app_name));
 
-        service = new CuidadorService(activity);
+        service = new UsuarioService(activity);
 
         tvEmptyView.setText(R.string.nenhuma_mensagem);
         tvEmptyViewHelp.setText(R.string.chat_empty);

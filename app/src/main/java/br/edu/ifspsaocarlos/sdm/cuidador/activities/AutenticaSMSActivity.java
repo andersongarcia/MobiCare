@@ -25,15 +25,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
+import br.edu.ifspsaocarlos.sdm.cuidador.util.BrPhoneNumberFormatter;
 
-public class PhoneAuthActivity extends AppCompatActivity implements
+public class AutenticaSMSActivity extends AppCompatActivity implements
         View.OnClickListener {
 
-    private static final String TAG = "PhoneAuthActivity";
+    private static final String TAG = "AutenticaSMSActivity";
 
     private static final String KEY_VERIFY_IN_PROGRESS = "key_verify_in_progress";
 
@@ -83,6 +85,9 @@ public class PhoneAuthActivity extends AppCompatActivity implements
         mDetailText = (TextView) findViewById(R.id.detail);
 
         mPhoneNumberField = (EditText) findViewById(R.id.field_phone_number);
+        BrPhoneNumberFormatter addLineNumberFormatter = new BrPhoneNumberFormatter(new WeakReference<>(mPhoneNumberField));
+        mPhoneNumberField.addTextChangedListener(addLineNumberFormatter);
+
         mVerificationField = (EditText) findViewById(R.id.field_verification_code);
         mVerificationCode = (TextInputLayout) findViewById(R.id.il_verification_code);
 

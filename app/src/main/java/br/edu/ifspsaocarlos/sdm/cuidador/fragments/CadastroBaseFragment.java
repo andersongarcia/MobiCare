@@ -25,7 +25,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogDeleteListener;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
 
@@ -44,7 +44,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     private final Fragment fragmentLista;
     private final NO no;
 
-    protected CuidadorService service;
+    protected UsuarioService service;
     MainActivity activity;
     protected View view;
 

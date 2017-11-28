@@ -1,4 +1,4 @@
-package br.edu.ifspsaocarlos.sdm.cuidador.data;
+package br.edu.ifspsaocarlos.sdm.cuidador.services;
 
 import android.content.Context;
 import android.net.Uri;
@@ -28,14 +28,14 @@ import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
  *
  * @author Anderson Canale Garcia
  */
-public class CuidadorFirebaseStorage {
+public class FirebaseStorageService {
     private static final String TAG = "FirebaseStorage";
 
-    private static CuidadorFirebaseStorage storage;
+    private static FirebaseStorageService storage;
     private final StorageReference idosoEndPoint;
     private final StorageReference fotosEndPoint;
 
-    private CuidadorFirebaseStorage(){
+    private FirebaseStorageService(){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference rootRef = storage.getReference();
         idosoEndPoint = rootRef.child(NO.getNo(NO.IDOSOS));
@@ -43,9 +43,9 @@ public class CuidadorFirebaseStorage {
     }
 
     // Singleton
-    public static CuidadorFirebaseStorage getInstance(){
+    public static FirebaseStorageService getInstance(){
         if(storage == null){
-            storage = new CuidadorFirebaseStorage();
+            storage = new FirebaseStorageService();
         }
 
         return storage;

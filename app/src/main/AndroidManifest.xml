@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.PhoneAuthActivity" />
+        <activity android:name=".activities.AutenticaSMSActivity" />
         <activity android:name=".activities.ConfiguracoesActivity" />
         <activity android:name=".activities.ConfirmaRemedioActivity">
             <intent-filter>
@@ -48,18 +48,18 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".services.MyFirebaseMessagingService">
+        <service android:name=".services.MensagemService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".services.MyFirebaseInstanceIDService">
+        <service android:name=".services.CustomFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".services.MyJobService"
+            android:name=".services.CustomJobService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />

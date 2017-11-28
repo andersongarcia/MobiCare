@@ -12,7 +12,6 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackGenerico;
-import br.edu.ifspsaocarlos.sdm.cuidador.data.CuidadorFirebaseStorage;
 import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
@@ -27,16 +26,14 @@ import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
  *
  * @author Anderson Canale Garcia
  */
-public class CuidadorService {
-    private static final String TAG = "CuidadorService";
-    public static final String NO_INSTRUCOES = "instrucoes";
-    public static final String NO_CHAT = "instrucoes";
+public class UsuarioService {
+    private static final String TAG = "UsuarioService";
 
 
     private final Context contexto;
     private final PreferenciaHelper preferencias;
 
-    public CuidadorService(Context context){
+    public UsuarioService(Context context){
         this.contexto = context;
         this.preferencias = new PreferenciaHelper(context);
     }
@@ -100,11 +97,11 @@ public class CuidadorService {
     }
 
     public void salvaAudioInstrucao(String fileName, String remedioId, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
-        CuidadorFirebaseStorage.getInstance().salvaAudioInstrucao(preferencias.getIdosoSelecionadoId(), remedioId, fileName, onSuccessListener);
+        FirebaseStorageService.getInstance().salvaAudioInstrucao(preferencias.getIdosoSelecionadoId(), remedioId, fileName, onSuccessListener);
     }
 
     public void carregaArquivo(Uri uri, File localFile, OnSuccessListener<FileDownloadTask.TaskSnapshot> successListener, OnFailureListener failureListener) {
-        CuidadorFirebaseStorage.getInstance().carregaArquivo(uri, localFile, successListener, failureListener);
+        FirebaseStorageService.getInstance().carregaArquivo(uri, localFile, successListener, failureListener);
     }
 
     public String obterIdLogado() {
@@ -116,7 +113,7 @@ public class CuidadorService {
     }
 
     public void salvaAudioChat(String fileName) {
-        CuidadorFirebaseStorage.getInstance().salvaAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
+        FirebaseStorageService.getInstance().salvaAudioChat(preferencias.getIdosoSelecionadoId(), preferencias.getUsuarioLogadoId(), fileName);
     }
 
     public void efetuaLogout() {
@@ -127,7 +124,7 @@ public class CuidadorService {
     }
 
     public UploadTask salvaFoto(NO no, String id, File arquivoFoto) {
-        return CuidadorFirebaseStorage.getInstance().salvarArquivo(NO.getNo(no), id, arquivoFoto, contexto);
+        return FirebaseStorageService.getInstance().salvarArquivo(NO.getNo(no), id, arquivoFoto, contexto);
     }
 
     public UploadTask salvaFotoPerfil(File arquivoFoto) {

@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.IMService;
 
 /**
@@ -15,7 +15,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.IMService;
  */
 
 public class BaseActivity extends AppCompatActivity {
-    CuidadorService service;
+    UsuarioService service;
     PreferenciaHelper preferencias;
 
     @Override
@@ -25,7 +25,7 @@ public class BaseActivity extends AppCompatActivity {
         preferencias = new PreferenciaHelper(this);
 
         // inicia classe de serviço com o contexto
-        service = new CuidadorService(this);
+        service = new UsuarioService(this);
 
         // inscreve usuário logado para receber notificações a ele direcionadas
         String idLogado = service.obterIdLogado();
@@ -38,9 +38,9 @@ public class BaseActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(preferencias.obterPreferenciaBoolean("authFirebase", true)){
+        if(preferencias.obterPreferenciaBoolean("authFirebase", false)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
-                Intent intent = new Intent(this, PhoneAuthActivity.class);
+                Intent intent = new Intent(this, AutenticaSMSActivity.class);
                 startActivity(intent);
             }
         }
@@ -51,7 +51,7 @@ public class BaseActivity extends AppCompatActivity {
 
     // verifica se tem usuário logado
     public void verificaLogado() {
-        CuidadorService service = new CuidadorService(this);
+        UsuarioService service = new UsuarioService(this);
 
         Intent intent;
         if(!service.verificaUsuarioLogado()){

@@ -26,7 +26,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.enums.AlertaRemedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.MediaPlayerHelper;
 
@@ -37,7 +37,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.util.MediaPlayerHelper;
  */
 public class ChatIdosoFragment extends Fragment {
 
-    private CuidadorService service;
+    private UsuarioService service;
     private MainActivity activity;
     private TextView tvDescription;
     private IMensagem mensagem;
@@ -56,7 +56,7 @@ public class ChatIdosoFragment extends Fragment {
         activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.app_name));
 
-        service = new CuidadorService(activity);
+        service = new UsuarioService(activity);
 
         final ImageView ivAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
         ivAvatar.setImageResource(R.drawable.mobicare_logo);

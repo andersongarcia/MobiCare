@@ -32,7 +32,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.TimePickedListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.listeners.DialogAudioListener;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.FirebaseRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 
 /**
  * Fragment de cadastro de remédio.
@@ -81,7 +81,7 @@ public class CadastroRemedioFragment extends CadastroBaseFragment implements Tim
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        service = new CuidadorService(getActivity());
+        service = new UsuarioService(getActivity());
 
         if (getArguments() != null) {
             this.remedio = (Remedio) getArguments().getSerializable(REMEDIO);

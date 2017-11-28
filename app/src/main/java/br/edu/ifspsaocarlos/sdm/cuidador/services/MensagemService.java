@@ -17,8 +17,8 @@ import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
  * Created by ander on 29/10/2017.
  */
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
-    private static final String TAG = "MyFirebaseMsgService";
+public class MensagemService extends FirebaseMessagingService {
+    private static final String TAG = "MessagingService";
     private static final String NOTIFICACAO_NOVA_MENSAGEM = "mensagem";
     private static final String NOTIFICACAO_SINCRONIZAR_CONTATOS = "contatos";
     private static final String NOTIFICACAO_SINCRONIZAR_REMEDIOS = "remedios";
@@ -43,7 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // mapeia dados do payload
             Map<String, String> data = remoteMessage.getData();
 
-            CuidadorService cuidadorService = new CuidadorService(getBaseContext());
+            UsuarioService usuarioService = new UsuarioService(getBaseContext());
 
             // identifica a que se destina a mensagem
             switch (data.get("label")){
@@ -57,13 +57,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     break;
                 case NOTIFICACAO_SINCRONIZAR_CONTATOS:
                     Log.d(TAG, "sincronizar contatos");
-                    //cuidadorService.sincronizarContatos();
+                    //usuarioService.sincronizarContatos();
                     break;
                 case NOTIFICACAO_SINCRONIZAR_REMEDIOS:
-                    cuidadorService.sincronizarRemedios();
+                    usuarioService.sincronizarRemedios();
                     break;
                 case NOTIFICACAO_SINCRONIZAR_PROGRAMAS:
-                    cuidadorService.sincronizarProgramas();
+                    usuarioService.sincronizarProgramas();
                     break;
                 case NOTIFICACAO_CONFIRMAR_REMEDIO:
                     /*String remedioId = data.get("remedioId");
@@ -94,7 +94,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // [START dispatch_job]
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
         Job myJob = dispatcher.newJobBuilder()
-                .setService(MyJobService.class)
+                .setService(CustomJobService.class)
                 .setTag("my-job-tag")
                 .build();
         dispatcher.schedule(myJob);

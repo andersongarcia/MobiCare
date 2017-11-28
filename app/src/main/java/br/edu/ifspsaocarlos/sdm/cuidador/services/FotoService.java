@@ -123,7 +123,7 @@ public abstract class FotoService {
         }
     }
 
-    public static void carregarAvatar(final CuidadorService service, String uri, final ImageView imageView, final CallbackSimples callback) {
+    public static void carregarAvatar(final UsuarioService service, String uri, final ImageView imageView, final CallbackSimples callback) {
         final File localFile;
         try {
             localFile = File.createTempFile("foto", ".jpg");

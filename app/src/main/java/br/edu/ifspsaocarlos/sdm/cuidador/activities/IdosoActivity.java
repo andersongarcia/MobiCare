@@ -26,7 +26,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.enums.AlertaRemedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.MediaPlayerHelper;
 import butterknife.BindView;
@@ -63,7 +63,7 @@ public class IdosoActivity extends BaseActivity {
 
         final Window win= getWindow(); win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD); win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        service = new CuidadorService(this);
+        service = new UsuarioService(this);
 
         Log.d(TAG, "Nova mensagem a ser exibida para idoso");
 

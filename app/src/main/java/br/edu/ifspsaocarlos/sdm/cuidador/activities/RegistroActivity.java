@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +18,7 @@ import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.RegistroPerfilFragment;
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 
 import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_CODE;
@@ -30,17 +31,23 @@ import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_
  */
 public class RegistroActivity extends AppCompatActivity {
 
-    private CuidadorService cuidadorService;
+    private UsuarioService usuarioService;
     private File localFile;
+    private android.support.v4.app.Fragment contentRegistroCuidador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            //Restore the fragment's instance
+            contentRegistroCuidador = getSupportFragmentManager().getFragment(savedInstanceState, "RegistroCuidadorFragment");
+        }
+
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean("authFirebase", true)){
+        if(sharedPref.getBoolean("authFirebase", false)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
-                Intent intent = new Intent(this, PhoneAuthActivity.class);
+                Intent intent = new Intent(this, AutenticaSMSActivity.class);
                 startActivity(intent);
             }
         }
@@ -49,7 +56,7 @@ public class RegistroActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_registro);
 
-        cuidadorService = new CuidadorService(this);
+        usuarioService = new UsuarioService(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -58,7 +65,7 @@ public class RegistroActivity extends AppCompatActivity {
     }
 
     private void verificaLogado() {
-        CuidadorService service = new CuidadorService(this);
+        UsuarioService service = new UsuarioService(this);
 
         if(service.verificaUsuarioLogado()){
             // Se não estiver logado, redireciona para tela de registro do usuário
@@ -71,8 +78,8 @@ public class RegistroActivity extends AppCompatActivity {
         getFragmentManager().beginTransaction().replace(R.id.frame_registro, fragment).commit();
     }
 
-    public CuidadorService getCuidadorService() {
-        return cuidadorService;
+    public UsuarioService getUsuarioService() {
+        return usuarioService;
     }
 
 
@@ -90,6 +97,14 @@ public class RegistroActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+        //Save the fragment's instance
+        getSupportFragmentManager().putFragment(outState, "RegistroCuidadorFragment", contentRegistroCuidador);
     }
 
     public void setLocalFile(File localFile) {

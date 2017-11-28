@@ -71,7 +71,7 @@ public class RegistroIdosoFragment extends Fragment {
                     @Override
                     public void OnComplete(Boolean existe) {
                         if(existe){
-                            activity.getCuidadorService().registraUsuarioIdoso(telefone);
+                            activity.getUsuarioService().registraUsuarioIdoso(telefone);
                             activity.abrirFragment(RegistroFotoFragment.newInstance(Usuario.IDOSO));
                         }else {
                             etTelefone.setError(getResources().getString(R.string.msg_erro_validacao_idoso));

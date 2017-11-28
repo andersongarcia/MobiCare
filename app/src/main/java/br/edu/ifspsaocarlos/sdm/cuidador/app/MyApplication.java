@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.google.firebase.database.FirebaseDatabase;
 
-import br.edu.ifspsaocarlos.sdm.cuidador.services.CuidadorService;
+import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 
 public class MyApplication extends Application {
 
@@ -16,8 +16,8 @@ public class MyApplication extends Application {
         firebaseDatabase.setPersistenceEnabled(true);
 
         // inicia alertas de remédios e programas
-        CuidadorService cuidadorService = new CuidadorService(getBaseContext());
-        cuidadorService.sincronizarRemedios();
-        cuidadorService.sincronizarProgramas();
+        UsuarioService usuarioService = new UsuarioService(getBaseContext());
+        usuarioService.sincronizarRemedios();
+        usuarioService.sincronizarProgramas();
     }
 }
