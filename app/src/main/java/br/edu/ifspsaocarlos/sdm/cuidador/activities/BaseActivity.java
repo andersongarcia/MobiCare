@@ -38,10 +38,11 @@ public class BaseActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(preferencias.obterPreferenciaBoolean("authFirebase", false)){
+        if(preferencias.obterPreferenciaBoolean("authFirebase", true)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
                 Intent intent = new Intent(this, AutenticaSMSActivity.class);
                 startActivity(intent);
+                finish();
             }
         }
 
@@ -58,12 +59,14 @@ public class BaseActivity extends AppCompatActivity {
             // Se não estiver logado, redireciona para tela de registro do usuário
             intent = new Intent(this, RegistroActivity.class);
             startActivity(intent);
+            finish();
         }else {
             // Se estiver logado, verifica se tem idoso registrado
             if(!service.verificaIdosoSelecionado()){
                 // Se não tiver idoso selecionado, redireciona para registro do idoso
                 intent = new Intent(this, RegistroActivity.class);
                 startActivity(intent);
+                finish();
             }
         }
     }

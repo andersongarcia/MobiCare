@@ -6,7 +6,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 
-public class MyApplication extends Application {
+public class MobicareApp extends Application {
 
     @Override
     public void onCreate() {

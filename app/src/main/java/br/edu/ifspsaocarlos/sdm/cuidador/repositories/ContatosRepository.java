@@ -165,11 +165,13 @@ public class ContatosRepository extends Observable {
         });
     }
 
-    public Task<Void> salvaContato(final String idosoId, final Contato contato) {
+    public Task<Void> salvaContato(final String idosoId, final Contato contato, final boolean relacionado) {
         return contatoEndPoint.child(contato.getId()).setValue(contato).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                relacionaContatoIdoso(contato.getId(), idosoId);
+                if(relacionado){
+                    relacionaContatoIdoso(contato.getId(), idosoId);
+                }
             }
         });
     }

@@ -56,8 +56,8 @@ public class UsuarioService {
         Contato idoso = new Contato(nomeIdoso, telefoneIdoso);
 
         ContatosRepository contatosRepository = ContatosRepository.getInstance();
-        contatosRepository.salvaContato(preferencias.getIdosoSelecionadoId(), cuidador);
-        contatosRepository.salvaContato(preferencias.getIdosoSelecionadoId(), idoso);
+        contatosRepository.salvaContato(preferencias.getIdosoSelecionadoId(), cuidador, false);
+        contatosRepository.salvaContato(preferencias.getIdosoSelecionadoId(), idoso, false);
         contatosRepository.relacionaCuidadorIdoso(cuidador.getId(), idoso.getId());
 
         registraUsuario(cuidador.getId(), Usuario.CUIDADOR);

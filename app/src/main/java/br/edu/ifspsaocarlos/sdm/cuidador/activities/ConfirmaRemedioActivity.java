@@ -98,6 +98,7 @@ public class ConfirmaRemedioActivity extends AppCompatActivity implements View.O
 
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 }

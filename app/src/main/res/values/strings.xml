@@ -127,10 +127,10 @@
     <string name="verify_phone_auth">Verify</string>
     <string name="resend_phone_auth">Resend</string>
     <string name="hint_phone_number">Phone Number</string>
-    <string name="hint_verification_code">Verification Code</string>
-    <string name="status_code_sent">Code Sent</string>
-    <string name="status_verification_failed">Verification failed</string>
-    <string name="status_verification_succeeded">Verification succeeded</string>
+    <string name="hint_verification_code">Código de verificação</string>
+    <string name="status_code_sent">Código solicitado</string>
+    <string name="status_verification_failed">Falha na verificação</string>
+    <string name="status_verification_succeeded">Verificação concluída com sucesso</string>
     <string name="status_sign_in_failed">Sign-in failed</string>
     <string name="instant_validation">(instant validation)</string>
     <string name="firebase_status_fmt">Firebase User: %s</string>
@@ -159,6 +159,9 @@
     <string name="contatos_empty">Use o botão abaixo para cadastrar um contato</string>
     <string name="nenhum_contato">Nenhum contato</string>
     <string name="hint_numero_celular">Número do celular do contato</string>
+    <string name="msg_erro_nenhum_perfil_selecionado">Nenhum perfil selecionado</string>
+    <string name="mensagens">Mensagens</string>
+    <string name="msg_erro_telefone_invalido">Número de telefone inválido</string>
 
 
 </resources>

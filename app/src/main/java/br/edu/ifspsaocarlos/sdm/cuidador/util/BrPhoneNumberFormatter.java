@@ -143,4 +143,8 @@ public class BrPhoneNumberFormatter implements TextWatcher {
         text.append(formattedString.toString());
         return formattedString.toString();
     }
+
+    public static String onlyNumbers(String phoneNumber){
+        return phoneNumber.replaceAll("[^0-9]","");
+    }
 }

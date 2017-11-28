@@ -65,8 +65,8 @@
 
 
     <style name="ThemeOverlay.FirebaseIcon" parent="AppMaterialTheme">
-        <item name="android:layout_marginTop">@dimen/icon_top_margin</item>
-        <item name="android:layout_marginBottom">@dimen/icon_bottom_margin</item>
+        <item name="android:layout_marginTop">@dimen/icon_top_margin_zero</item>
+        <item name="android:layout_marginBottom">@dimen/icon_bottom_margin_zero</item>
     </style>
 
     <style name="ThemeOverlay.MyTitleText" parent="AppMaterialTheme">

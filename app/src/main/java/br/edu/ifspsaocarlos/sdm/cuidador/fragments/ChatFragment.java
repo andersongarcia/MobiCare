@@ -82,7 +82,7 @@ public class ChatFragment extends Fragment implements RecyclerViewOnItemSelecion
         ButterKnife.bind(this, view);
 
         activity = (MainActivity) getActivity();
-        activity.getSupportActionBar().setTitle(getString(R.string.app_name));
+        activity.getSupportActionBar().setTitle(getString(R.string.mensagens));
 
         service = new UsuarioService(activity);
 

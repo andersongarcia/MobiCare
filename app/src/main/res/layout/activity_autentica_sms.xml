@@ -32,14 +32,8 @@
             android:theme="@style/ThemeOverlay.MyTitleText" />
 
         <TextView
-            android:id="@+id/status"
-            style="@style/ThemeOverlay.MyTextDetail"
-            android:text="@string/action_sair" android:visibility="invisible" />
-
-        <TextView
             android:id="@+id/detail"
-            style="@style/ThemeOverlay.MyTextDetail"
-            tools:text="Firebase User ID: 123456789abc" android:visibility="invisible" />
+            style="@style/ThemeOverlay.MyTextDetail" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="@dimen/item_width"

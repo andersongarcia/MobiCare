@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Usuario;
 import br.edu.ifspsaocarlos.sdm.cuidador.fragments.ChatFragment;
@@ -33,7 +35,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Toolbar toolbar = getToolbar();
         setNavigationView(toolbar);
 
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle(R.string.mensagens);
 
         // Verifica perfil
         switch (service.obterPerfilLogado()){
@@ -181,8 +183,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (id == R.id.action_sair) {
             service.efetuaLogout();
+            FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(this, RegistroActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

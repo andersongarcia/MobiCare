@@ -67,7 +67,7 @@ public class CadastroContatoFragment extends CadastroBaseFragment {
         String telefone = etTelefone.getText().toString().trim();
 
         final Contato contato = new Contato(nome, telefone);
-        ContatosRepository.getInstance().salvaContato(activity.getPreferencias().getIdosoSelecionadoId(), contato).addOnCompleteListener(new OnCompleteListener<Void>() {
+        ContatosRepository.getInstance().salvaContato(activity.getPreferencias().getIdosoSelecionadoId(), contato, true).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(localFile != null && localFile.exists()){

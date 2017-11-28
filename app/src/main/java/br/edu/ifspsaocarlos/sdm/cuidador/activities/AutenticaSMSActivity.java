@@ -57,7 +57,6 @@ public class AutenticaSMSActivity extends AppCompatActivity implements
 
     private ViewGroup mPhoneNumberViews;
 
-    private TextView mStatusText;
     private TextView mDetailText;
 
     private TextInputLayout mVerificationCode;
@@ -71,7 +70,7 @@ public class AutenticaSMSActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_phone_auth);
+        setContentView(R.layout.activity_autentica_sms);
 
         // Restore instance state
         if (savedInstanceState != null) {
@@ -81,7 +80,6 @@ public class AutenticaSMSActivity extends AppCompatActivity implements
         // Assign views
         mPhoneNumberViews = (ViewGroup) findViewById(R.id.phone_auth_fields);
 
-        mStatusText = (TextView) findViewById(R.id.status);
         mDetailText = (TextView) findViewById(R.id.detail);
 
         mPhoneNumberField = (EditText) findViewById(R.id.field_phone_number);
@@ -259,6 +257,7 @@ public class AutenticaSMSActivity extends AppCompatActivity implements
                             Intent intent = new Intent(getBaseContext(), RegistroActivity.class);
                             intent.putExtra("bundle", bundle);
                             startActivity(intent);
+                            finish();
 
                             // [START_EXCLUDE]
                             updateUI(STATE_SIGNIN_SUCCESS, user);
@@ -320,6 +319,7 @@ public class AutenticaSMSActivity extends AppCompatActivity implements
                 enableViews(mVerifyButton, mResendButton, mPhoneNumberViews, mVerificationField, mVerificationCode);
                 disableViews(mStartButton);
                 mDetailText.setText(R.string.status_code_sent);
+                mVerificationField.requestFocus();
                 break;
             case STATE_VERIFY_FAILED:
                 // Verification has failed, show all options
@@ -350,27 +350,12 @@ public class AutenticaSMSActivity extends AppCompatActivity implements
                 // Np-op, handled by sign-in check
                 break;
         }
-
-        /*if (user == null) {
-            // Signed out
-            mPhoneNumberViews.setVisibility(View.VISIBLE);
-        } else {
-            // Signed in
-            mPhoneNumberViews.setVisibility(View.GONE);
-
-            enableViews(mPhoneNumberField, mVerificationField);
-            mPhoneNumberField.setText(null);
-            mVerificationField.setText(null);
-
-            mStatusText.setText(R.string.signed_in);
-            mDetailText.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-        }*/
     }
 
     private boolean validatePhoneNumber() {
         String phoneNumber = mPhoneNumberField.getText().toString();
         if (TextUtils.isEmpty(phoneNumber)) {
-            mPhoneNumberField.setError("Invalid phone number.");
+            mPhoneNumberField.setError(getString(R.string.msg_erro_telefone_invalido));
             return false;
         }
 
@@ -412,9 +397,6 @@ public class AutenticaSMSActivity extends AppCompatActivity implements
                 break;
             case R.id.button_resend:
                 resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
-                break;
-            case R.id.sign_out_button:
-                signOut();
                 break;
         }
     }
