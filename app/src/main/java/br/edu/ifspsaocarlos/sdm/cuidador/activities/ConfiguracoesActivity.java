@@ -1,12 +1,16 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.activities;
 
+import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 
+/**
+ * Activity de configurações
+ *
+ * @author Anderson Canale Garcia
+ */
 public class ConfiguracoesActivity extends PreferenceActivity {
 
     @Override

@@ -33,6 +33,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * Activity do idoso. É chamada quando recebe uma nova mensagem.
+ *
+ * @author Anderson Canale Garcia
+ */
 public class IdosoActivity extends BaseActivity {
     private static final String TAG = "IdosoActivity";
 

@@ -32,6 +32,11 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.entities.Contato;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.BrPhoneNumberFormatter;
 
+/**
+ * Activity para autenticação por SMS via Firebase
+ *
+ * @author Anderson Canale Garcia
+ */
 public class AutenticaSMSActivity extends AppCompatActivity implements
         View.OnClickListener {
 

@@ -11,9 +11,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.IMService;
 
 /**
- * Created by ander on 18/10/2017.
+ * Activity base
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class BaseActivity extends AppCompatActivity {
     UsuarioService service;
     PreferenciaHelper preferencias;

@@ -29,6 +29,11 @@ import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
 
 import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_CODE;
 
+/**
+ * Activity para registro da foto de perfil do usuário
+ *
+ * @author Anderson Canale Garcia
+ */
 public class RegistroFotoActivity extends RegistroBaseActivity {
     protected static final int REQUEST_PERMISSIONS = 201;
     private static final String TAG = "RegistroFoto";
@@ -54,11 +59,12 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
-            case REQUEST_PERMISSIONS:
+            case REQUEST_PERMISSIONS: // verifica se possui as permissões necessárias
                 permissionToPhotoAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 permissionToExternalStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
+        // Se não possuir permissões, finaliza activity
         if (!permissionToPhotoAccepted || !permissionToExternalStorageAccepted) this.finish();
     }
 
@@ -67,15 +73,18 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
         setContentView(R.layout.activity_registro_foto);
         super.onCreate(savedInstanceState);
 
+        // Configura toolbar
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(R.string.registro_foto);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Chama verificação das permissões
         int MyVersion = Build.VERSION.SDK_INT;
         if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
             ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
         }
 
+        // Seta ação do fab para abrir câmera
         btnTirarFoto = (FloatingActionButton) findViewById(R.id.btn_foto_perfil);
         btnTirarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,25 +100,36 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
         return true;
     }
 
+    /**
+     * Implementa ações da toolbar
+     * @param item item do menu clicado
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
 
+            // Ação salvar
             case R.id.salvar:
+                // Verifica se arquivo da foto foi salvo corretamente
                 if(getLocalFile() != null && getLocalFile().exists()){
+                    // Salva foto do perfil no storage
                     usuarioService.salvaFotoPerfil(getLocalFile()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             PreferenciaHelper preferencias = new PreferenciaHelper(getBaseContext());
+                            // Atualiza URI da foto de perfil no database
                             ContatosRepository.getInstance().salvaUriContato(preferencias.getUsuarioLogadoId(), taskSnapshot.getDownloadUrl().toString());
                         }
                     });
                 }
+                // Redireciona para activity principal
                 Intent intent = new Intent(RegistroFotoActivity.this, MainActivity.class);
                 startActivity(intent);
                 break;
 
+            // Ação voltar
             case android.R.id.home:
                 super.onBackPressed();
                 break;
@@ -118,13 +138,21 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Captura retorno da câmera
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch(requestCode){
                 case TAKE_PHOTO_CODE:
+                    // Corrige a rotação da foto (bug em alguns aparelhos)
                     FotoService.corrigeRotacao(this, localFile);
                     if(localFile.exists()){
+                        // Exibe foto na tela
                         Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                         ImageView ivFotoPerfil = (ImageView)findViewById(R.id.iv_foto_perfil);
                         ivFotoPerfil.setImageBitmap(bitmap);
@@ -134,6 +162,9 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
         }
     }
 
+    /**
+     * Abre a câmera
+     */
     public void tirarFoto(){
         try {
             setLocalFile(FotoService.getTempFile(getPackageName()));

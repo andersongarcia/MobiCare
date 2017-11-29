@@ -14,9 +14,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
 
 /**
- * Created by ander on 28/11/2017.
+ * Activity base para todas as telas de registro de usuário
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class RegistroBaseActivity extends AppCompatActivity {
     protected UsuarioService usuarioService;
 

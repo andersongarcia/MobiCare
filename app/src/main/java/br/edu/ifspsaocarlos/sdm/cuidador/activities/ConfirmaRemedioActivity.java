@@ -21,6 +21,12 @@ import br.edu.ifspsaocarlos.sdm.cuidador.repositories.RemediosRepository;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Activity de confirmação de medicação pelo cuidador.
+ * É acessada via notificação recebida quando o alarme do idoso é disparado
+ *
+ * @author Anderson Canale Garcia
+ */
 public class ConfirmaRemedioActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "ConfirmaRemedioActivity";
