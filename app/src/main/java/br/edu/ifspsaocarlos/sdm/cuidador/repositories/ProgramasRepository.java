@@ -108,7 +108,7 @@ public class ProgramasRepository extends Observable {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     // Lê dados do snapshot e converte para programa
                     Programa programa = postSnapshot.getValue(Programa.class);
-                    if(programa.getId() != null){
+                    if(programa!= null && programa.getId() != null){
                         programas.add(programa);
                         // Se foi passado o serviço de alarme, atualiza
                         if(alarmeService != null){
@@ -137,7 +137,7 @@ public class ProgramasRepository extends Observable {
         Iterator<Programa> i = programas.iterator();
         while (i.hasNext()) {
             Programa programa = i.next();
-            if(programa.getId() == programaId)
+            if(programa.getId().equals(programaId))
                 i.remove();
         }
     }
