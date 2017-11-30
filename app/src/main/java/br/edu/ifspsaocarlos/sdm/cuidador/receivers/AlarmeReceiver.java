@@ -20,9 +20,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.DatetimeHelper;
 
 /**
- * Created by ander on 30/10/2017.
+ * Receiver para disparos do alarme
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class AlarmeReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmeReceiver";
     private static final String DADOS = "dados";
@@ -43,13 +44,14 @@ public class AlarmeReceiver extends BroadcastReceiver {
         //Acquire the lock
         wl.acquire();
 
-        //You can do the processing here.
-        //Bundle extras = intent.getExtras();
+        // Lê dados do bundle
         Bundle bundle = intent.getBundleExtra(BUNDLE);
 
+        // Cria instância do intent para tela do idoso
         Intent newIntent = new Intent(context, IdosoActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+        // Se bundle não for nulo, lê dados da mensagem e envia para tela do idoso
         if(bundle != null){
             IMensagem mensagem = (IMensagem) bundle.getSerializable(NO.getNo(NO.MENSAGENS));
             Bundle newBundle = new Bundle();
@@ -63,6 +65,11 @@ public class AlarmeReceiver extends BroadcastReceiver {
         wl.release();
     }
 
+    /**
+     * Cancela alarme pelo request code
+     * @param context Contexto
+     * @param requestCode Código de requisição (request code). Identifica o alarme a ser cancelado.
+     */
     public void cancelaAlarme(Context context, int requestCode)
     {
         Intent intent = new Intent(context, AlarmeReceiver.class);
@@ -71,22 +78,35 @@ public class AlarmeReceiver extends BroadcastReceiver {
         alarmManager.cancel(sender);
     }
 
+    /**
+     * Agenda alarme para executar de acordo com periodicidade definida
+     * @param context Contexto
+     * @param mensagem Mensagem a ser exibida a cada disparo
+     * @param requestCode Código de requisição (request code). Identifica o alarme criado.
+     * @param horario Horário do primeiro alarme
+     * @param recorrencia Intervalo de recorrência em horas
+     */
     public void defineAlarmeRecorrente(Context context, IMensagem mensagem, int requestCode, String horario, int recorrencia)
     {
+        // Se horário estiver vazio, não agenda o alarme
         if(horario.isEmpty()){
             Log.d(TAG, "Horário indefinido para criação de alarme");
             return;
         }
 
-        AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        // Recupera gerenciador de alarmes do contexto
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
+        // Inclui mensagem no budle
         Bundle bundle = new Bundle();
         bundle.putSerializable(NO.getNo(NO.MENSAGENS), mensagem);
         bundle.putBoolean(ONE_TIME, Boolean.FALSE);
 
+        // Cria instância para a própria classe para atender aos disparos do alarme
         Intent intent = new Intent(context, AlarmeReceiver.class);
         intent.putExtra(BUNDLE, bundle);
 
+        // Pendura intent a ser executada no disparo do alarme
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // calcula intervalo do primeiro alarme
@@ -95,11 +115,20 @@ public class AlarmeReceiver extends BroadcastReceiver {
         // calcula intervalo de recorrência
         long intervaloRecorrencia = TimeUnit.HOURS.toMillis(recorrencia);
 
+        // Agenda alarme de acordo com o horário e intervalo estipulados
         am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), intervaloRecorrencia , pi);
 
         Log.d(TAG, "Novo alarme único definido para " + cal.toString());
     }
 
+    /**
+     * Agenda alarme para executar uma única vez
+     * @param context Contexto
+     * @param mensagem Mensagem a ser exibida a cada disparo
+     * @param requestCode Código de requisição (request code). Identifica o alarme criado.
+     * @param horario Horário do alarme único
+     * @param deveAjustarProximo Flag para dizer se próximo horário depende de reagendamento
+     */
     public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, String horario, boolean deveAjustarProximo){
         if(horario.isEmpty()){
             Log.d(TAG, "Horário indefinido para criação de alarme");
@@ -112,17 +141,27 @@ public class AlarmeReceiver extends BroadcastReceiver {
         defineAlarmeUnico(context, mensagem, requestCode, cal, deveAjustarProximo);
     }
 
+     /**
+     * Agenda alarme para executar uma única vez
+     * @param context Contexto
+     * @param mensagem Mensagem a ser exibida a cada disparo
+     * @param requestCode Código de requisição (request code). Identifica o alarme criado.
+     * @param agenda Horário do alarme único
+     * @param deveAjustarProximo Flag para dizer se próximo horário depende de reagendamento
+     */
     public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, Calendar agenda, boolean deveAjustarProximo) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
+        // Inclui mensagem no budle
         Bundle bundle = new Bundle();
         bundle.putSerializable(NO.getNo(NO.MENSAGENS), mensagem);
         bundle.putBoolean(REAGENDA, deveAjustarProximo);
 
+        // Cria instância para a própria classe para atender aos disparos do alarme
         Intent intent = new Intent(context, AlarmeReceiver.class);
-        intent.putExtra(NO.getNo(NO.REMEDIOS), mensagem.getId());
         intent.putExtra(BUNDLE, bundle);
 
+        // Pendura intent a ser executada no disparo do alarme
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
 
@@ -132,26 +171,35 @@ public class AlarmeReceiver extends BroadcastReceiver {
     public void mostraNovaMensagem(Context context, Mensagem mensagem) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
+        // Inclui mensagem no budle
         Bundle bundle = new Bundle();
         bundle.putSerializable(NO.getNo(NO.MENSAGENS), mensagem);
 
+        // Cria instância para a própria classe para atender aos disparos do alarme
         Intent intent = new Intent(context, AlarmeReceiver.class);
         intent.putExtra(BUNDLE, bundle);
 
+        // Pendura intent a ser executada no disparo do alarme
         PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_ALARM_DEFAULT, intent, 0);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
 
         Log.d(TAG, "Nova mensagem enviada");
     }
 
+    /**
+     * Calcula intervalo entre o agora e o horário definido
+     * @param horario O horário com o qual se deseja comparar
+     * @return Objeto com o intervalo
+     */
     private Calendar calculaIntervalo(String horario) {
         String array[];
         array = horario.split(":");
         int hora = Integer.parseInt(array[0]);
         int minuto = Integer.parseInt(array[1]);
 
+        // Pega o horário atual
         Calendar agora = new GregorianCalendar();
-        agora.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
+        agora.setTimeInMillis(System.currentTimeMillis());
 
         Calendar cal = new GregorianCalendar();
         cal.set(Calendar.DAY_OF_YEAR, agora.get(Calendar.DAY_OF_YEAR));

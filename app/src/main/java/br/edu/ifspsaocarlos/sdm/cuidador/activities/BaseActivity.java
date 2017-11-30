@@ -39,7 +39,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(preferencias.obterPreferenciaBoolean("authFirebase", true)){
+        if(preferencias.obterPreferenciaBoolean("authFirebase", false)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
                 Intent intent = new Intent(this, AutenticaSMSActivity.class);
                 startActivity(intent);

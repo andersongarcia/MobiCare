@@ -16,16 +16,20 @@ import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.AlarmeService;
 
 /**
- * Created by ander on 11/11/2017.
+ * Repository para programas favoritos
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class ProgramasRepository extends Observable {
-    private static final String TAG = "RemediosRepository";
+    private static final String TAG = "ProgramasRepository";
 
     private static ProgramasRepository repository;
     private final DatabaseReference programaEndPoint;
     private List<Programa> programas;
 
+    /**
+     * Construtor
+     */
     private ProgramasRepository() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         programaEndPoint = firebaseDatabase.getReference().child(NO.getNo(NO.PROGRAMAS));
@@ -45,7 +49,12 @@ public class ProgramasRepository extends Observable {
         return programas;
     }
 
-
+    /**
+     * Adiciona novo programa na base
+     * @param idosoId Id do idoso
+     * @param programa Instância do programa favorito
+     * @return Id gerado do novo programa
+     */
     private String adicionaPrograma(String idosoId, Programa programa) {
         FirebaseRepository firebaseRepository = FirebaseRepository.getInstance();
         DatabaseReference reference = programaEndPoint.child(idosoId);
@@ -63,29 +72,51 @@ public class ProgramasRepository extends Observable {
         return key;
     }
 
+    /**
+     * Atualiza programa favorito
+     * @param idosoId Id do idoso
+     * @param programa Instância do programa favorito
+     */
     private void atualizaPrograma(String idosoId, Programa programa) {
         programaEndPoint.child(idosoId).child(programa.getId()).setValue(programa);
     }
 
+    /**
+     * Remove programa favorito
+     * @param idosoId Id do idoso
+     * @param programaId Id do programa a ser removido
+     */
     public void removePrograma(String idosoId, String programaId) {
         programaEndPoint.child(idosoId).child(programaId).removeValue();
         removeProgramaDaLista(programaId);
     }
 
+    /**
+     * Carrega lista de programas favoritos
+     * @param idosoId Id do idoso
+     * @param alarmeService Instância do serviço de alarme, se for necessária reprogramação
+     */
     public void carregaProgramas(String idosoId, final AlarmeService alarmeService) {
+        // Pega referência para programas do idosos selecionado
         final DatabaseReference reference = programaEndPoint.child(idosoId);
+        // Faz o carregamento inicial e adiciona listener para modificações em tempo real
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                programas.clear();
+                programas.clear(); // limpa lista de programas
+                // Para cada programa lido do banco, cria instância e insere na lista
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    //Getting the data from snapshot
+                    // Lê dados do snapshot e converte para programa
                     Programa programa = postSnapshot.getValue(Programa.class);
-                    programas.add(programa);
-                    if(alarmeService != null){
-                        alarmeService.atualizaAlarmePrograma(programa);
+                    if(programa.getId() != null){
+                        programas.add(programa);
+                        // Se foi passado o serviço de alarme, atualiza
+                        if(alarmeService != null){
+                            alarmeService.atualizaAlarmePrograma(programa);
+                        }
                     }
                 }
+                // notifica observers que houve alteração na lista
                 setChanged();
                 notifyObservers();
             }
@@ -98,6 +129,10 @@ public class ProgramasRepository extends Observable {
         });
     }
 
+    /**
+     * Remove programa da lista carregada
+     * @param programaId Id do programa
+     */
     private void removeProgramaDaLista(String programaId) {
         Iterator<Programa> i = programas.iterator();
         while (i.hasNext()) {
@@ -107,7 +142,12 @@ public class ProgramasRepository extends Observable {
         }
     }
 
-
+    /**
+     * Façade para salvar programa. Adiciona se for novo, atualiza se já existente.
+     * @param idosoId Id do idoso selecionado
+     * @param programa Instância do programa a ser salvo
+     * @return Id do programa salvo, inclusive se for novo
+     */
     public String salvaPrograma(String idosoId, Programa programa) {
         String id = programa.getId();
         if(programa.getId() == null || programa.getId().isEmpty()){

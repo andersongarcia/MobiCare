@@ -33,9 +33,10 @@ import static android.app.Activity.RESULT_OK;
 import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_CODE;
 
 /**
- * Created by ander on 28/10/2017.
+ * Fragment base para telas de cadastro em geral
+ *
+ * @author Anderson Canale Garcia
  */
-
 public abstract class CadastroBaseFragment extends Fragment {
 
     protected static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
@@ -148,7 +149,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     {
         //super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_cadastro ,menu);
-        menu.findItem(R.id.excluir).setVisible(true);
+        menu.findItem(R.id.excluir).setVisible(getIdCadastro() != null && !getIdCadastro().isEmpty());
     }
 
     @Override

@@ -3,12 +3,14 @@ package br.edu.ifspsaocarlos.sdm.cuidador.fragments;
 import android.app.DialogFragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.UploadTask;
 
@@ -29,7 +31,6 @@ import br.edu.ifspsaocarlos.sdm.cuidador.util.CheckedTextViewHelper;
  *
  * @author Anderson Canale Garcia
  */
-
 public class CadastroProgramaFragment  extends CadastroBaseFragment implements TimePickedListener {
     private static final String PROGRAMA = "PROGRAMA";
 
@@ -111,7 +112,15 @@ public class CadastroProgramaFragment  extends CadastroBaseFragment implements T
                             FirebaseRepository.getInstance().salvaUri(NO.PROGRAMAS, activity.getPreferencias().getIdosoSelecionadoId(), id, uri.toString());
                             redirecionaParaLista();
                         }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            redirecionaParaLista();
+                        }
                     });
+        }else {
+            redirecionaParaLista();
         }
     }
 

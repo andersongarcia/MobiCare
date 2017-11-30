@@ -26,7 +26,7 @@ public class RegistroBaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean("authFirebase", true)){
+        if(sharedPref.getBoolean("authFirebase", false)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
                 Intent intent = new Intent(this, AutenticaSMSActivity.class);
                 startActivity(intent);

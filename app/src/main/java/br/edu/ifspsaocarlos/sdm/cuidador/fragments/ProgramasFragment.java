@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.activities.MainActivity;
 import br.edu.ifspsaocarlos.sdm.cuidador.adapters.ProgramaListAdapter;
@@ -28,7 +26,6 @@ import butterknife.ButterKnife;
  */
 public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSelecionado {
     private RecyclerView mRecyclerView;
-    private List<Programa> listaProgramas;
     MainActivity activity;
     private ProgramaListAdapter adapter;
 
@@ -82,14 +79,13 @@ public class ProgramasFragment extends Fragment implements RecyclerViewOnItemSel
     @Override
     public void onItemSelecionado(View view, int posicao) {
 
-        Programa programa = listaProgramas.get(posicao);
+        Programa programa = adapter.getItem(posicao);
 
         CadastroProgramaFragment fragment = CadastroProgramaFragment.newInstance(programa);
         activity.openFragment(fragment);
     }
 
     public static ProgramasFragment newInstance() {
-        ProgramasFragment fragment = new ProgramasFragment();
-        return fragment;
+        return new ProgramasFragment();
     }
 }

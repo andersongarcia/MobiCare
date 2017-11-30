@@ -14,9 +14,8 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
 /**
- * Created by ander on 03/11/2017.
+ * Serviço para atualizações de alarmes
  */
-
 public class AlarmeService {
 
     private static final String TAG = "AlarmeService";
@@ -24,7 +23,7 @@ public class AlarmeService {
     private final AlarmeReceiver alarmeReceiver;
     private final PreferenciaHelper preferencias;
 
-    public AlarmeService(Context contexto){
+    AlarmeService(Context contexto){
         this.contexto = contexto;
         this.alarmeReceiver = new AlarmeReceiver();
         this.preferencias = new PreferenciaHelper(contexto);
@@ -44,16 +43,21 @@ public class AlarmeService {
     }
 
     public void atualizaAlarmePrograma(Programa programa) {
+        // Se não tiver horário agendado, não agenda o alarme
+        if(programa.getHorario() == null || programa.getHorario().isEmpty())
+            return;
         IMensagem mensagem = new ProgramaMensagemAdapter(programa);
         Log.d(TAG, "Atualizando alarmes para programa " + programa.getNome());
         alarmeReceiver.cancelaAlarme(contexto, programa.getCodigoAlarme());
         Calendar proximaExibicao = programa.obterProximaExibicao();
-        alarmeReceiver.defineAlarmeUnico(contexto, mensagem, programa.getCodigoAlarme(), proximaExibicao, false);
-        // salva código do alarme nas preferências
-        preferencias.setAlarmeId(programa.getCodigoAlarme(), PreferenciaHelper.ALARMES_PROGRAMAS);
+        if(proximaExibicao != null){
+            alarmeReceiver.defineAlarmeUnico(contexto, mensagem, programa.getCodigoAlarme(), proximaExibicao, false);
+            // salva código do alarme nas preferências
+            preferencias.setAlarmeId(programa.getCodigoAlarme(), PreferenciaHelper.ALARMES_PROGRAMAS);
+        }
     }
 
-    public void cancelaTodos(String tagAlarme) {
+    void cancelaTodos(String tagAlarme) {
         for (int idAlarm : preferencias.getAlarmesIds(tagAlarme)) {
             alarmeReceiver.cancelaAlarme(contexto, idAlarm);
         }

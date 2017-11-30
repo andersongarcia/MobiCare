@@ -17,9 +17,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.RecyclerViewOnItemSelecionad
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ProgramasRepository;
 
 /**
- * Created by ander on 11/09/2017.
+ * Adapter para lista de programas favoritos
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapter.ProgramaHolder> {
     private ProgramasRepository repositorio;
     private List<Programa> lista;
@@ -27,7 +28,13 @@ public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapte
     private RecyclerViewOnItemSelecionado meuRecyclerViewOnItemSelecionado;
     private View emptyView;
 
-    Observer observer = new Observer() {
+    // Observer pattern
+    private Observer observer = new Observer() {
+        /**
+         * Quando notificado, atualiza RecyclerView
+         * @param observable objeto a ser observado
+         * @param o não utilizado
+         */
         @Override
         public void update(Observable observable, Object o) {
             notifyDataSetChanged();
@@ -42,6 +49,7 @@ public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapte
 
         // define observer
         repositorio.addObserver(observer);
+        // carrega lista de programas
         repositorio.carregaProgramas(idosoId, null);
     }
 
@@ -49,9 +57,8 @@ public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapte
     public ProgramaListAdapter.ProgramaHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View v = mLayoutInflater.inflate(R.layout.item_lista, parent, false);
-        ProgramaListAdapter.ProgramaHolder mvh = new ProgramaListAdapter.ProgramaHolder(v);
 
-        return mvh;
+        return new ProgramaHolder(v);
     }
 
     @Override
@@ -65,6 +72,10 @@ public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapte
     public int getItemCount() {
 
         return lista.size();
+    }
+
+    public Programa getItem(int posicao) {
+        return lista.get(posicao);
     }
 
     public void setRecyclerViewOnItemSelecionado(RecyclerViewOnItemSelecionado r){
@@ -86,10 +97,10 @@ public class ProgramaListAdapter extends RecyclerView.Adapter<ProgramaListAdapte
 
     public class ProgramaHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView tvNome;
-        public TextView tvHorarios;
+        TextView tvNome;
+        TextView tvHorarios;
 
-        public ProgramaHolder(View itemView) {
+        ProgramaHolder(View itemView) {
 
             super(itemView);
 
