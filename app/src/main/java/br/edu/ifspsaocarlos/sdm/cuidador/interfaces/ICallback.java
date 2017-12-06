@@ -1,9 +1,10 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.interfaces;
 
 /**
- * Created by ander on 02/11/2017.
+ * Interface de callback genérica.
+ *
+ * @param <T> Instância da classe específica
  */
-
 public interface ICallback<T> {
     void OnComplete(T value);
 }

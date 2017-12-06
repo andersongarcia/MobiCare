@@ -1,9 +1,8 @@
 package br.edu.ifspsaocarlos.sdm.cuidador.enums;
 
 /**
- * Created by ander on 10/11/2017.
+ * Nós utilizados para persistência
  */
-
 public enum NO {
     CONTATOS,
     CUIDADORES,
