@@ -27,23 +27,29 @@ import br.edu.ifspsaocarlos.sdm.cuidador.callbacks.CallbackSimples;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * Created by ander on 26/10/2017.
+ * Serviço de captura e gravação de fotos
  */
-
 public abstract class FotoService {
+    //region TAGs
     private static final String TAG = "FotoService";
     public static final int CAMERA_REQUEST = 1;
+    //endregion
 
     public abstract void run(File file);
 
-    public static void corrigeRotacao(Context context, File file) {
+    /**
+     * Corrige rotação da imagem capturada (solução para bug em alguns aparelhos)
+     * @param contexto Contexto
+     * @param arquivo Arquivo de imagem capturada
+     */
+    public static void corrigeRotacao(Context contexto, File arquivo) {
 
         Bitmap bitmap = null;
         try {
-            ExifInterface ei = new ExifInterface(file.getAbsolutePath());
+            ExifInterface ei = new ExifInterface(arquivo.getAbsolutePath());
             int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                     ExifInterface.ORIENTATION_UNDEFINED);
-            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.fromFile(file) );
+            bitmap = MediaStore.Images.Media.getBitmap(contexto.getContentResolver(), Uri.fromFile(arquivo) );
             bitmap = Bitmap.createScaledBitmap(bitmap,(int)(bitmap.getWidth()*0.5), (int)(bitmap.getHeight()*0.5), true);
             Bitmap rotatedBitmap = null;
             switch(orientation) {
@@ -65,12 +71,17 @@ public abstract class FotoService {
                     rotatedBitmap = bitmap;
             }
 
-            salvaFoto(rotatedBitmap, file);
+            salvaFoto(rotatedBitmap, arquivo);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Obtém instância de arquivo temporário
+     * @param packageName
+     * @return Instância de novo arquivo temporário
+     */
     public static File getTempFile(String packageName){
         //it will return /sdcard/image.tmp
         final File path = new File( Environment.getExternalStorageDirectory(), packageName );
@@ -86,6 +97,11 @@ public abstract class FotoService {
         activity.startActivityForResult(intent, CAMERA_REQUEST);
     }
 
+    /**
+     * Grava imagem capturada em um arquivo
+     * @param bitmap Imagem capturada
+     * @param file Arquivo de saída
+     */
     private static void salvaFoto(Bitmap bitmap, File file) {
 
         FileOutputStream out = null;
@@ -123,7 +139,14 @@ public abstract class FotoService {
         }
     }
 
-    public static void carregarAvatar(final UsuarioService service, String uri, final ImageView imageView, final CallbackSimples callback) {
+    /**
+     * Carrega foto de perfil pela Uri
+     * @param service Serviço de usuário
+     * @param uri URI
+     * @param imageView Widget de imagem da tela
+     * @param callback Código para execução ao concluir carregamento
+     */
+    public static void carregaAvatar(final UsuarioService service, String uri, final ImageView imageView, final CallbackSimples callback) {
         final File localFile;
         try {
             localFile = File.createTempFile("foto", ".jpg");

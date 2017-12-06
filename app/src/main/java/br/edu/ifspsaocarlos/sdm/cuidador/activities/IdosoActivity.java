@@ -109,7 +109,7 @@ public class IdosoActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 
-                FotoService.carregarAvatar(service, mensagem.getFotoUri(), ivAvatar, new CallbackSimples() {
+                FotoService.carregaAvatar(service, mensagem.getFotoUri(), ivAvatar, new CallbackSimples() {
 
                     @Override
                     public void OnComplete() {

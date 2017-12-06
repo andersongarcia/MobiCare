@@ -121,7 +121,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     protected void carregaAvatar() {
         if(getUriAvatar() != null && !getUriAvatar().isEmpty()){
             Picasso.with(activity).load(getUriAvatar()).into(ivAvatar);
-            /*FotoService.carregarAvatar(service, getUriAvatar(), ivAvatar, new CallbackSimples() {
+            /*FotoService.carregaAvatar(service, getUriAvatar(), ivAvatar, new CallbackSimples() {
                 @Override
                 public void OnComplete() {
                 }

@@ -208,6 +208,11 @@ import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
         });
     }
 
+    /**
+     * Salva mensagem para idoso
+     * @param idosoId Id do idoso
+     * @param mensagem Instãncia de mensagem
+     */
     public void salvaMensagem(String idosoId, final Mensagem mensagem) {
         final DatabaseReference reference = mensagemEndPoint.child(idosoId);
 

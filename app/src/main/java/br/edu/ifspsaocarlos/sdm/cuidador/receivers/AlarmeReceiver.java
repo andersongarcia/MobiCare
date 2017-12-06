@@ -129,7 +129,8 @@ public class AlarmeReceiver extends BroadcastReceiver {
      * @param horario Horário do alarme único
      * @param deveAjustarProximo Flag para dizer se próximo horário depende de reagendamento
      */
-    public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, String horario, boolean deveAjustarProximo){
+    public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode,
+                                  String horario, boolean deveAjustarProximo){
         if(horario.isEmpty()){
             Log.d(TAG, "Horário indefinido para criação de alarme");
             return;
@@ -149,7 +150,8 @@ public class AlarmeReceiver extends BroadcastReceiver {
      * @param agenda Horário do alarme único
      * @param deveAjustarProximo Flag para dizer se próximo horário depende de reagendamento
      */
-    public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode, Calendar agenda, boolean deveAjustarProximo) {
+    public void defineAlarmeUnico(Context context, IMensagem mensagem, int requestCode,
+                                  Calendar agenda, boolean deveAjustarProximo) {
         AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
         // Inclui mensagem no budle
@@ -162,10 +164,12 @@ public class AlarmeReceiver extends BroadcastReceiver {
         intent.putExtra(BUNDLE, bundle);
 
         // Pendura intent a ser executada no disparo do alarme
-        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
         am.set(AlarmManager.RTC_WAKEUP, agenda.getTimeInMillis(), pi);
 
-        Log.d(TAG, "Novo alarme único definido para " + DatetimeHelper.getFormatedDate(agenda, "dd/MM/yyyy HH:mm"));
+        Log.d(TAG, "Novo alarme único definido para " +
+                DatetimeHelper.getFormatedDate(agenda, "dd/MM/yyyy HH:mm"));
     }
 
     public void mostraNovaMensagem(Context context, Mensagem mensagem) {

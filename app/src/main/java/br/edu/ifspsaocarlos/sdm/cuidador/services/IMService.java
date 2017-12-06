@@ -11,19 +11,26 @@ import java.io.IOException;
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 
 /**
- * Created by ander on 29/10/2017.
+ * Serviço de notificações
  */
-
 public class IMService {
 
     private final static String TAG = "IMService";
 
-    public static void subscribe(String topic){
-        FirebaseMessaging.getInstance().subscribeToTopic(topic);
+    /**
+     * Inscreve app em um tópico de notificações
+     * @param topico Identificação do tópico
+     */
+    public static void subscribe(String topico){
+        FirebaseMessaging.getInstance().subscribeToTopic(topico);
     }
 
-    public static void unsubscribe(String topic){
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+    /**
+     * Desfaz inscrição num tópico de notificações
+     * @param topico Identificação do tópico
+     */
+    public static void unsubscribe(String topico){
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(topico);
     }
 
     public static void unsubscribe(){

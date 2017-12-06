@@ -5,9 +5,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Remedio;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 
 /**
- * Created by ander on 05/11/2017.
+ * Adapter de Remedio para IMensagem
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class RemedioMensagemAdapter implements IMensagem {
 
     private final Remedio remedio;

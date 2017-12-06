@@ -14,9 +14,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Mensagem;
 import br.edu.ifspsaocarlos.sdm.cuidador.receivers.AlarmeReceiver;
 
 /**
- * Created by ander on 29/10/2017.
+ * Serviço de envio de notificações
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class MensagemService extends FirebaseMessagingService {
     private static final String TAG = "MessagingService";
     private static final String NOTIFICACAO_NOVA_MENSAGEM = "mensagem";

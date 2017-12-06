@@ -7,9 +7,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.Programa;
 import br.edu.ifspsaocarlos.sdm.cuidador.interfaces.IMensagem;
 
 /**
- * Created by ander on 05/11/2017.
+ * Adapter de Programa para IMensagem
+ *
+ * @author Anderson Canale Garcia
  */
-
 public class ProgramaMensagemAdapter implements IMensagem {
 
     private final Programa programa;

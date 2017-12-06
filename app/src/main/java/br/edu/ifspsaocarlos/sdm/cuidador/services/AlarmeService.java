@@ -52,10 +52,12 @@ public class AlarmeService {
 
         if(remedio.isAjustavel() || remedio.getRepeticao() == 0){
             // Se remédio solicita reprogramação para agendamento, agenda alarme único
-            alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao() > 0);
+            alarmeReceiver.defineAlarmeUnico(contexto, mensagem, remedio.getCodigoAlarme(),
+                    remedio.getHorario(), remedio.getRepeticao() > 0);
         }else {
             // Caso contrário, agenda alarme recorrente
-            alarmeReceiver.defineAlarmeRecorrente(contexto, mensagem, remedio.getCodigoAlarme(), remedio.getHorario(), remedio.getRepeticao());
+            alarmeReceiver.defineAlarmeRecorrente(contexto, mensagem, remedio.getCodigoAlarme(),
+                    remedio.getHorario(), remedio.getRepeticao());
         }
         // salva código do alarme nas preferências
         preferencias.setAlarmeId(remedio.getCodigoAlarme(), PreferenciaHelper.ALARMES_REMEDIOS);
