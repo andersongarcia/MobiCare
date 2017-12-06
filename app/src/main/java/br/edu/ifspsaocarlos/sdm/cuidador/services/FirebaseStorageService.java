@@ -29,12 +29,17 @@ import br.edu.ifspsaocarlos.sdm.cuidador.repositories.MensagensRepository;
  * @author Anderson Canale Garcia
  */
 public class FirebaseStorageService {
+    //region TAGs
     private static final String TAG = "FirebaseStorage";
+    //endregion
 
+    //region Atributos
     private static FirebaseStorageService storage;
     private final StorageReference idosoEndPoint;
     private final StorageReference fotosEndPoint;
+    //endregion
 
+    //region Singleton
     private FirebaseStorageService(){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference rootRef = storage.getReference();
@@ -42,7 +47,6 @@ public class FirebaseStorageService {
         fotosEndPoint = rootRef.child(NO.getNo(NO.FOTOS));
     }
 
-    // Singleton
     public static FirebaseStorageService getInstance(){
         if(storage == null){
             storage = new FirebaseStorageService();
@@ -50,12 +54,23 @@ public class FirebaseStorageService {
 
         return storage;
     }
+    //endregion
 
-    public void salvaAudioInstrucao(String idosoId, String remedioId, String fileName, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
+    /**
+     * Salva arquivo de áudio com instrução para remédio no Storage
+     * @param idosoId Id do idoso
+     * @param remedioId Id do remédio
+     * @param fileName Nome do arquivo de áudio
+     * @param onSuccessListener Código a ser executado em caso de sucesso
+     */
+    public void salvaAudioInstrucao(String idosoId, String remedioId, String fileName,
+                                    OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
         Uri uri = Uri.fromFile(new File(fileName));
-        UploadTask uploadTask = idosoEndPoint.child(idosoId).child(NO.getNo(NO.INSTRUCOES)).child(remedioId).putFile(uri);
+        // Cria tarefa de upload no nó do remédio
+        UploadTask uploadTask = idosoEndPoint.child(idosoId)
+                .child(NO.getNo(NO.INSTRUCOES)).child(remedioId).putFile(uri);
 
-        // Register observers to listen for when the download is done or if it fails
+        // Registra observers para escutar quando o upload estiver concluído ou se falhar
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {

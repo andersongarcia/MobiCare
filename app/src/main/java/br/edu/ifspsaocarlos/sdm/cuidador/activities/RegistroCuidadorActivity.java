@@ -5,12 +5,18 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.BrPhoneNumberFormatter;
@@ -20,7 +26,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.util.BrPhoneNumberFormatter;
  *
  * @author Anderson Canale Garcia
  */
-public class RegistroCuidadorActivity extends RegistroBaseActivity {
+public class RegistroCuidadorActivity extends RegistroBaseActivity implements Validator.ValidationListener {
     //region Constantes
     private static final String CUIDADOR_NOME = ":cuidadorNome";
     private static final String CUIDADOR_TELEFONE = ":cuidadorTelefone";
@@ -29,10 +35,16 @@ public class RegistroCuidadorActivity extends RegistroBaseActivity {
     //endregion
 
     //region Campos do form
+    @NotEmpty(messageResId = R.string.msg_erro_nome_invalido)
     EditText etNome;
+    @NotEmpty(messageResId = R.string.msg_erro_telefone_invalido)
     EditText etTelefone;
+    @NotEmpty(messageResId = R.string.msg_erro_nome_invalido)
     EditText etNomeIdoso;
+    @NotEmpty(messageResId = R.string.msg_erro_telefone_invalido)
     EditText etTelefoneIdoso;
+
+    private Validator validator;
     //endregion
 
     @Override
@@ -50,6 +62,10 @@ public class RegistroCuidadorActivity extends RegistroBaseActivity {
         etTelefone = (EditText)findViewById(R.id.registro_cuidador_telefone);
         etNomeIdoso = (EditText)findViewById(R.id.registro_idoso_nome);
         etTelefoneIdoso = (EditText)findViewById(R.id.registro_idoso_telefone);
+
+        // Validação
+        validator = new Validator(this);
+        validator.setValidationListener(this);
 
         // Formatação para os campos de telefone
         BrPhoneNumberFormatter formatterTelefone = new BrPhoneNumberFormatter(new WeakReference<>(etTelefone));
@@ -92,20 +108,7 @@ public class RegistroCuidadorActivity extends RegistroBaseActivity {
 
             // Ação salvar
             case R.id.salvar:
-                // Lê campos do form
-                String nome = etNome.getText().toString().trim();
-                String telefone = BrPhoneNumberFormatter.onlyNumbers(
-                        etTelefone.getText().toString().trim()); // traz apenas números para telefone
-                String nomeIdoso = etNomeIdoso.getText().toString().trim();
-                String telefoneIdoso = BrPhoneNumberFormatter.onlyNumbers(
-                        etTelefoneIdoso.getText().toString().trim()); // traz apenas números para telefone
-
-                // Registra dados do cuidador (usuário) e do idoso
-                usuarioService.registraCuidadorIdoso(nome, telefone, nomeIdoso, telefoneIdoso);
-
-                // Redireciona para activity de foto de perfil
-                Intent intent = new Intent(RegistroCuidadorActivity.this, RegistroFotoActivity.class);
-                startActivity(intent);
+                validator.validate();
                 break;
 
             // Ação voltar
@@ -129,5 +132,38 @@ public class RegistroCuidadorActivity extends RegistroBaseActivity {
         outState.putString(IDOSO_NOME, etNomeIdoso.getText().toString().trim());
         outState.putString(IDOSO_TELEFONE, BrPhoneNumberFormatter.onlyNumbers( etTelefoneIdoso.getText().toString().trim()));
         super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    public void onValidationSucceeded() {
+        // Lê campos do form
+        String nome = etNome.getText().toString().trim();
+        String telefone = BrPhoneNumberFormatter.onlyNumbers(
+                etTelefone.getText().toString().trim()); // traz apenas números para telefone
+        String nomeIdoso = etNomeIdoso.getText().toString().trim();
+        String telefoneIdoso = BrPhoneNumberFormatter.onlyNumbers(
+                etTelefoneIdoso.getText().toString().trim()); // traz apenas números para telefone
+
+        // Registra dados do cuidador (usuário) e do idoso
+        usuarioService.registraCuidadorIdoso(nome, telefone, nomeIdoso, telefoneIdoso);
+
+        // Redireciona para activity de foto de perfil
+        Intent intent = new Intent(RegistroCuidadorActivity.this, RegistroFotoActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(this);
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

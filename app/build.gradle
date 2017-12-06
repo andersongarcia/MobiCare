@@ -48,6 +48,10 @@ dependencies {
     // Butter Knife
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    // Picasso
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    // Validação
+    compile 'com.mobsandgeeks:android-saripaar:2.0.0'
 
     testCompile 'junit:junit:4.12'
 }

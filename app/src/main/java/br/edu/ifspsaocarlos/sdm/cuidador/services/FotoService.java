@@ -32,7 +32,7 @@ import static android.app.Activity.RESULT_OK;
 
 public abstract class FotoService {
     private static final String TAG = "FotoService";
-    public static final int TAKE_PHOTO_CODE = 1;
+    public static final int CAMERA_REQUEST = 1;
 
     public abstract void run(File file);
 
@@ -83,7 +83,7 @@ public abstract class FotoService {
     public void tirarFoto(Activity activity){
         final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(getTempFile(activity.getPackageName())) );
-        activity.startActivityForResult(intent, TAKE_PHOTO_CODE);
+        activity.startActivityForResult(intent, CAMERA_REQUEST);
     }
 
     private static void salvaFoto(Bitmap bitmap, File file) {
@@ -115,7 +115,7 @@ public abstract class FotoService {
     public void retornaFoto(int requestCode, int resultCode, Context context) {
         if (resultCode == RESULT_OK) {
             switch(requestCode){
-                case TAKE_PHOTO_CODE:
+                case CAMERA_REQUEST:
                     corrigeRotacao(context, getTempFile(context.getPackageName()));
                     run(getTempFile(context.getPackageName()));
                     break;

@@ -73,7 +73,7 @@
     <string name="gravar_audio">Gravar áudio</string>
     <string name="action_sair">Sair</string>
     <string name="msg_token_fmt">InstanceID Token: %s</string>
-    <string name="registro_foto">Tire uma foto</string>
+    <string name="registro_foto">Tire uma selfie</string>
     <string name="msg_erro_validacao_idoso">Este número não está registrado para nenhum idoso. Verifique o número ou peça o registro pelo Cuidador.</string>
     <string name="hint_celular_idoso">O número do celular do idoso</string>
     <string name="nome_idoso">Nome do idoso</string>
@@ -162,6 +162,10 @@
     <string name="msg_erro_nenhum_perfil_selecionado">Nenhum perfil selecionado</string>
     <string name="mensagens">Mensagens</string>
     <string name="msg_erro_telefone_invalido">Número de telefone inválido</string>
+    <string name="msg_erro_nome_invalido">Preencha o nome corretamente</string>
+    <string name="nenhuma_foto">Tire uma selfie! \nAssim o idoso saberá quem é você.</string>
+    <string name="foto_empty">Use o ícone abaixo para abrir a câmera</string>
+    <string name="pular">PULAR</string>
 
 
 </resources>

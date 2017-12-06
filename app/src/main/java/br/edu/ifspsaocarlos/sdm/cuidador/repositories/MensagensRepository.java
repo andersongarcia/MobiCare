@@ -21,18 +21,23 @@ import br.edu.ifspsaocarlos.sdm.cuidador.entities.MensagemSet;
 import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 
 /**
- * Created by ander on 11/11/2017.
- */
-
-public class MensagensRepository extends Observable {
+ * Repositório de acesso a dados das mensagens
+ *
+ * @author Anderson Canale Garcia
+ */public class MensagensRepository extends Observable {
+    //region TAG
     private static final String TAG = "MensagensRepository";
+    //endregion
 
+    //region Atributos
     private static MensagensRepository repository;
     private final DatabaseReference mensagemEndPoint;
     private final DatabaseReference contatoEndPoint;
     private List<MensagemSet> mensagens;
     private final ArrayList<String> mKeys;
+    //endregion
 
+    //region Singleton
     private MensagensRepository() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         mensagemEndPoint = firebaseDatabase.getReference().child(NO.getNo(NO.MENSAGENS));
@@ -41,7 +46,6 @@ public class MensagensRepository extends Observable {
         mKeys = new ArrayList<String>();
     }
 
-    // Singleton
     public static MensagensRepository getInstance(){
         if(repository == null){
             repository = new MensagensRepository();
@@ -49,34 +53,45 @@ public class MensagensRepository extends Observable {
 
         return repository;
     }
+    //endregion
 
+    // Lista de mensagens
     public List<MensagemSet> getMensagens() {
         return mensagens;
     }
 
-
+    /**
+     * Carrega lista de mensagens enviadas ao idoso
+     * @param idosoId Id do idoso
+     */
     public void carregaMensagens(String idosoId){
-        mensagens.clear();
-        mKeys.clear();
-        DatabaseReference reference = mensagemEndPoint.child(idosoId);
+        mensagens.clear();  // limpa lista de mensagens
+        mKeys.clear();      // limpa lista de chavez
+
+        DatabaseReference reference = mensagemEndPoint.child(idosoId); // referência ao nó das mensagens do idoso
+        // Adiciona listener à referência para alterações nos nós filhos
         reference.addChildEventListener(new ChildEventListener() {
+            // Quando um item é adicionado
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, final String previousChildName) {
                 // carrega objeto de mensagem
                 final Mensagem mensagem = dataSnapshot.getValue(Mensagem.class);
-                final String key = dataSnapshot.getKey();
+                final String key = dataSnapshot.getKey();  // carrega chave de identificação
 
-                // busca dados de contato do emissor
+                // busca dados de contato do emissor no nó de contatos
                 contatoEndPoint.child(mensagem.getEmissorId()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot emissorSnapshot) {
+                        // carrega dados do contato do emissor
                         final Contato emissor = emissorSnapshot.getValue(Contato.class);
                         // busca dados de contato do destinatário
                         contatoEndPoint.child(mensagem.getDestinatarioId()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot destinatarioSnapshot) {
+                                // carrega dados do contato do destinatário
                                 Contato destinatario = destinatarioSnapshot.getValue(Contato.class);
 
+                                // instancia conjunto para guardar objetos lidos
                                 MensagemSet model = new MensagemSet(mensagem, emissor, destinatario);
 
                                 int i = mKeys.indexOf(key);

@@ -14,10 +14,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="windowNoTitle">true</item>
-
         <!-- use to make contextual action mode overlap the Toolbar -->
         <item name="windowActionModeOverlay">true</item>
+
     </style>
 
     <style name="MyToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
@@ -25,6 +24,8 @@
         </item>  <!-- Text color of Toolbar Title -->
         <item name="android:textColorSecondary">@android:color/white
         </item><!-- Color of Overflow Menu and color of Navigation Drawer Icon -->
+        <item name="actionMenuTextColor">@android:color/white</item>
+
     </style>
 
     <style name="MyPopupTheme" parent="ThemeOverlay.AppCompat.Light">
@@ -74,6 +75,5 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">28sp</item>
     </style>
-
 
 </resources>

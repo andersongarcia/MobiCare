@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 
 import br.edu.ifspsaocarlos.sdm.cuidador.R;
@@ -30,7 +32,7 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
 
 import static android.app.Activity.RESULT_OK;
-import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_CODE;
+import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.CAMERA_REQUEST;
 
 /**
  * Fragment base para telas de cadastro em geral
@@ -109,7 +111,7 @@ public abstract class CadastroBaseFragment extends Fragment {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, GenericFileProvider.getUriForFile(activity, activity.getPackageName() + ".util.fileprovider", localFile));
-            startActivityForResult(intent, TAKE_PHOTO_CODE);
+            startActivityForResult(intent, CAMERA_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,11 +120,12 @@ public abstract class CadastroBaseFragment extends Fragment {
 
     protected void carregaAvatar() {
         if(getUriAvatar() != null && !getUriAvatar().isEmpty()){
-            FotoService.carregarAvatar(service, getUriAvatar(), ivAvatar, new CallbackSimples() {
+            Picasso.with(activity).load(getUriAvatar()).into(ivAvatar);
+            /*FotoService.carregarAvatar(service, getUriAvatar(), ivAvatar, new CallbackSimples() {
                 @Override
                 public void OnComplete() {
                 }
-            });
+            });*/
         }
     }
 
@@ -185,7 +188,7 @@ public abstract class CadastroBaseFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch(requestCode){
-                case TAKE_PHOTO_CODE:
+                case CAMERA_REQUEST:
                     FotoService.corrigeRotacao(activity, localFile);
                     if(localFile.exists()){
                         Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());

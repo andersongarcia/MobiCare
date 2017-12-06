@@ -213,11 +213,10 @@ public class DialogAudioListener implements View.OnClickListener {
             mRecorder.setOutputFile(fileName);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             mRecorder.prepare();
+            mRecorder.start();
         } catch (IOException e) {
             Toast.makeText(context, R.string.msg_erro_gravacao + ": " + e.getMessage(), Toast.LENGTH_LONG);
         }
-
-        mRecorder.start();
     }
 
     private void pararGravacao() {

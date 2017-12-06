@@ -20,13 +20,14 @@ import br.edu.ifspsaocarlos.sdm.cuidador.services.UsuarioService;
  */
 public class RegistroBaseActivity extends AppCompatActivity {
     protected UsuarioService usuarioService;
+    protected Toolbar toolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean("authFirebase", false)){
+        if(sharedPref.getBoolean("authFirebase", true)){
             if(FirebaseAuth.getInstance().getCurrentUser() == null){
                 Intent intent = new Intent(this, AutenticaSMSActivity.class);
                 startActivity(intent);
@@ -37,7 +38,7 @@ public class RegistroBaseActivity extends AppCompatActivity {
         usuarioService = new UsuarioService(this);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 }

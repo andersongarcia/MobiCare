@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.UploadTask;
@@ -26,8 +27,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.data.PreferenciaHelper;
 import br.edu.ifspsaocarlos.sdm.cuidador.repositories.ContatosRepository;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService;
 import br.edu.ifspsaocarlos.sdm.cuidador.util.GenericFileProvider;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.TAKE_PHOTO_CODE;
+import static br.edu.ifspsaocarlos.sdm.cuidador.services.FotoService.CAMERA_REQUEST;
 
 /**
  * Activity para registro da foto de perfil do usuário
@@ -42,6 +45,14 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
     private boolean permissionToPhotoAccepted = false;
     private boolean permissionToExternalStorageAccepted = false;
     protected String [] permissions = { android.Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+
+    @BindView(R.id.ll_empty_view)
+    View emptyView;
+    @BindView(R.id.tv_empty_view)
+    TextView tvEmptyView;
+    @BindView(R.id.tv_empty_view_help)
+    TextView tvEmptyViewHelp;
+
 
     private FloatingActionButton btnTirarFoto;
 
@@ -73,6 +84,8 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
         setContentView(R.layout.activity_registro_foto);
         super.onCreate(savedInstanceState);
 
+        ButterKnife.bind(this, this);
+
         // Configura toolbar
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(R.string.registro_foto);
@@ -83,6 +96,10 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
         if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
             ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
         }
+
+        // Define texto exibido enquanto não há foto
+        tvEmptyView.setText(R.string.nenhuma_foto);
+        tvEmptyViewHelp.setText(R.string.foto_empty);
 
         // Seta ação do fab para abrir câmera
         btnTirarFoto = (FloatingActionButton) findViewById(R.id.btn_foto_perfil);
@@ -97,6 +114,8 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_cadastro, menu);
+        menu.findItem(R.id.pular).setVisible(true);
+        menu.findItem(R.id.salvar).setVisible(false);
         return true;
     }
 
@@ -108,6 +127,8 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        Intent intent = new Intent(RegistroFotoActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         switch (item.getItemId()) {
 
             // Ação salvar
@@ -125,7 +146,11 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
                     });
                 }
                 // Redireciona para activity principal
-                Intent intent = new Intent(RegistroFotoActivity.this, MainActivity.class);
+                startActivity(intent);
+                break;
+
+            // Ação pular
+            case R.id.pular:
                 startActivity(intent);
                 break;
 
@@ -148,7 +173,7 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch(requestCode){
-                case TAKE_PHOTO_CODE:
+                case CAMERA_REQUEST:
                     // Corrige a rotação da foto (bug em alguns aparelhos)
                     FotoService.corrigeRotacao(this, localFile);
                     if(localFile.exists()){
@@ -156,6 +181,9 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
                         Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                         ImageView ivFotoPerfil = (ImageView)findViewById(R.id.iv_foto_perfil);
                         ivFotoPerfil.setImageBitmap(bitmap);
+                        emptyView.setVisibility(View.INVISIBLE);
+                        toolbar.getMenu().findItem(R.id.salvar).setVisible(true);
+                        toolbar.getMenu().findItem(R.id.pular).setVisible(false);
                     }
                     break;
             }
@@ -173,7 +201,8 @@ public class RegistroFotoActivity extends RegistroBaseActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, GenericFileProvider.getUriForFile(this, getPackageName() + ".util.fileprovider", getLocalFile()));
-            startActivityForResult(intent, TAKE_PHOTO_CODE);
+            intent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
+            startActivityForResult(intent, CAMERA_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
         }

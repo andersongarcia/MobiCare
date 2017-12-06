@@ -87,8 +87,8 @@ public class RegistroIdosoActivity extends RegistroBaseActivity {
                             // se idoso estiver cadastrado, registra usuário idoso
                             usuarioService.registraUsuarioIdoso(telefone);
 
-                            // Redireciona para activity de foto de perfil
-                            Intent intent = new Intent(RegistroIdosoActivity.this, RegistroFotoActivity.class);
+                            // Redireciona para activity principal
+                            Intent intent = new Intent(RegistroIdosoActivity.this, MainActivity.class);
                             startActivity(intent);
                         }else {
                             // se idoso não estiver cadastrado, exibe mensagem

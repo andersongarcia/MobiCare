@@ -104,7 +104,7 @@ public class Mensagem implements Serializable, IMensagem {
 
     @Exclude
     public String obterDataHora() {
-        SimpleDateFormat dt1 = new SimpleDateFormat("dd/mm/yyyy hh:mm");
+        SimpleDateFormat dt1 = new SimpleDateFormat("dd/MM/yyyy hh:mm");
         return dt1.format(new Date(getTimestampEnvioLong()));
     }
 }

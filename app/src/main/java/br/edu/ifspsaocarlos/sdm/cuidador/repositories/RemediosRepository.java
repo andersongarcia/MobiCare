@@ -21,10 +21,10 @@ import br.edu.ifspsaocarlos.sdm.cuidador.enums.NO;
 import br.edu.ifspsaocarlos.sdm.cuidador.services.AlarmeService;
 
 /**
- * Created by ander on 10/11/2017.
- */
-
-public class RemediosRepository extends Observable {
+ * Repositório de acesso a dados dos remédios
+ *
+ * @author Anderson Canale Garcia
+ */public class RemediosRepository extends Observable {
     private static final String TAG = "RemediosRepository";
 
     private static RemediosRepository repository;
@@ -80,23 +80,34 @@ public class RemediosRepository extends Observable {
         removeRemedioDaLista(remedioId);
     }
 
+    /**
+     * Carrega lista de remédios cadastrados para um idoso
+     * @param idosoId Id do idoso
+     * @param alarmeService Serviço de alarmes, quando necessário reagendamento
+     */
     public void carregaRemedios(String idosoId, final AlarmeService alarmeService) {
+        // A partir da referência para o nó do idoso, abaixo do nó de remédios,
+        // cria listener para ler eventos de atualizações dos dados
         remedioEndPoint.child(idosoId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                remedios.clear();
+                remedios.clear();   // limpa lista de remédios
+                // Adiciona cada nó filho como remédio na lista
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    //Getting the data from snapshot
+                    // Converte dados do snapshot para objeto de domínio
                     Remedio remedio = postSnapshot.getValue(Remedio.class);
-                    remedios.add(remedio);
+                    remedios.add(remedio);  // adiciona remédio à lista
+
+                    // Se houver serviço de alarme definido,
                     if(alarmeService != null){
                         alarmeService.atualizaAlarmeRemedio(remedio);
                     }
                 }
-                setChanged();
-                notifyObservers();
+                // Notifica observers que houve atualização na lista
+                notificar();
             }
 
+            // Em caso de falha, listener é cancelado
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getMessage());
@@ -111,6 +122,7 @@ public class RemediosRepository extends Observable {
             if(remedio.getId() == remedioId)
                 i.remove();
         }
+        notificar();
     }
 
 
@@ -122,7 +134,14 @@ public class RemediosRepository extends Observable {
             atualizaRemedio(idosoId, remedio);
         }
 
+        notificar();
+
         return id;
+    }
+
+    private void notificar() {
+        setChanged();
+        notifyObservers();
     }
 
     public Remedio obterRemedio(String remedioId) {

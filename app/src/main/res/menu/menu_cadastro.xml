@@ -12,6 +12,13 @@
 		android:visible="false" />
 
 	<item
+		android:id="@+id/pular"
+		android:orderInCategory="90"
+		android:title="@string/pular"
+		app:showAsAction="always"
+		android:visible="false" />
+
+	<item
 		android:id="@+id/salvar"
 		android:icon="@drawable/ic_done_white_36dp"
 		android:orderInCategory="100"
